@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "root",
+    "password": null,
+    "database": "dart-server-dev",
+    "dialect": "sqlite",
+    "storage": "db/dart-server-dev.sqlite"
+  },
+  "test": {
+    "username": "root",
+    "password": null,
+    "database": "dart-server-test",
+    "dialect": "sqlite",
+    "storage": ":memory:"
+  },
+  "production": {
+    "username": "root",
+    "password": null,
+    "database": "dart-server",
+    "dialect": "sqlite",
+    "storage": "db/dart-server.sqlite"
+  }
+}
