@@ -5,6 +5,7 @@ Work in progress but to follow along
 
 ```bash
 git clone https://github.com/archanglmr/dart-server
+cd dart-server
 npm install
 npm start
 ```
