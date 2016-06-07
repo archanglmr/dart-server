@@ -63,7 +63,7 @@
         <input type="text" name="type" placeholder="Type" />
         <input type="text" name="variation" placeholder="Variation" />
         <input type="text" name="modifiers" placeholder="Modifiers" />
-        <input type="text" name="gameIdentifier" placeholder="Game Identifier" />
+        <input type="text" name="signature" placeholder="Game Signature" />
         <br />
         <textarea name="data" placeholder="Data"></textarea>
         <textarea name="players" placeholder="Players"></textarea>
@@ -73,7 +73,7 @@
     <ul>
         {{#each games}}
             <li>
-                {{this.id}}: {{this.gameIdentifier}}<br />
+                {{this.id}}: {{this.signature}}<br />
                 {{this.name}} | {{this.type}} | {{this.variation}} | {{this.modifiers}} | {{this.data}} | {{this.players}}
                  -
                 <a href="/games/{{this.id}}">View Raw</a> |

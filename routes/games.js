@@ -19,7 +19,7 @@ router.post('/create', function(req, res) {
         type: req.body.type,
         variation: req.body.variation,
         modifiers: req.body.modifiers,
-        gameIdentifier: req.body.gameIdentifier,
+        signature: req.body.signature,
         players: req.body.players,
         data: req.body.data,
         log: req.body.log

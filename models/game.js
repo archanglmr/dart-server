@@ -6,7 +6,7 @@ module.exports = function(sequelize, DataTypes) {
     type: DataTypes.STRING,
     variation: DataTypes.STRING,
     modifiers: DataTypes.STRING,
-    gameIdentifier: DataTypes.STRING,
+    signature: DataTypes.STRING,
     data: DataTypes.TEXT,
     players: DataTypes.TEXT,
     log: DataTypes.TEXT
