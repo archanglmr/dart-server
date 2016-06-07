@@ -15,6 +15,7 @@ router.get('/', function(req, res) {
 
 router.post('/create', function(req, res) {
     models.Throw.create({
+        leg: req.body.leg,
         round: req.body.round,
         section: req.body.section,
         number: req.body.number,

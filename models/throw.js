@@ -1,6 +1,7 @@
 'use strict';
 module.exports = function(sequelize, DataTypes) {
   var Throw = sequelize.define('Throw', {
+    leg: DataTypes.INTEGER,
     round: DataTypes.INTEGER,
     section: DataTypes.STRING,
     number: DataTypes.INTEGER,
