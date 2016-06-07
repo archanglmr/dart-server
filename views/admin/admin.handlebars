@@ -1,0 +1,112 @@
+<h1>{{title}}</h1>
+<p>Welcome to {{title}}</p>
+
+<section>
+    <h2>Players</h2>
+    <form action="/players/create" method="post">
+        <input type="text" name="firstName" placeholder="First Name" />
+        <input type="text" name="lastName" placeholder="Last Name" />
+        <input type="text" name="displayName" placeholder="Display Name" />
+        <input type="submit" />
+    </form>
+    <ul>
+        {{#each players}}
+            <li>
+                {{this.id}}: {{this.firstName}} | {{this.lastName}} | {{this.displayName}}
+                -
+                <a href="/players/{{this.id}}">View Raw</a> |
+                <a href="/players/{{this.id}}/destroy">Destroy</a>
+            </li>
+        {{else}}
+            <li>No Players yet</li>
+        {{/each}}
+    </ul>
+    <div><a href="/players">View all</a></div>
+</section>
+
+
+<section>
+    <h2>Dartboards</h2>
+    <form action="/dartboards/create" method="post">
+        <input type="text" name="name" placeholder="Name" />
+        <select name="type">
+            <optgroup label="Type">
+                {{#each dartboardTypes}}<option>{{this}}</option>{{/each}}
+            </optgroup>
+        </select>
+        <input type="text" name="location" placeholder="Location" />
+        <br />
+        <textarea name="description" placeholder="Description"></textarea>
+        <input type="submit" />
+    </form>
+    <ul>
+        {{#each dartboards}}
+            <li>
+                {{this.id}}: {{this.name}} | {{this.type}} | {{this.location}}
+                -
+                <a href="/dartboards/{{this.id}}">View Raw</a> |
+                <a href="/dartboards/{{this.id}}/destroy">Destroy</a>
+            </li>
+        {{else}}
+            <li>No Dartboards yet</li>
+        {{/each}}
+    </ul>
+    <div><a href="/dartboards">View all</a></div>
+</section>
+
+
+<section>
+    <h2>Games</h2>
+    <form action="/games/create" method="post">
+        <input type="text" name="name" placeholder="Name" />
+        <input type="text" name="version" placeholder="Version" />
+        <input type="text" name="type" placeholder="Type" />
+        <input type="text" name="variation" placeholder="Variation" />
+        <input type="text" name="modifiers" placeholder="Modifiers" />
+        <input type="text" name="gameIdentifier" placeholder="Game Identifier" />
+        <br />
+        <textarea name="data" placeholder="Data"></textarea>
+        <textarea name="players" placeholder="Players"></textarea>
+        <textarea name="log" placeholder="Log"></textarea>
+        <input type="submit" />
+    </form>
+    <ul>
+        {{#each games}}
+            <li>
+                {{this.id}}: {{this.gameIdentifier}}<br />
+                {{this.name}} | {{this.type}} | {{this.variation}} | {{this.modifiers}} | {{this.data}} | {{this.players}}
+                 -
+                <a href="/games/{{this.id}}">View Raw</a> |
+                <a href="/games/{{this.id}}/destroy">Destroy</a>
+            </li>
+        {{else}}
+            <li>No Games yet</li>
+        {{/each}}
+    </ul>
+    <div><a href="/games">View all</a></div>
+</section>
+
+
+<section>
+    <h2>Throws</h2>
+    <form action="/throws/create" method="post">
+        <input type="number" name="round" placeholder="Round" />
+        <select name="section">
+            <option value="little">Little Single</option>
+            <option value="tripple">Tripple</option>
+            <option value="fat">Fat Single</option>
+            <option value="double">Double</option>
+            <option value="miss">Miss</option>
+        </select>
+        <input type="number" name="number" placeholder="Number" />
+        <input type="number" name="points" placeholder="Points" />
+        <select name="GameId">
+            {{#each games}}<option value="{{this.id}}">{{this.id}} - {{this.name}}</option>{{/each}}
+        </select>
+        <select name="PlayerId">
+            {{#each players}}<option value="{{this.id}}">{{this.id}} - {{this.displayName}}</option>{{/each}}
+        </select>
+        <input type="submit" />
+    </form>
+    <div><a href="/throws">View all</a></div>
+</section>

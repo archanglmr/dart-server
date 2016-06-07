@@ -26,19 +26,16 @@ router.post('/create', function(req, res) {
 });
 
 router.get('/:player_id', function(req, res) {
-    models.Player.findOne({
-        where: {
-            id: req.params.player_id
-        }
-    }).then(function(player) {
-        if (player) {
-            res.setHeader('Content-Type', 'application/json');
-            res.write(JSON.stringify(player), 'utf-8');
-        } else {
-            res.status(404).send('Not found');
-        }
-        res.end();
-    });
+    models.Player.findById(req.params.player_id)
+        .then(function(player) {
+            if (player) {
+                res.setHeader('Content-Type', 'application/json');
+                res.write(JSON.stringify(player), 'utf-8');
+            } else {
+                res.status(404).send('Not found');
+            }
+            res.end();
+        });
 });
 
 router.get('/:player_id/destroy', function(req, res) {
