@@ -1,2 +1,23 @@
 <h1>{{title}}</h1>
 <p>Welcome to {{title}}</p>
+
+
+<h2>Create a new Player</h2>
+<form action="/players/create" method="post">
+    <input type="text" name="firstName" placeholder="First Name" />
+    <input type="text" name="lastName" placeholder="Last Name" />
+    <input type="text" name="displayName" placeholder="Display Name" />
+    <input type="submit" />
+</form>
+
+
+<h2>Players</h2>
+<ul>
+    {{#each players}}
+        <li>
+            {{this.firstName}} {{this.lastName}} ({{this.displayName}}) - <a href="/players/{{this.id}}/destroy">Destroy</a>
+        </li>
+    {{else}}
+        <li>No Players yet</li>
+    {{/each}}
+</ul>

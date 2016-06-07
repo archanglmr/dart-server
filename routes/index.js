@@ -4,7 +4,12 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-    res.render('index', { title: 'Express' });
+    models.Player.findAll().then(function(players) {
+        res.render('index', {
+            title: 'Express',
+            players: players
+        });
+    });
 });
 
 module.exports = router;
