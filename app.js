@@ -22,6 +22,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', require('./routes/index'));
 app.use('/admin', require('./routes/admin'));
+app.use('/display', require('./routes/display'));
 app.use('/players', require('./routes/players'));
 app.use('/dartboards', require('./routes/dartboards'));
 app.use('/games', require('./routes/games'));
