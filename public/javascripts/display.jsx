@@ -19,6 +19,7 @@ var Display = React.createClass({
         }
 
         this.setState({
+            src: this.props.src,
             top: Math.max(0, (viewportHeight - height) / 2),
             left: Math.max(0, (viewportWidth - width) / 2),
             width: width,
@@ -45,9 +46,9 @@ var Display = React.createClass({
             height: this.state.height + 'px'
         };
         return (
-            <iframe src={this.props.src} style={styles} />
+            <iframe src={this.state.src} style={styles} />
         );
     }
 });
 // Render application.
-ReactDOM.render(<Display src="/display/content" />, document.getElementById('body'));
+var dis = ReactDOM.render(<Display src="/display/content" />, document.getElementById('body'));
