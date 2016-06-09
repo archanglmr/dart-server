@@ -1,7 +1,7 @@
 'use strict';
 
 var assert = require('chai').assert,
-    DartHelpers = require('../../lib/DartHelpers.js'),
+    DartHelpers = require('../../lib/dart-helpers'),
     Sig = DartHelpers.Signature;
 
 describe('DartHelper.Signature', () => {

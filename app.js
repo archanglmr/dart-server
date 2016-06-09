@@ -20,13 +20,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// setup routes
 app.use('/', require('./routes/index'));
-app.use('/admin', require('./routes/admin'));
 app.use('/display', require('./routes/display'));
-app.use('/players', require('./routes/players'));
-app.use('/dartboards', require('./routes/dartboards'));
-app.use('/games', require('./routes/games'));
-app.use('/throws', require('./routes/throws'));
+app.use('/api', require('./routes/api'));
+app.use('/admin', require('./routes/admin'));
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

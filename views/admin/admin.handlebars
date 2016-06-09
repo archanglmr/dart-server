@@ -3,7 +3,7 @@
 
 <section>
     <h2>Players</h2>
-    <form action="/players/create" method="post">
+    <form action="/api/players/create" method="post">
         <input type="text" name="firstName" placeholder="First Name" />
         <input type="text" name="lastName" placeholder="Last Name" />
         <input type="text" name="displayName" placeholder="Display Name" />
@@ -14,20 +14,20 @@
             <li>
                 {{this.id}}: {{this.firstName}} | {{this.lastName}} | {{this.displayName}}
                 -
-                <a href="/players/{{this.id}}">View Raw</a> |
-                <a href="/players/{{this.id}}/destroy">Destroy</a>
+                <a href="/api/players/{{this.id}}">View Raw</a> |
+                <a href="/api/players/{{this.id}}/destroy">Destroy</a>
             </li>
         {{else}}
             <li>No Players yet</li>
         {{/each}}
     </ul>
-    <div><a href="/players">View all</a></div>
+    <div><a href="/api/players">View all</a></div>
 </section>
 
 
 <section>
     <h2>Dartboards</h2>
-    <form action="/dartboards/create" method="post">
+    <form action="/api/dartboards/create" method="post">
         <input type="text" name="name" placeholder="Name" />
         <select name="type">
             <optgroup label="Type">
@@ -44,20 +44,20 @@
             <li>
                 {{this.id}}: {{this.name}} | {{this.type}} | {{this.location}}
                 -
-                <a href="/dartboards/{{this.id}}">View Raw</a> |
-                <a href="/dartboards/{{this.id}}/destroy">Destroy</a>
+                <a href="/api/dartboards/{{this.id}}">View Raw</a> |
+                <a href="/api/dartboards/{{this.id}}/destroy">Destroy</a>
             </li>
         {{else}}
             <li>No Dartboards yet</li>
         {{/each}}
     </ul>
-    <div><a href="/dartboards">View all</a></div>
+    <div><a href="/api/dartboards">View all</a></div>
 </section>
 
 
 <section>
     <h2>Games</h2>
-    <form action="/games/create" method="post">
+    <form action="/api/games/create" method="post">
         <input type="text" name="name" placeholder="Name" />
         <input type="text" name="version" placeholder="Version" />
         <input type="text" name="type" placeholder="Type" />
@@ -76,20 +76,20 @@
                 {{this.id}}: {{this.signature}}<br />
                 {{this.name}} | {{this.type}} | {{this.variation}} | {{this.modifiers}} | {{this.data}} | {{this.players}}
                  -
-                <a href="/games/{{this.id}}">View Raw</a> |
-                <a href="/games/{{this.id}}/destroy">Destroy</a>
+                <a href="/api/games/{{this.id}}">View Raw</a> |
+                <a href="/api/games/{{this.id}}/destroy">Destroy</a>
             </li>
         {{else}}
             <li>No Games yet</li>
         {{/each}}
     </ul>
-    <div><a href="/games">View all</a></div>
+    <div><a href="/api/games">View all</a></div>
 </section>
 
 
 <section>
     <h2>Throws</h2>
-    <form action="/throws/create" method="post">
+    <form action="/api/throws/create" method="post">
         <input type="number" name="leg" placeholder="Leg" />
         <input type="number" name="round" placeholder="Round" />
         <select name="section">
@@ -109,5 +109,5 @@
         </select>
         <input type="submit" />
     </form>
-    <div><a href="/throws">View all</a></div>
+    <div><a href="/api/throws">View all</a></div>
 </section>
