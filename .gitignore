@@ -40,3 +40,8 @@ node_modules
 
 # Databases
 db/*.sqlite
+
+# Builds
+builds/*.map
+builds/*.js
+builds/*.css
