@@ -4,9 +4,9 @@ var webpack = require('webpack'),
 module.exports = {
     entry: __dirname + '/client/client.jsx',
     output: {
-        path: __dirname + '/builds',
+        path: __dirname + '/builds/client',
         filename: 'client.js',
-        publicPath: '../builds/'
+        publicPath: '/client/'
     },
     plugins: [
         new ExtractPlugin('client.css')

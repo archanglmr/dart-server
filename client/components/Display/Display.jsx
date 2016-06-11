@@ -38,7 +38,6 @@ export default class Display extends Component {
         }
 
         this.setState({
-            src: this.props.src,
             top: Math.max(0, (viewportHeight - height) / 2),
             left: Math.max(0, (viewportWidth - width) / 2),
             width: width,
@@ -63,7 +62,7 @@ export default class Display extends Component {
             height: this.state.height + 'px'
         };
         return (
-            <iframe src={this.state.src} style={styles} />
+            <iframe src={this.props.src} style={styles} />
         );
     }
 }

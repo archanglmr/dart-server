@@ -1,6 +1,6 @@
 import React from 'react';
 import {render} from 'react-dom';
-import Display from './components/display/display.jsx';
+import Display from './components/Display';
 
 
-render(<Display src="dummy.html" />, document.getElementById('body'));
+render(<Display src="/client/content" />, document.getElementById('body'));

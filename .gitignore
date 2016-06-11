@@ -42,6 +42,4 @@ node_modules
 db/*.sqlite
 
 # Builds
-builds/*.map
-builds/*.js
-builds/*.css
+builds/client
