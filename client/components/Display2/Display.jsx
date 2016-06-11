@@ -51,6 +51,10 @@ export default class Display extends Component {
         this.windowResize();
     }
 
+    componentWillUnMount() {
+        window.removeEventListener('resize', this.windowResize);
+    }
+
     render () {
         var styles = {
             top: this.state.top + 'px',
