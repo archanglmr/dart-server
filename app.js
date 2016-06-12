@@ -22,7 +22,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // setup routes
 app.use('/', require('./routes/index'));
-app.use('/client', require('./routes/client'));
+app.use('/display', require('./routes/display'));
 app.use('/api', require('./routes/api'));
 app.use('/admin', require('./routes/admin'));
 

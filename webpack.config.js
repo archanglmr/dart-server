@@ -2,14 +2,14 @@ var webpack = require('webpack'),
     ExtractPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
-    entry: __dirname + '/client/client.jsx',
+    entry: __dirname + '/client/display.jsx',
     output: {
-        path: __dirname + '/builds/client',
-        filename: 'client.js',
-        publicPath: '/client/'
+        path: __dirname + '/builds/display',
+        filename: 'display.js',
+        publicPath: '/display/'
     },
     plugins: [
-        new ExtractPlugin('client.css')
+        new ExtractPlugin('display.css')
     ],
     module: {
         loaders: [
