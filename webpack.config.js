@@ -1,11 +1,12 @@
 var webpack = require('webpack'),
     ExtractPlugin = require('extract-text-webpack-plugin'),
-    path = require('path');
+    path = require('path'),
+    hotMiddlewareScript = 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000&reload=true';
 
 module.exports = {
   entry: {
-    display: __dirname + '/clients/display.jsx',
-    throw: __dirname + '/clients/throw.jsx'
+    display: [__dirname + '/clients/display.jsx', hotMiddlewareScript],
+    throw: [__dirname + '/clients/throw.jsx', hotMiddlewareScript]
   },
   output: {
     path: path.join(__dirname, 'builds'),
@@ -13,7 +14,9 @@ module.exports = {
     publicPath: '/builds/'
   },
   plugins: [
-    new ExtractPlugin('[name].css')
+    new ExtractPlugin('[name].css'),
+    new webpack.optimize.OccurrenceOrderPlugin(),
+    new webpack.HotModuleReplacementPlugin()
   ],
   module: {
     loaders: [
