@@ -4,15 +4,12 @@ var express = require('express'),
 
 /* GET display home page. */
 router.get('/', function(req, res, next) {
-    res.render('display/index', {layout: false, title: 'Dart Game Display'});
+  res.render('display/index', {layout: false, title: 'Dart Game Display'});
 });
 
 /* Sample content */
 router.get('/content', function(req, res, next) {
-    res.render('display/content', {layout: false, title: 'Hello World'});
+  res.render('display/content', {layout: false, title: 'Hello World'});
 });
-
-
-router.use('/assets', express.static(path.join(__dirname, '../builds/display')));
 
 module.exports = router;

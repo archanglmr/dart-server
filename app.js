@@ -23,8 +23,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 // setup routes
 app.use('/', require('./routes/index'));
 app.use('/display', require('./routes/display'));
+app.use('/throw', require('./routes/throw'));
 app.use('/api', require('./routes/api'));
 app.use('/admin', require('./routes/admin'));
+
+app.use('/builds', express.static('builds'));
 
 
 // catch 404 and forward to error handler

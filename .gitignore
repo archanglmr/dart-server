@@ -42,5 +42,5 @@ node_modules
 db/*.sqlite
 
 # Builds
-builds/display
-builds/client
+builds/*.css
+builds/*.js
