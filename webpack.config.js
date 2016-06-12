@@ -2,7 +2,7 @@ var webpack = require('webpack'),
     ExtractPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
-    entry: __dirname + '/client/display.jsx',
+    entry: __dirname + '/clients/display.jsx',
     output: {
         path: __dirname + '/builds/display',
         filename: 'display.js',
