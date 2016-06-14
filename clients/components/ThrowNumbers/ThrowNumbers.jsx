@@ -4,7 +4,7 @@ import React, {PropTypes} from 'react';
 import ThrowButton from '../ThrowButton';
 
 
-function HitNumbers({buttons, onHitNumberClick}) {
+function ThrowNumbers({buttons, onHitNumberClick}) {
   return (
       <menu>
         {buttons.map((button) => (
@@ -18,7 +18,7 @@ function HitNumbers({buttons, onHitNumberClick}) {
   );
 }
 
-HitNumbers.propTypes = {
+ThrowNumbers.propTypes = {
   buttons: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.number.isRequired,
@@ -30,4 +30,4 @@ HitNumbers.propTypes = {
   onHitNumberClick: PropTypes.func.isRequired
 };
 
-export default HitNumbers;
+export default ThrowNumbers;

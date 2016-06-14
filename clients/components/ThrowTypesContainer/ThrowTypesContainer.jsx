@@ -2,7 +2,7 @@
 
 import {connect} from 'react-redux';
 import {selectHitType, HitTypesList} from '../../throw/actions';
-import HitTypes from '../HitTypes';
+import ThrowTypes from '../ThrowTypes';
 
 
 const mapStateToProps = (state) => {
@@ -57,9 +57,9 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-const HitTypesContainer = connect(
+const ThrowTypesContainer = connect(
     mapStateToProps,
     mapDispatchToProps
-)(HitTypes);
+)(ThrowTypes);
 
-export default HitTypesContainer;
+export default ThrowTypesContainer;

@@ -2,7 +2,7 @@
 
 import {connect} from 'react-redux';
 import {selectHitNumber} from '../../throw/actions';
-import HitNumbers from '../HitNumbers';
+import ThrowNumbers from '../ThrowNumbers';
 
 
 const mapStateToProps = (state) => {
@@ -32,9 +32,9 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-const HitNumbersContainer = connect(
+const ThrowNumbersContainer = connect(
     mapStateToProps,
     mapDispatchToProps
-)(HitNumbers);
+)(ThrowNumbers);
 
-export default HitNumbersContainer;
+export default ThrowNumbersContainer;

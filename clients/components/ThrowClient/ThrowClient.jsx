@@ -1,16 +1,16 @@
 'use strict';
 
 import React, {PropTypes} from 'react';
-import HitTypesContainer from '../HitTypesContainer';
-import HitNumbersContainer from '../HitNumbersContainer';
+import ThrowTypesContainer from '../ThrowTypesContainer';
+import ThrowNumbersContainer from '../ThrowNumbersContainer';
 import ThrowSubmitButtonContainer from '../ThrowSubmitButtonContainer';
 import './ThrowClient.scss';
 
 function ThrowClient() {
   return (
       <div>
-        <HitTypesContainer />
-        <HitNumbersContainer />
+        <ThrowTypesContainer />
+        <ThrowNumbersContainer />
         <ThrowSubmitButtonContainer text="Send Throw" />
       </div>
   );
