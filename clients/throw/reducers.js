@@ -45,7 +45,7 @@ export default function throwApp(state, action = {}) {
             case HitTypesList.DOUBLE:
               newState.submitable = !!state.number;
               break;
-            
+
             case HitTypesList.OUTER_SINGLE:
             case HitTypesList.TRIPLE:
               // can't have a triple bull

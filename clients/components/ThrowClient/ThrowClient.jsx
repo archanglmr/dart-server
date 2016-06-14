@@ -3,7 +3,7 @@
 import React, {PropTypes} from 'react';
 import HitTypesContainer from '../HitTypesContainer';
 import HitNumbersContainer from '../HitNumbersContainer';
-import HitSubmitButtonContainer from '../HitSubmitButtonContainer';
+import ThrowSubmitButtonContainer from '../ThrowSubmitButtonContainer';
 import './ThrowClient.scss';
 
 function ThrowClient() {
@@ -11,7 +11,7 @@ function ThrowClient() {
       <div>
         <HitTypesContainer />
         <HitNumbersContainer />
-        <HitSubmitButtonContainer text="Send Throw" />
+        <ThrowSubmitButtonContainer text="Send Throw" />
       </div>
   );
 }

@@ -17,9 +17,9 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-const HitSubmitButtonContainer = connect(
+const ThrowSubmitButtonContainer = connect(
     mapStateToProps,
     mapDispatchToProps
 )(ThrowButton);
 
-export default HitSubmitButtonContainer;
+export default ThrowSubmitButtonContainer;
