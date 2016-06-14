@@ -1,0 +1,8 @@
+.throwButton {
+  &:disabled {
+    color: red;
+  }
+  &.selected {
+    border-color: red;
+  }
+}

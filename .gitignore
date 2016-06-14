@@ -44,3 +44,4 @@ db/*.sqlite
 # Builds
 builds/*.css
 builds/*.js
+builds/*.map

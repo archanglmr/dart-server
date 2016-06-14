@@ -4,6 +4,7 @@ var webpack = require('webpack'),
     hotMiddlewareScript = 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000&reload=true';
 
 module.exports = {
+  devtool: 'source-map',
   entry: {
     display: [__dirname + '/clients/display.jsx', hotMiddlewareScript],
     throw: [__dirname + '/clients/throw.jsx', hotMiddlewareScript]

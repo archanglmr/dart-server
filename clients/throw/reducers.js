@@ -1,6 +1,6 @@
 'use strict';
 
-import {SELECT_HIT_TYPE, SELECT_NUMBER, HitTypes} from './actions';
+import {SELECT_HIT_TYPE, SELECT_HIT_NUMBER, HitTypes} from './actions';
 
 const initialState = {
   hitType: null,
@@ -61,7 +61,7 @@ export default function throwApp(state, action = {}) {
         return Object.assign({}, state, newState);
       }
 
-    case SELECT_NUMBER:
+    case SELECT_HIT_NUMBER:
       // make sure we have a valid "number" and that it's not disabled
       if (action.number > 0 && action.number <= 21 && -1 == state.disabledNumbers.indexOf(action.number)) {
         let newState = {};
