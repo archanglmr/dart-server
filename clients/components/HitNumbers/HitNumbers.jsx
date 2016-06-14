@@ -6,7 +6,7 @@ import ThrowButton from '../ThrowButton';
 
 function HitNumbers({buttons, onHitNumberClick}) {
   return (
-      <nav>
+      <menu>
         {buttons.map((button) => (
             <ThrowButton
                 key={button.id}
@@ -14,7 +14,7 @@ function HitNumbers({buttons, onHitNumberClick}) {
                 onClick={() => onHitNumberClick(button.id)}
                 />
         ))}
-      </nav>
+      </menu>
   );
 }
 

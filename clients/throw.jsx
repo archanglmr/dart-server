@@ -11,7 +11,6 @@ import {Provider} from 'react-redux'
 import * as actions from './throw/actions';
 import throwApp from './throw/reducers';
 
-
 // Create the Redux store
 var store = createStore(throwApp);
 

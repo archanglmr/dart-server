@@ -43,11 +43,10 @@ export default function throwApp(state, action = {}) {
             case HitTypesList.INNER_SINGLE:
             // all numbers are valid for double
             case HitTypesList.DOUBLE:
-            // @todo: Decide if outer single bull is ok, for now sure.
-            case HitTypesList.OUTER_SINGLE:
               newState.submitable = !!state.number;
               break;
-
+            
+            case HitTypesList.OUTER_SINGLE:
             case HitTypesList.TRIPLE:
               // can't have a triple bull
               newState.disabledNumbers.push(21);
@@ -80,8 +79,7 @@ export default function throwApp(state, action = {}) {
           newState.number = action.number;
           newState.disabledHitTypes = [HitTypesList.MISS];
           if (21 === newState.number) {
-            // @todo: Add HitType.OUTER_SINGLE if we decide that's not ok
-            newState.disabledHitTypes.push(HitTypesList.TRIPLE);
+            newState.disabledHitTypes.push(HitTypesList.TRIPLE, HitTypesList.OUTER_SINGLE);
           }
           newState.submitable = !!state.hitType;
         }

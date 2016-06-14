@@ -1,7 +1,8 @@
 var webpack = require('webpack'),
     ExtractPlugin = require('extract-text-webpack-plugin'),
     path = require('path'),
-    hotMiddlewareScript = 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000&reload=true';
+    hotMiddlewareScript = 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000&reload=true',
+    reset = require('node-reset-scss');
 
 module.exports = {
   devtool: 'source-map',
@@ -45,5 +46,9 @@ module.exports = {
         test:   /\.html/,
         loader: 'html'
       }]
+  },
+  sassLoader: {
+    includePaths: [reset.includePath],
+    outputStyle: 'compressed'
   }
 };
