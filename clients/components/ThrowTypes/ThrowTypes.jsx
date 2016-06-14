@@ -4,14 +4,14 @@ import React, {PropTypes} from 'react';
 import ThrowButton from '../ThrowButton';
 
 
-function ThrowTypes({buttons, onHitTypeClick}) {
+function ThrowTypes({buttons, onThrowTypeClick}) {
   return (
       <menu>
         {buttons.map((button) => (
             <ThrowButton
                 key={button.id}
                 {...button}
-                onClick={() => onHitTypeClick(button.id)}
+                onClick={() => onThrowTypeClick(button.id)}
                 />
         ))}
       </menu>
@@ -27,7 +27,7 @@ ThrowTypes.propTypes = {
         enabled: PropTypes.bool
       })
   ).isRequired,
-  onHitTypeClick: PropTypes.func.isRequired
+  onThrowTypeClick: PropTypes.func.isRequired
 };
 
 export default ThrowTypes;

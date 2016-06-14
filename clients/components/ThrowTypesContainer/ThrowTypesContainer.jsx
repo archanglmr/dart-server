@@ -1,34 +1,34 @@
 'use strict';
 
 import {connect} from 'react-redux';
-import {selectHitType, HitTypesList} from '../../throw/actions';
+import {selectThrowType, ThrowTypesList} from '../../throw/actions';
 import ThrowTypes from '../ThrowTypes';
 
 
 const mapStateToProps = (state) => {
   let buttons = [];
 
-  for (let key in HitTypesList) {
-    if (HitTypesList.hasOwnProperty(key)) {
+  for (let key in ThrowTypesList) {
+    if (ThrowTypesList.hasOwnProperty(key)) {
       let button = {id: key};
       switch(key) {
-        case HitTypesList.INNER_SINGLE:
+        case ThrowTypesList.INNER_SINGLE:
           button.text = 'Inner Single';
           break;
 
-        case HitTypesList.TRIPLE:
+        case ThrowTypesList.TRIPLE:
           button.text = 'Triple';
           break;
 
-        case HitTypesList.OUTER_SINGLE:
+        case ThrowTypesList.OUTER_SINGLE:
           button.text = 'Outer Single';
           break;
 
-        case HitTypesList.DOUBLE:
+        case ThrowTypesList.DOUBLE:
           button.text = 'Double';
           break;
 
-        case HitTypesList.MISS:
+        case ThrowTypesList.MISS:
           button.text = 'Miss';
           break;
 
@@ -36,9 +36,9 @@ const mapStateToProps = (state) => {
           break;
       }
 
-      if (key === state.hitType) {
+      if (key === state.throwType) {
         button.selected = true;
-      } else if (-1 !== state.disabledHitTypes.indexOf(key)) {
+      } else if (-1 !== state.disabledThrowTypes.indexOf(key)) {
         button.disabled = true;
       }
 
@@ -51,8 +51,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onHitTypeClick: (id) => {
-      dispatch(selectHitType(id))
+    onThrowTypeClick: (id) => {
+      dispatch(selectThrowType(id))
     }
   };
 };

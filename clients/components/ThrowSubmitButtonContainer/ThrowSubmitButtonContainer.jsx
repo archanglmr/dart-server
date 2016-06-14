@@ -1,7 +1,7 @@
 'use strict';
 
 import {connect} from 'react-redux';
-import {submitHit} from '../../throw/actions';
+import {submitThrow} from '../../throw/actions';
 import ThrowButton from '../ThrowButton';
 
 
@@ -12,7 +12,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     onClick: () => {
-      dispatch(submitHit())
+      dispatch(submitThrow())
     }
   };
 };

@@ -3,15 +3,15 @@
 /**
  * action types
  */
-export const SELECT_HIT_TYPE = 'SELECT_HIT_TYPE';
-export const SELECT_HIT_NUMBER = 'SELECT_HIT_NUMBER';
-export const SUBMIT_HIT = 'SUBMIT_HIT';
+export const SELECT_THROW_TYPE = 'SELECT_THROW_TYPE';
+export const SELECT_THROW_NUMBER = 'SELECT_THROW_NUMBER';
+export const SUBMIT_THROW = 'SUBMIT_THROW';
 
 
 /**
  * Other constants
  */
-export const HitTypesList = {
+export const ThrowTypesList = {
   INNER_SINGLE: 'INNER_SINGLE',
   TRIPLE: 'TRIPLE',
   OUTER_SINGLE: 'OUTER_SINGLE',
@@ -19,14 +19,14 @@ export const HitTypesList = {
   MISS: 'MISS'
 };
 
-export function selectHitType(hitType) {
-  return {type: SELECT_HIT_TYPE, hitType};
+export function selectThrowType(throwType) {
+  return {type: SELECT_THROW_TYPE, throwType};
 }
 
-export function selectHitNumber(number) {
-  return {type: SELECT_HIT_NUMBER, number};
+export function selectThrowNumber(throwNumber) {
+  return {type: SELECT_THROW_NUMBER, throwNumber};
 }
 
-export function submitHit() {
-  return {type: SUBMIT_HIT};
+export function submitThrow() {
+  return {type: SUBMIT_THROW};
 }

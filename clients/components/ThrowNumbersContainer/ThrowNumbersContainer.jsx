@@ -1,7 +1,7 @@
 'use strict';
 
 import {connect} from 'react-redux';
-import {selectHitNumber} from '../../throw/actions';
+import {selectThrowNumber} from '../../throw/actions';
 import ThrowNumbers from '../ThrowNumbers';
 
 
@@ -13,9 +13,9 @@ const mapStateToProps = (state) => {
       id: i,
       text: '' + (21 === i ? 'B' : i)
     };
-    if (i === state.number) {
+    if (i === state.throwNumber) {
       button.selected = true;
-    } else if (-1 !== state.disabledNumbers.indexOf(i)) {
+    } else if (-1 !== state.disabledThrowNumbers.indexOf(i)) {
       button.disabled = true;
     }
     buttons.push(button);
@@ -26,8 +26,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onHitNumberClick: (id) => {
-      dispatch(selectHitNumber(id))
+    onThrowNumberClick: (id) => {
+      dispatch(selectThrowNumber(id))
     }
   };
 };

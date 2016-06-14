@@ -1,23 +1,23 @@
 'use strict';
 
-import {SELECT_HIT_TYPE, SELECT_HIT_NUMBER, SUBMIT_HIT, HitTypesList} from './actions';
+import {SELECT_THROW_TYPE, SELECT_THROW_NUMBER, SUBMIT_THROW, ThrowTypesList} from './actions';
 
 const initialState = {
-  hitType: null,
-  number: null,
+  throwType: null,
+  throwNumber: null,
 
   submitable: false,
 
-  disabledHitTypes: [],
-  disabledNumbers: []
+  disabledThrowTypes: [],
+  disabledThrowNumbers: []
 };
 
 
 /**
  * The
- * @param state {{hitType: string, number: string, disabledHitTypes: Array, disabledNumbers: Array}}
+ * @param state {{throwType: string, throwNumber: string, disabledThrowTypes: Array, disabledThrowNumbers: Array}}
  * @param action {{type: string}}
- * @returns {{hitType: string, number: string, disabledHitTypes: Array, disabledNumbers: Array}}
+ * @returns {{throwType: string, throwNumber: string, disabledThrowTypes: Array, disabledThrowNumbers: Array}}
  */
 export default function throwApp(state, action = {}) {
   if ('undefined' === typeof state) {
@@ -25,38 +25,38 @@ export default function throwApp(state, action = {}) {
   }
 
   switch(action.type) {
-    case SELECT_HIT_TYPE:
+    case SELECT_THROW_TYPE:
       // make sure we have a valid "hit type" and that it's not disabled
-      if (HitTypesList.hasOwnProperty(action.hitType) && -1 == state.disabledHitTypes.indexOf(action.hitType)) {
+      if (ThrowTypesList.hasOwnProperty(action.throwType) && -1 == state.disabledThrowTypes.indexOf(action.throwType)) {
         let newState = {
           submitable: false,
-          disabledNumbers: []
+          disabledThrowNumbers: []
         };
 
-        if (state.hitType === action.hitType) {
-          newState.hitType = null;
+        if (state.throwType === action.throwType) {
+          newState.throwType = null;
         } else {
-          newState.hitType = action.hitType;
+          newState.throwType = action.throwType;
 
-          switch (newState.hitType) {
+          switch (newState.throwType) {
             // all numbers are valid for inner single
-            case HitTypesList.INNER_SINGLE:
+            case ThrowTypesList.INNER_SINGLE:
             // all numbers are valid for double
-            case HitTypesList.DOUBLE:
-              newState.submitable = !!state.number;
+            case ThrowTypesList.DOUBLE:
+              newState.submitable = !!state.throwNumber;
               break;
 
-            case HitTypesList.OUTER_SINGLE:
-            case HitTypesList.TRIPLE:
+            case ThrowTypesList.OUTER_SINGLE:
+            case ThrowTypesList.TRIPLE:
               // can't have a triple bull
-              newState.disabledNumbers.push(21);
-              newState.submitable = !!state.number;
+              newState.disabledThrowNumbers.push(21);
+              newState.submitable = !!state.throwNumber;
               break;
 
-            case HitTypesList.MISS:
+            case ThrowTypesList.MISS:
               // no numbers are valid for a miss
               for (let i = 21; i > 0; i -= 1) {
-                newState.disabledNumbers.push(i);
+                newState.disabledThrowNumbers.push(i);
               }
               newState.submitable = true;
               break;
@@ -66,28 +66,28 @@ export default function throwApp(state, action = {}) {
         return Object.assign({}, state, newState);
       }
 
-    case SELECT_HIT_NUMBER:
+    case SELECT_THROW_NUMBER:
       // make sure we have a valid "number" and that it's not disabled
-      if (action.number > 0 && action.number <= 21 && -1 == state.disabledNumbers.indexOf(action.number)) {
+      if (action.throwNumber > 0 && action.throwNumber <= 21 && -1 == state.disabledThrowNumbers.indexOf(action.throwNumber)) {
         let newState = {submitable: false};
 
-        if (state.number === action.number) {
+        if (state.throwNumber === action.throwNumber) {
           // same number, disable it
-          newState.number = null;
-          newState.disabledHitTypes = [];
+          newState.throwNumber = null;
+          newState.disabledThrowTypes = [];
         } else {
-          newState.number = action.number;
-          newState.disabledHitTypes = [HitTypesList.MISS];
-          if (21 === newState.number) {
-            newState.disabledHitTypes.push(HitTypesList.TRIPLE, HitTypesList.OUTER_SINGLE);
+          newState.throwNumber = action.throwNumber;
+          newState.disabledThrowTypes = [ThrowTypesList.MISS];
+          if (21 === newState.throwNumber) {
+            newState.disabledThrowTypes.push(ThrowTypesList.TRIPLE, ThrowTypesList.OUTER_SINGLE);
           }
-          newState.submitable = !!state.hitType;
+          newState.submitable = !!state.throwType;
         }
 
         return Object.assign({}, state, newState);
       }
 
-    case SUBMIT_HIT:
+    case SUBMIT_THROW:
       if (state.submitable) {
         return initialState;
       }
