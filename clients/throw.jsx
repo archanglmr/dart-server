@@ -3,7 +3,7 @@
 // React dependencies
 import React from 'react';
 import {render} from 'react-dom';
-import HitNumbersContainer from './components/HitNumbersContainer';
+import ThrowClient from './components/ThrowClient';
 
 // Redux dependencies
 import {createStore} from 'redux'
@@ -16,15 +16,15 @@ import throwApp from './throw/reducers';
 var store = createStore(throwApp);
 
 
-let unsubscribe = store.subscribe(() =>
-    console.log(store.getState())
-);
+//let unsubscribe = store.subscribe(() =>
+//    console.log(store.getState())
+//);
 
 // Render the React root component
 render(
   (
     <Provider store={store}>
-      <HitNumbersContainer />
+      <ThrowClient />
     </Provider>
   ),
   document.getElementById('root')

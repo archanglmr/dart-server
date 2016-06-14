@@ -10,7 +10,7 @@ export const SELECT_HIT_NUMBER = 'SELECT_HIT_NUMBER';
 /**
  * Other constants
  */
-export const HitTypes = {
+export const HitTypesList = {
   INNER_SINGLE: 'INNER_SINGLE',
   TRIPLE: 'TRIPLE',
   OUTER_SINGLE: 'OUTER_SINGLE',

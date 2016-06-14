@@ -4,30 +4,30 @@ import React, {PropTypes} from 'react';
 import ThrowButton from '../ThrowButton';
 
 
-function HitNumbers({buttons, onHitNumberClick}) {
+function HitTypes({buttons, onHitTypeClick}) {
   return (
       <nav>
         {buttons.map((button) => (
             <ThrowButton
                 key={button.id}
                 {...button}
-                onClick={() => onHitNumberClick(button.id)}
+                onClick={() => onHitTypeClick(button.id)}
                 />
         ))}
       </nav>
   );
 }
 
-HitNumbers.propTypes = {
+HitTypes.propTypes = {
   buttons: PropTypes.arrayOf(
       PropTypes.shape({
-        id: PropTypes.number.isRequired,
+        id: PropTypes.string.isRequired,
         text: PropTypes.string.isRequired,
         selected: PropTypes.bool,
         enabled: PropTypes.bool
       })
   ).isRequired,
-  onHitNumberClick: PropTypes.func.isRequired
+  onHitTypeClick: PropTypes.func.isRequired
 };
 
-export default HitNumbers;
+export default HitTypes;

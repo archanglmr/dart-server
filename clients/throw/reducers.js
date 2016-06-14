@@ -1,6 +1,6 @@
 'use strict';
 
-import {SELECT_HIT_TYPE, SELECT_HIT_NUMBER, HitTypes} from './actions';
+import {SELECT_HIT_TYPE, SELECT_HIT_NUMBER, HitTypesList} from './actions';
 
 const initialState = {
   hitType: null,
@@ -25,7 +25,7 @@ export default function throwApp(state, action = {}) {
   switch(action.type) {
     case SELECT_HIT_TYPE:
       // make sure we have a valid "hit type" and that it's not disabled
-      if (HitTypes.hasOwnProperty(action.hitType) && -1 == state.disabledHitTypes.indexOf(action.hitType)) {
+      if (HitTypesList.hasOwnProperty(action.hitType) && -1 == state.disabledHitTypes.indexOf(action.hitType)) {
         let newState = {
           disabledNumbers: []
         };
@@ -37,19 +37,19 @@ export default function throwApp(state, action = {}) {
 
           switch (newState.hitType) {
             // all numbers are valid for inner single
-            case HitTypes.INNER_SINGLE:
+            case HitTypesList.INNER_SINGLE:
             // all numbers are valid for double
-            case HitTypes.DOUBLE:
+            case HitTypesList.DOUBLE:
             // @todo: Decide if outer single bull is ok, for now sure.
-            case HitTypes.OUTER_SINGLE:
+            case HitTypesList.OUTER_SINGLE:
               break;
 
-            case HitTypes.TRIPLE:
+            case HitTypesList.TRIPLE:
               // can't have a triple bull
               newState.disabledNumbers.push(21);
               break;
 
-            case HitTypes.MISS:
+            case HitTypesList.MISS:
               // no numbers are valid for a miss
               for (let i = 21; i > 0; i -= 1) {
                 newState.disabledNumbers.push(i);
@@ -72,10 +72,10 @@ export default function throwApp(state, action = {}) {
           newState.disabledHitTypes = [];
         } else {
           newState.number = action.number;
-          newState.disabledHitTypes = [HitTypes.MISS];
+          newState.disabledHitTypes = [HitTypesList.MISS];
           if (21 === newState.number) {
             // @todo: Add HitType.OUTER_SINGLE if we decide that's not ok
-            newState.disabledHitTypes.push(HitTypes.TRIPLE);
+            newState.disabledHitTypes.push(HitTypesList.TRIPLE);
           }
         }
 
