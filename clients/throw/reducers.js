@@ -1,10 +1,12 @@
 'use strict';
 
-import {SELECT_HIT_TYPE, SELECT_HIT_NUMBER, HitTypesList} from './actions';
+import {SELECT_HIT_TYPE, SELECT_HIT_NUMBER, SUBMIT_HIT, HitTypesList} from './actions';
 
 const initialState = {
   hitType: null,
   number: null,
+
+  submitable: false,
 
   disabledHitTypes: [],
   disabledNumbers: []
@@ -27,6 +29,7 @@ export default function throwApp(state, action = {}) {
       // make sure we have a valid "hit type" and that it's not disabled
       if (HitTypesList.hasOwnProperty(action.hitType) && -1 == state.disabledHitTypes.indexOf(action.hitType)) {
         let newState = {
+          submitable: false,
           disabledNumbers: []
         };
 
@@ -42,11 +45,13 @@ export default function throwApp(state, action = {}) {
             case HitTypesList.DOUBLE:
             // @todo: Decide if outer single bull is ok, for now sure.
             case HitTypesList.OUTER_SINGLE:
+              newState.submitable = !!state.number;
               break;
 
             case HitTypesList.TRIPLE:
               // can't have a triple bull
               newState.disabledNumbers.push(21);
+              newState.submitable = !!state.number;
               break;
 
             case HitTypesList.MISS:
@@ -54,6 +59,7 @@ export default function throwApp(state, action = {}) {
               for (let i = 21; i > 0; i -= 1) {
                 newState.disabledNumbers.push(i);
               }
+              newState.submitable = true;
               break;
           }
         }
@@ -64,7 +70,7 @@ export default function throwApp(state, action = {}) {
     case SELECT_HIT_NUMBER:
       // make sure we have a valid "number" and that it's not disabled
       if (action.number > 0 && action.number <= 21 && -1 == state.disabledNumbers.indexOf(action.number)) {
-        let newState = {};
+        let newState = {submitable: false};
 
         if (state.number === action.number) {
           // same number, disable it
@@ -77,9 +83,15 @@ export default function throwApp(state, action = {}) {
             // @todo: Add HitType.OUTER_SINGLE if we decide that's not ok
             newState.disabledHitTypes.push(HitTypesList.TRIPLE);
           }
+          newState.submitable = !!state.hitType;
         }
 
         return Object.assign({}, state, newState);
+      }
+
+    case SUBMIT_HIT:
+      if (state.submitable) {
+        return initialState;
       }
 
     default:

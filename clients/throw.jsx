@@ -16,9 +16,9 @@ import throwApp from './throw/reducers';
 var store = createStore(throwApp);
 
 
-//let unsubscribe = store.subscribe(() =>
-//    console.log(store.getState())
-//);
+let unsubscribe = store.subscribe(() =>
+    console.log(store.getState())
+);
 
 // Render the React root component
 render(
