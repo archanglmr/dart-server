@@ -1,7 +1,7 @@
 'use strict';
 
 import React, {Component} from 'react';
-import './display.scss';
+import './Display.scss';
 
 
 export default class Display extends Component {
