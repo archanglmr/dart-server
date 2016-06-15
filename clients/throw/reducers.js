@@ -6,7 +6,7 @@ const initialState = {
   throwType: null,
   throwNumber: null,
 
-  submitable: false,
+  submittable: false,
 
   disabledThrowTypes: [],
   disabledThrowNumbers: []
@@ -29,7 +29,7 @@ export default function rootReducer(state, action = {}) {
       // make sure we have a valid "hit type" and that it's not disabled
       if (ThrowTypesList.hasOwnProperty(action.throwType) && -1 == state.disabledThrowTypes.indexOf(action.throwType)) {
         let newState = {
-          submitable: false,
+          submittable: false,
           disabledThrowNumbers: []
         };
 
@@ -43,14 +43,14 @@ export default function rootReducer(state, action = {}) {
             case ThrowTypesList.INNER_SINGLE:
             // all numbers are valid for double
             case ThrowTypesList.DOUBLE:
-              newState.submitable = !!state.throwNumber;
+              newState.submittable = !!state.throwNumber;
               break;
 
             case ThrowTypesList.OUTER_SINGLE:
             case ThrowTypesList.TRIPLE:
               // can't have a triple bull
               newState.disabledThrowNumbers.push(21);
-              newState.submitable = !!state.throwNumber;
+              newState.submittable = !!state.throwNumber;
               break;
 
             case ThrowTypesList.MISS:
@@ -58,7 +58,7 @@ export default function rootReducer(state, action = {}) {
               for (let i = 21; i > 0; i -= 1) {
                 newState.disabledThrowNumbers.push(i);
               }
-              newState.submitable = true;
+              newState.submittable = true;
               break;
           }
         }
@@ -70,7 +70,7 @@ export default function rootReducer(state, action = {}) {
     case SELECT_THROW_NUMBER:
       // make sure we have a valid "number" and that it's not disabled
       if (action.throwNumber > 0 && action.throwNumber <= 21 && -1 == state.disabledThrowNumbers.indexOf(action.throwNumber)) {
-        let newState = {submitable: false};
+        let newState = {submittable: false};
 
         if (state.throwNumber === action.throwNumber) {
           // same number, disable it
@@ -82,7 +82,7 @@ export default function rootReducer(state, action = {}) {
           if (21 === newState.throwNumber) {
             newState.disabledThrowTypes.push(ThrowTypesList.TRIPLE, ThrowTypesList.OUTER_SINGLE);
           }
-          newState.submitable = !!state.throwType;
+          newState.submittable = !!state.throwType;
         }
 
         return Object.assign({}, state, newState);
@@ -90,7 +90,7 @@ export default function rootReducer(state, action = {}) {
       break;
 
     case SUBMIT_THROW:
-      if (state.submitable) {
+      if (state.submittable) {
         return initialState;
       }
       break;
