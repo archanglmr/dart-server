@@ -8,11 +8,10 @@ import ThrowClient from './components/ThrowClient';
 // Redux dependencies
 import {createStore} from 'redux'
 import {Provider} from 'react-redux'
-import * as actions from './throw/actions';
-import throwApp from './throw/reducers';
+import rootReducer from './throw/reducers';
 
 // Create the Redux store
-var store = createStore(throwApp);
+var store = createStore(rootReducer);
 
 
 let unsubscribe = store.subscribe(() =>

@@ -19,7 +19,7 @@ const initialState = {
  * @param action {{type: string}}
  * @returns {{throwType: string, throwNumber: string, disabledThrowTypes: Array, disabledThrowNumbers: Array}}
  */
-export default function throwApp(state, action = {}) {
+export default function rootReducer(state, action = {}) {
   if ('undefined' === typeof state) {
     return initialState;
   }
@@ -65,6 +65,7 @@ export default function throwApp(state, action = {}) {
 
         return Object.assign({}, state, newState);
       }
+      break;
 
     case SELECT_THROW_NUMBER:
       // make sure we have a valid "number" and that it's not disabled
@@ -86,13 +87,16 @@ export default function throwApp(state, action = {}) {
 
         return Object.assign({}, state, newState);
       }
+      break;
 
     case SUBMIT_THROW:
       if (state.submitable) {
         return initialState;
       }
+      break;
 
     default:
       return state;
   }
+  return state;
 }
