@@ -1,11 +1,13 @@
 'use strict';
+import fetch from 'isomorphic-fetch';
 
 /**
  * action types
  */
 export const SELECT_THROW_TYPE = 'SELECT_THROW_TYPE';
 export const SELECT_THROW_NUMBER = 'SELECT_THROW_NUMBER';
-export const SUBMIT_THROW = 'SUBMIT_THROW';
+export const SUBMIT_THROW_START = 'SUBMIT_THROW_START';
+export const SUBMIT_THROW_COMPLETE = 'SUBMIT_THROW_COMPLETE';
 
 
 /**
@@ -27,6 +29,36 @@ export function selectThrowNumber(throwNumber) {
   return {type: SELECT_THROW_NUMBER, throwNumber};
 }
 
+export function submitThrowStart() {
+  return {type: SUBMIT_THROW_START};
+}
+
 export function submitThrow() {
-  return {type: SUBMIT_THROW};
+  return (dispatch, getState) => {
+    let state = getState();
+
+    if (state.submittable) {
+      dispatch(submitThrowStart());
+
+      return fetch('/api/throw', {
+        method: 'post',
+        headers: new Headers({
+          'Content-Type': 'application/json'
+        }),
+        body: JSON.stringify({
+          section: state.throwType,
+          number: state.throwNumber
+        })
+      })
+        // @todo: add .catch() for error handling
+          .then(response =>  response.json())
+          .then(json => dispatch(submitThrowComplete(json)))
+    } else {
+      // @todo: could dispatch an input error here if we wenated
+    }
+  };
+}
+
+export function submitThrowComplete(response) {
+  return {type: SUBMIT_THROW_COMPLETE, response};
 }

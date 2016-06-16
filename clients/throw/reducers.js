@@ -1,11 +1,18 @@
 'use strict';
 
-import {SELECT_THROW_TYPE, SELECT_THROW_NUMBER, SUBMIT_THROW, ThrowTypesList} from './actions';
+import {
+    SELECT_THROW_TYPE,
+    SELECT_THROW_NUMBER,
+    SUBMIT_THROW_START,
+    SUBMIT_THROW_COMPLETE,
+    ThrowTypesList
+} from './actions';
 
 const initialState = {
   throwType: null,
   throwNumber: null,
 
+  isSubmitting: false,
   submittable: false,
 
   disabledThrowTypes: [],
@@ -14,10 +21,11 @@ const initialState = {
 
 
 /**
- * The
- * @param state {{throwType: string, throwNumber: string, disabledThrowTypes: Array, disabledThrowNumbers: Array}}
+ * The "Root Reducer" for the throw client
+ *
+ * @param state {{throwType: string, throwNumber: string, isSubmitting: bool, submittable: bool, disabledThrowTypes: Array, disabledThrowNumbers: Array}}
  * @param action {{type: string}}
- * @returns {{throwType: string, throwNumber: string, disabledThrowTypes: Array, disabledThrowNumbers: Array}}
+ * @returns {{throwType: string, throwNumber: string, isSubmitting: bool, submittable: bool, disabledThrowTypes: Array, disabledThrowNumbers: Array}}
  */
 export default function rootReducer(state, action = {}) {
   if ('undefined' === typeof state) {
@@ -89,10 +97,13 @@ export default function rootReducer(state, action = {}) {
       }
       break;
 
-    case SUBMIT_THROW:
-      if (state.submittable) {
-        return initialState;
-      }
+    case SUBMIT_THROW_START:
+      return Object.assign({}, state, {isSubmitting: true});
+
+    case SUBMIT_THROW_COMPLETE:
+        if (action.response.success) {
+          return initialState;
+        }
       break;
 
     default:

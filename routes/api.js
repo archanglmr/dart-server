@@ -163,6 +163,23 @@ router.get('/players/:player_id/destroy', function(req, res) {
 
 
 /**
+ * Throw handler for "throw app"
+ */
+router.post('/throw', function(req, res) {
+  var data = req.body;
+
+  if ('object' == typeof req.body) {
+    res.setHeader('Content-Type', 'application/json');
+    res.write(JSON.stringify({success: true}));
+    res.end();
+  } else {
+    res.status(400);
+    res.end();
+  }
+});
+
+
+/**
  * Throws scaffolding
  */
 router.get('/throws', function(req, res) {
