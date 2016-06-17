@@ -1,40 +1,59 @@
 'use strict';
 import fetch from 'isomorphic-fetch';
+import {ThrowTypes} from '../../lib/throw-types.js';
 
 /**
- * action types
+ * Action types
  */
 export const SELECT_THROW_TYPE = 'SELECT_THROW_TYPE';
 export const SELECT_THROW_NUMBER = 'SELECT_THROW_NUMBER';
 export const SUBMIT_THROW_START = 'SUBMIT_THROW_START';
 export const SUBMIT_THROW_COMPLETE = 'SUBMIT_THROW_COMPLETE';
 
+/**
+ * List of throw types
+ */
+export const ThrowTypesList = ThrowTypes;
+
 
 /**
- * Other constants
+ * ACTOINS
  */
-export const ThrowTypesList = {
-  INNER_SINGLE: 'INNER_SINGLE',
-  TRIPLE: 'TRIPLE',
-  OUTER_SINGLE: 'OUTER_SINGLE',
-  DOUBLE: 'DOUBLE',
-  MISS: 'MISS'
-};
 
+/**
+ * Dispatchable action for selecting the type of throw.
+ *
+ * @param throwType key from the ThrowTypesList constant
+ * @returns {{type: string, throwType: *}}
+ */
 export function selectThrowType(throwType) {
   return {type: SELECT_THROW_TYPE, throwType};
 }
 
+/**
+ * Dispatchable action for hitting a number between 1-21 where 21 represents
+ * bullseye.
+ *
+ * @param {number} throwNumber
+ * @returns {{type: string, throwNumber: number}}
+ */
 export function selectThrowNumber(throwNumber) {
   return {type: SELECT_THROW_NUMBER, throwNumber};
 }
 
+/**
+ * Dispatchable action to update the state that a throw is submitting to the
+ * server
+ *
+ * @returns {{type: string}}
+ */
 export function submitThrowStart() {
   return {type: SUBMIT_THROW_START};
 }
 
 /**
- * Makes the AJAX request and triggers other actions for loading and whatnot
+ * Makes the AJAX request and dispatches other actions such as loading and throw
+ * complete
  *
  * @returns {Function}
  */
@@ -64,6 +83,13 @@ export function submitThrow() {
   };
 }
 
+/**
+ * Dispatchable action to process the respons from the server after the throw
+ * has been submitted
+ *
+ * @param {object} response
+ * @returns {{type: string, response: object}}
+ */
 export function submitThrowComplete(response) {
   return {type: SUBMIT_THROW_COMPLETE, response};
 }

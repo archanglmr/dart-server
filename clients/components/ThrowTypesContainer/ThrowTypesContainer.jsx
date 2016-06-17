@@ -12,7 +12,7 @@ const mapStateToProps = (state) => {
     if (ThrowTypesList.hasOwnProperty(key)) {
       let button = {id: key};
       switch(key) {
-        case ThrowTypesList.INNER_SINGLE:
+        case ThrowTypesList.SINGLE_INNER:
           button.text = 'Inner Single';
           break;
 
@@ -20,7 +20,7 @@ const mapStateToProps = (state) => {
           button.text = 'Triple';
           break;
 
-        case ThrowTypesList.OUTER_SINGLE:
+        case ThrowTypesList.SINGLE_OUTER:
           button.text = 'Outer Single';
           break;
 
