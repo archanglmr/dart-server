@@ -1,6 +1,6 @@
 'use strict';
 import fetch from 'isomorphic-fetch';
-import {ThrowTypes} from '../../lib/throw-types.js';
+import ThrowTypes from '../../lib/throw-types.js';
 
 /**
  * Action types
