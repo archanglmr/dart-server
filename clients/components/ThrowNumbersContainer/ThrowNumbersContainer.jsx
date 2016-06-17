@@ -15,7 +15,8 @@ const mapStateToProps = (state) => {
     };
     if (i === state.throwNumber) {
       button.selected = true;
-    } else if (-1 !== state.disabledThrowNumbers.indexOf(i)) {
+    }
+    if (-1 !== state.disabledThrowNumbers.indexOf(i)) {
       button.disabled = true;
     }
     buttons.push(button);

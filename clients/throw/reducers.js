@@ -98,7 +98,25 @@ export default function rootReducer(state, action = {}) {
       break;
 
     case SUBMIT_THROW_START:
-      return Object.assign({}, state, {isSubmitting: true});
+      let newState = {
+        isSubmitting: true, // assign isSubmitting to true here
+        disabledThrowTypes: [],
+        disabledThrowNumbers: [],
+        lastState: {
+          disabledThrowTypes:  Object.assign({}, state.disabledThrowTypes),
+          disabledThrowNumbers: Object.assign({}, state.disabledThrowNumbers)
+        }
+      };
+      for (let i = 21; i > 0; i -= 1) {
+        newState.disabledThrowNumbers.push(i);
+      }
+      for (let k in ThrowTypesList) {
+        if (ThrowTypesList.hasOwnProperty(k)) {
+          newState.disabledThrowTypes.push(ThrowTypesList[k]);
+        }
+      }
+
+      return Object.assign({}, state, newState);
 
     case SUBMIT_THROW_COMPLETE:
         if (action.response.success) {

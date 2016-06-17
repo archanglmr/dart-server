@@ -6,7 +6,11 @@ import ThrowButton from '../ThrowButton';
 
 
 const mapStateToProps = (state, ownProps) => {
-  return Object.assign({}, ownProps, {disabled: !state.submittable});
+  let newProps = {disabled: (!state.submittable || state.isSubmitting)};
+  if (state.isSubmitting) {
+    newProps.text = 'Submitting...';
+  }
+  return Object.assign({}, ownProps, newProps);
 };
 
 const mapDispatchToProps = (dispatch) => {

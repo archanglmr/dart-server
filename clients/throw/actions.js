@@ -33,6 +33,11 @@ export function submitThrowStart() {
   return {type: SUBMIT_THROW_START};
 }
 
+/**
+ * Makes the AJAX request and triggers other actions for loading and whatnot
+ *
+ * @returns {Function}
+ */
 export function submitThrow() {
   return (dispatch, getState) => {
     let state = getState();

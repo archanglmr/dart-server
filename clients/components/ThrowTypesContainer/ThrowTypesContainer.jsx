@@ -38,7 +38,8 @@ const mapStateToProps = (state) => {
 
       if (key === state.throwType) {
         button.selected = true;
-      } else if (-1 !== state.disabledThrowTypes.indexOf(key)) {
+      }
+      if (-1 !== state.disabledThrowTypes.indexOf(key)) {
         button.disabled = true;
       }
 
