@@ -47,14 +47,14 @@ export default function rootReducer(state, action = {}) {
           newState.throwType = action.throwType;
 
           switch (newState.throwType) {
-            // all numbers are valid for inner single
-            case ThrowTypesList.SINGLE_INNER:
+            // all numbers are valid for outer single
+            case ThrowTypesList.SINGLE_OUTER:
             // all numbers are valid for double
             case ThrowTypesList.DOUBLE:
               newState.submittable = !!state.throwNumber;
               break;
 
-            case ThrowTypesList.SINGLE_OUTER:
+            case ThrowTypesList.SINGLE_INNER:
             case ThrowTypesList.TRIPLE:
               // can't have a triple bull
               newState.disabledThrowNumbers.push(21);
@@ -88,7 +88,7 @@ export default function rootReducer(state, action = {}) {
           newState.throwNumber = action.throwNumber;
           newState.disabledThrowTypes = [ThrowTypesList.MISS];
           if (21 === newState.throwNumber) {
-            newState.disabledThrowTypes.push(ThrowTypesList.TRIPLE, ThrowTypesList.SINGLE_OUTER);
+            newState.disabledThrowTypes.push(ThrowTypesList.TRIPLE, ThrowTypesList.SINGLE_INNER);
           }
           newState.submittable = !!state.throwType;
         }
