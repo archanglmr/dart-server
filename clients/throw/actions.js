@@ -17,7 +17,7 @@ export const ThrowTypesList = ThrowTypes;
 
 
 /**
- * ACTOINS
+ * ACTIONS
  */
 
 /**
