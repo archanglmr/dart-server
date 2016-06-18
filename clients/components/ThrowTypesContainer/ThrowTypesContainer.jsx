@@ -21,7 +21,11 @@ const mapStateToProps = (state) => {
           break;
 
         case ThrowTypesList.SINGLE_OUTER:
-          button.text = 'Outer Single';
+          if (21 === state.throwNumber) {
+            button.text = 'Outer';
+          } else {
+            button.text = 'Outer Single';
+          }
           break;
 
         case ThrowTypesList.DOUBLE:
