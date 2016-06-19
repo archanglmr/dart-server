@@ -1,0 +1,22 @@
+{
+  "name": "x01 Games",
+  "version": "1.0",
+  "instructions": "Be the first to reach 0 without going over. If you pass zero in a round you \"bust\" and forfeit your points for the round.",
+  "options": {
+    "rounds": 25
+  },
+  "variations": {
+    "301": {
+      "name": "301",
+      "instructions": "Start from 301."
+    },
+    "501": {
+      "name": "501",
+      "instructions": "Start from 501."
+    },
+    "701": {
+      "name": "701",
+      "instructions": "Start from 701."
+    }
+  }
+}
