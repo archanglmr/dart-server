@@ -36,7 +36,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
     lines.push(`Temp Score: ${state.game.tempScore} ${conditions.join(' ')}`);
     lines.push('----------------------------------------');
     lines.push(
-        `-${player.displayName}- is on ` +
+        `${player.displayName}: ` +
         `throw ${state.game.currentThrow + 1}:${state.rounds.throws} ` +
         `round ${state.rounds.current + 1}:${state.rounds.limit}`);
     for (let i = 0, c = state.players.order.length; i < c; i += 1) {

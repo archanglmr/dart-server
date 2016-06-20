@@ -12,9 +12,9 @@ var game = new DartGameServer_01({
     limit: 10
   },
   players: {
-    2: {"id":2,"firstName":"Matt","lastName":"Rossetta","displayName":"Matt Rossetta"},
-    3: {"id":3,"firstName":"Em","lastName":"Ross","displayName":"Lovie"},
-    4: {"id":4,"firstName":"Leo","lastName":"Lucas","displayName":"Mr Leo"}
+    2: {"id":2,"firstName":"Matthew","lastName":"Rossetta","displayName":"Matt"},
+    3: {"id":3,"firstName":"Emily","lastName":"Ross","displayName":"Em"},
+    4: {"id":4,"firstName":"Leonidas","lastName":"Lucas","displayName":"Leo"}
   },
   playerOrder: [3, 4, 2]
 });
@@ -27,6 +27,7 @@ console.log('========================================');
 console.log('');
 
 game.startGame();
+//console.log(game.getScores());
 
 for (let i = 0, c = 10; i < c; i += 1) {
   let throwData = DartHelpers.Test.generateThrowData();
