@@ -21,13 +21,24 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
   getScores() {
     var state = this.getState(),
         player = DartHelpers.State.getPlayer(state, state.players.current),
-        lines = [];
+        lines = [],
+        conditions = [],
+        score = state.game.players[player.id].score;
 
+    if (0 === score) {
+      conditions.push('WIN');
+    } if (score < 0) {
+      conditions.push('BUST');
+    }
+    if (state.rounds.limit && ((state.rounds.current + 1) === state.rounds.limit)) {
+      conditions.push('ROUND LIMIT');
+    }
+    lines.push(`Temp Score: ${state.game.tempScore} ${conditions.join(' ')}`);
     lines.push('----------------------------------------');
     lines.push(
-        `${player.displayName} is on ` +
-        `${state.game.currentThrow + 1} of ${state.rounds.throws} throws ` +
-        `round ${state.rounds.current} of ${state.rounds.limit} with a round score of ${state.game.tempScore}`);
+        `-${player.displayName}- is on ` +
+        `throw ${state.game.currentThrow + 1}:${state.rounds.throws} ` +
+        `round ${state.rounds.current + 1}:${state.rounds.limit}`);
     for (let i = 0, c = state.players.order.length; i < c; i += 1) {
       let id = state.players.order[i],
           player = DartHelpers.State.getPlayer(state, id);
@@ -148,9 +159,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
 
       // @todo: check to make sure assigning game.players[x].score is safe
       let score = game.players[game.currentPlayer].score = (game.roundBeginningScore - game.tempScore);
-      if (score < 0) {
-        console.log('BUST');
-      } else if (0 === score) {
+      if (0 === score) {
         game.finished = true;
         console.log('WINNER');
       }
@@ -181,19 +190,25 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
           rounds = Object.assign({}, state.rounds);
 
 
-      //// Process BUST
-      //if (game.players[game.currentPlayer].score < 0) {
-      //  game.players[game.currentPlayer].score = game.roundBeginningScore;
-      //}
+      // Process BUST
+      if (game.players[game.currentPlayer].score < 0) {
+        // advance from a bust
+        game.players[game.currentPlayer].score = game.roundBeginningScore;
 
-      // advance the game
-      game.currentThrow += 1;
-      if (game.currentThrow >= rounds.throws) {
-        // next player
         game.currentThrow = 0;
         game.tempScore = 0;
         game.playerOffset += 1;
+      } else {
+        // advance the game normally
+        game.currentThrow += 1;
+        if (game.currentThrow >= rounds.throws) {
+          // next player
+          game.currentThrow = 0;
+          game.tempScore = 0;
+          game.playerOffset += 1;
+        }
       }
+
 
       if (game.playerOffset >= players.order.length) {
         // @todo: test if last round?
@@ -201,18 +216,18 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
         // next round actually
         game.playerOffset = 0;
         game.currentRound += 1;
+        game.currentPlayer = players.order[game.playerOffset];
+        game.roundBeginningScore = game.players[game.currentPlayer].score;
 
         if (rounds.limit && game.currentRound >= rounds.limit) {
           game.finished = true;
-          console.log('Out of rounds');
           return Object.assign(newState, {game, players, rounds});
         }
+      } else {
+        game.currentPlayer = players.order[game.playerOffset];
       }
 
-      game.currentPlayer = players.order[game.playerOffset];
-      game.tempScore = 0;
-      // beginning score are calculated when a player is on the first throw
-      game.roundBeginningScore = game.players[game.currentPlayer].score;
+
 
       game.locked = false;
 

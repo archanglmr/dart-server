@@ -9,7 +9,7 @@ var game = new DartGameServer_01({
   //variation: 501,
   variation: 31,
   modifiers: {
-    limit: 30
+    limit: 10
   },
   players: {
     2: {"id":2,"firstName":"Matt","lastName":"Rossetta","displayName":"Matt Rossetta"},
@@ -28,10 +28,10 @@ console.log('');
 
 game.startGame();
 
-for (let i = 0, c = 5; i < c; i += 1) {
+for (let i = 0, c = 10; i < c; i += 1) {
   let throwData = DartHelpers.Test.generateThrowData();
 
-  console.log(`> threw ${throwData.type}:${throwData.number}`);
+  console.log(`> threw ${throwData.type}:${21 === throwData.number ? 'BULL' : throwData.number}`);
   game.throwDart(throwData);
   console.log(game.getScores());
   game.advanceGame();
