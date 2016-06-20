@@ -6,7 +6,8 @@ var DartGameServer_01 = require('./01/server/DartGame_01'),
 
 
 var game = new DartGameServer_01({
-  variation: 501,
+  //variation: 501,
+  variation: 31,
   modifiers: {
     limit: 30
   },
@@ -24,6 +25,8 @@ console.log('========================================');
 console.log(`  Welcome to ${game.getDisplayName()}`);
 console.log('========================================');
 console.log('');
+
+game.startGame();
 
 for (let i = 0, c = 5; i < c; i += 1) {
   let throwData = DartHelpers.Test.generateThrowData();

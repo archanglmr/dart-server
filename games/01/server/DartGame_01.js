@@ -24,12 +24,18 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
         lines = [];
 
     lines.push('----------------------------------------');
-    lines.push(`${player.displayName} is on round ${state.rounds.current} of ${state.rounds.limit} with a round score of ${state.game.tempScore}`);
+    lines.push(
+        `${player.displayName} is on ` +
+        `${state.game.currentThrow + 1} of ${state.rounds.throws} throws ` +
+        `round ${state.rounds.current} of ${state.rounds.limit} with a round score of ${state.game.tempScore}`);
     for (let i = 0, c = state.players.order.length; i < c; i += 1) {
       let id = state.players.order[i],
           player = DartHelpers.State.getPlayer(state, id);
 
-      lines.push(` - ${player.displayName}: ${state.game.players[id].score}`);
+      lines.push(
+          (state.players.current === id ? ' > ' : ' - ') +
+          `${player.displayName}: ${state.game.players[id].score}`
+      );
     }
     //lines.push('----------------------------------------');
     lines.push("");
@@ -80,7 +86,41 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
   /*****************************************************************************
    * HOOKS FOR DEFAULT ACTIONS
    ****************************************************************************/
+  /**
+   * Start the game (init is handled by the system).
+   *
+   * @param state {object}
+   * @returns {object} game state
+   */
+  actionStartGame(state) {
+    if (!state.game.started) {
+      //init the actual game
 
+      // shallow clone stuff
+      let newState = Object.assign({}, state),
+          game = Object.assign({}, state.game),
+          players = Object.assign({}, state.players);
+
+      game.playerOffset = 0;
+      game.currentPlayer = state.players.order[game.playerOffset];
+      game.currentRound = 0;
+      game.currentThrow = 0;
+
+      game.tempScore = 0;
+      game.roundBeginningScore = state.game.players[game.currentPlayer].score;
+
+      game.started = true;
+      game.finished = false;
+      game.locked = false;
+
+      // advance the global state
+      players.current = game.currentPlayer;
+
+      // rebuild the new state
+      return Object.assign(newState, {game, players});
+    }
+    return state;
+  }
 
   /**
    * Where the main game logic works. This responds to the PROCESS_DART action.
@@ -90,8 +130,48 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
    * @returns {object|boolean}
    */
   actionProcessThrow(state, throwData) {
-    // @todo: check for FINISHED
-    if (!state.rounds.limit || state.rounds.current <= state.rounds.limit) {
+    if (
+        state.game.started &&
+        !state.game.finished &&
+        !state.game.locked &&
+        DartHelpers.State.validRound(state.rounds)
+    ) {
+      // we're in a valid round
+
+      // shallow clone stuff
+      let newState = Object.assign({}, state),
+          game = Object.assign({}, state.game),
+          players = Object.assign({}, state.players);
+
+
+      game.tempScore += this.calculateThrowDataValue(throwData);
+
+      // @todo: check to make sure assigning game.players[x].score is safe
+      let score = game.players[game.currentPlayer].score = (game.roundBeginningScore - game.tempScore);
+      if (score < 0) {
+        console.log('BUST');
+      } else if (0 === score) {
+        game.finished = true;
+        console.log('WINNER');
+      }
+
+      game.locked = true;
+
+      // rebuild the new state
+      return Object.assign(newState, {game, players});
+    }
+    return state;
+  }
+
+
+  actionAdvanceGame(state) {
+    // @todo implement game advancement here
+    if (
+        state.game.started &&
+        !state.game.finished &&
+        state.game.locked &&
+        DartHelpers.State.validRound(state.rounds)
+    ) {
       // we're in a valid round
 
       // shallow clone stuff
@@ -100,50 +180,41 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
           players = Object.assign({}, state.players),
           rounds = Object.assign({}, state.rounds);
 
-      if (!game.started) {
-        //init the actual game
 
-        game.playerOffset = 0;
-        game.currentPlayer = players.order[game.playerOffset];
-        game.currentRound = 0;
+      //// Process BUST
+      //if (game.players[game.currentPlayer].score < 0) {
+      //  game.players[game.currentPlayer].score = game.roundBeginningScore;
+      //}
+
+      // advance the game
+      game.currentThrow += 1;
+      if (game.currentThrow >= rounds.throws) {
+        // next player
         game.currentThrow = 0;
-
         game.tempScore = 0;
-        game.roundBeginningScore = 0;
-
-        game.started = true;
+        game.playerOffset += 1;
       }
 
-      // do the game logic with the throw
-      if (!game.currentThrow) {
-        game.tempScore = 0;
-        game.roundBeginningScore = game.players[game.currentPlayer].score;
-      }
-      game.tempScore += this.calculateThrowDataValue(throwData);
+      if (game.playerOffset >= players.order.length) {
+        // @todo: test if last round?
 
-      let score = game.players[game.currentPlayer].score = (game.roundBeginningScore - game.tempScore);
-      if (score > 0) {
-        // advance the game
-        game.currentThrow += 1;
-        if (game.currentThrow >= rounds.throws) {
-          // next player
-          game.currentThrow = 0;
-          game.playerOffset += 1;
-          if (game.playerOffset >= players.order.length) {
-            // next round actually
-            game.playerOffset = 0;
-            game.currentRound += 1; // @todo: test if last round?
-          }
-          game.currentPlayer = players.order[game.playerOffset];
-          game.tempScore = 0;
-          // beginning score are calculated when a player is on the first throw
+        // next round actually
+        game.playerOffset = 0;
+        game.currentRound += 1;
+
+        if (rounds.limit && game.currentRound >= rounds.limit) {
+          game.finished = true;
+          console.log('Out of rounds');
+          return Object.assign(newState, {game, players, rounds});
         }
-      } else if (0 === score) {
-        console.log('WINNER');
-      } else {
-        console.log('BUST');
       }
 
+      game.currentPlayer = players.order[game.playerOffset];
+      game.tempScore = 0;
+      // beginning score are calculated when a player is on the first throw
+      game.roundBeginningScore = game.players[game.currentPlayer].score;
+
+      game.locked = false;
 
       // advance the global state
       players.current = game.currentPlayer;
@@ -152,12 +223,6 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       // rebuild the new state
       return Object.assign(newState, {game, players, rounds});
     }
-    return state;
-  }
-
-
-  actionAdvanceGame(state) {
-    // @todo implement game advancement here
     return state;
   }
 
