@@ -104,7 +104,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
    * @returns {object} game state
    */
   actionStartGame(state) {
-    if (!state.game.started) {
+    if (!state.started) {
       //init the actual game
 
       // shallow clone stuff
@@ -120,11 +120,10 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       game.tempScore = 0;
       game.roundBeginningScore = state.game.players[game.currentPlayer].score;
 
-      game.started = true;
-      game.finished = false;
-      game.locked = false;
+      newState.started = true;
+      newState.locked = false;
 
-      // advance the global state
+      // sync to the global state
       players.current = game.currentPlayer;
 
       // rebuild the new state
@@ -141,12 +140,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
    * @returns {object|boolean}
    */
   actionProcessThrow(state, throwData) {
-    if (
-        state.game.started &&
-        !state.game.finished &&
-        !state.game.locked &&
-        DartHelpers.State.validRound(state.rounds)
-    ) {
+    if (!state.locked && DartHelpers.State.isPlayable(state)) {
       // we're in a valid round
 
       // shallow clone stuff
@@ -160,11 +154,11 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       // @todo: check to make sure assigning game.players[x].score is safe
       let score = game.players[game.currentPlayer].score = (game.roundBeginningScore - game.tempScore);
       if (0 === score) {
-        game.finished = true;
+        newState.finished = true;
         console.log('WINNER');
       }
 
-      game.locked = true;
+      newState.locked = true;
 
       // rebuild the new state
       return Object.assign(newState, {game, players});
@@ -175,12 +169,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
 
   actionAdvanceGame(state) {
     // @todo implement game advancement here
-    if (
-        state.game.started &&
-        !state.game.finished &&
-        state.game.locked &&
-        DartHelpers.State.validRound(state.rounds)
-    ) {
+    if (state.locked && DartHelpers.State.isPlayable(state)) {
       // we're in a valid round
 
       // shallow clone stuff
@@ -220,18 +209,16 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
         game.roundBeginningScore = game.players[game.currentPlayer].score;
 
         if (rounds.limit && game.currentRound >= rounds.limit) {
-          game.finished = true;
+          newState.finished = true;
           return Object.assign(newState, {game, players, rounds});
         }
       } else {
         game.currentPlayer = players.order[game.playerOffset];
       }
 
+      newState.locked = false;
 
-
-      game.locked = false;
-
-      // advance the global state
+      // sync to the global state
       players.current = game.currentPlayer;
       rounds.current = game.currentRound;
 
