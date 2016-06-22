@@ -116,6 +116,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       game.currentPlayer = state.players.order[game.playerOffset];
       game.currentRound = 0;
       game.currentThrow = 0;
+      game.currentThrows = [];
 
       game.tempScore = 0;
       game.roundBeginningScore = state.game.players[game.currentPlayer].score;
@@ -146,10 +147,12 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       // shallow clone stuff
       let newState = Object.assign({}, state),
           game = Object.assign({}, state.game),
-          players = Object.assign({}, state.players);
+          players = Object.assign({}, state.players),
+          widgetThrows;
 
 
       game.tempScore += this.calculateThrowDataValue(throwData);
+      game.currentThrows.push(throwData);
 
       // @todo: check to make sure assigning game.players[x].score is safe
       let score = game.players[game.currentPlayer].score = (game.roundBeginningScore - game.tempScore);
@@ -160,8 +163,11 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
 
       newState.locked = true;
 
+      // sync to the global state
+      widgetThrows = game.currentThrows.slice(0);
+
       // rebuild the new state
-      return Object.assign(newState, {game, players});
+      return Object.assign(newState, {game, players, widgetThrows});
     }
     return state;
   }
@@ -176,7 +182,8 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       let newState = Object.assign({}, state),
           game = Object.assign({}, state.game),
           players = Object.assign({}, state.players),
-          rounds = Object.assign({}, state.rounds);
+          rounds = Object.assign({}, state.rounds),
+          widgetThrows;
 
 
       // Process BUST
@@ -187,6 +194,8 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
         game.currentThrow = 0;
         game.tempScore = 0;
         game.playerOffset += 1;
+
+        game.currentThrows = [];
       } else {
         // advance the game normally
         game.currentThrow += 1;
@@ -195,6 +204,8 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
           game.currentThrow = 0;
           game.tempScore = 0;
           game.playerOffset += 1;
+
+          game.currentThrows = [];
         }
       }
 
@@ -221,9 +232,10 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       // sync to the global state
       players.current = game.currentPlayer;
       rounds.current = game.currentRound;
+      widgetThrows = game.currentThrows.slice(0);
 
       // rebuild the new state
-      return Object.assign(newState, {game, players, rounds});
+      return Object.assign(newState, {game, players, rounds, widgetThrows});
     }
     return state;
   }

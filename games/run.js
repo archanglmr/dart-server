@@ -34,6 +34,7 @@ for (let i = 0, c = 30; i < c; i += 1) {
 
   console.log(`> threw ${throwData.type}:${21 === throwData.number ? 'BULL' : throwData.number}`);
   game.throwDart(throwData);
+  console.log(DartHelpers.Test.throwsWidget(game.getState()));
   console.log(game.getScores());
   game.advanceGame();
 }
