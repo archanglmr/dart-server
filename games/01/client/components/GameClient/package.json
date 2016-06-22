@@ -1,0 +1,4 @@
+{
+  "name": "GameClient",
+  "main": "./GameClient.jsx"
+}

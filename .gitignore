@@ -45,3 +45,4 @@ db/*.sqlite
 builds/*.css
 builds/*.js
 builds/*.map
+builds/games

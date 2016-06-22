@@ -1,6 +1,6 @@
 'use strict';
 
-import React, {PropTypes} from 'react';
+import React from 'react';
 import ThrowTypesContainer from '../ThrowTypesContainer';
 import ThrowNumbersContainer from '../ThrowNumbersContainer';
 import ThrowSubmitButtonContainer from '../ThrowSubmitButtonContainer';
