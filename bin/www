@@ -27,8 +27,9 @@ var io = require('socket.io')(server);
 
 
 models.sequelize.sync().then(function () {
-
-  // socket.io server
+  /**
+   * socket.io server
+   */
   io.on('connection', function(socket) {
     console.log('A client connected');
 
