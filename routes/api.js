@@ -3,6 +3,42 @@ var express = require('express');
 var router = express.Router();
 
 
+
+/**
+ * Throw handler for "throw client"
+ */
+router.post('/throw', function(req, res) {
+  var data = req.body;
+
+  if ('object' == typeof req.body) {
+    res.setHeader('Content-Type', 'application/json');
+    res.write(JSON.stringify({success: true}));
+    res.end();
+  } else {
+    res.status(400);
+    res.end();
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /**
  * Dartboard scaffolding
  */
@@ -162,21 +198,6 @@ router.get('/players/:player_id/destroy', function(req, res) {
 });
 
 
-/**
- * Throw handler for "throw app"
- */
-router.post('/throw', function(req, res) {
-  var data = req.body;
-
-  if ('object' == typeof req.body) {
-    res.setHeader('Content-Type', 'application/json');
-    res.write(JSON.stringify({success: true}));
-    res.end();
-  } else {
-    res.status(400);
-    res.end();
-  }
-});
 
 
 /**
