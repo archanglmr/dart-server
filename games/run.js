@@ -1,6 +1,6 @@
 'use strict';
 
-var DartGameServer_01 = require('./01/server/DartGame_01'),
+var DartGameServer_01 = require('./01/server/DartGameServer_01'),
     DartHelpers = require('../lib/dart-helpers'),
     ThrowTypes = DartHelpers.ThrowTypes;
 

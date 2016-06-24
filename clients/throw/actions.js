@@ -70,8 +70,8 @@ export function submitThrow() {
           'Content-Type': 'application/json'
         }),
         body: JSON.stringify({
-          section: state.throwType,
-          number: state.throwNumber
+          type: state.throwType,
+          number: state.throwNumber || 0
         })
       })
         // @todo: add .catch() for error handling

@@ -1,6 +1,24 @@
-var models  = require('../models');
-var express = require('express');
-var router = express.Router();
+var models  = require('../models'),
+    express = require('express'),
+    router = express.Router(),
+    DartHelper = require('../lib/dart-helpers');
+
+
+var DartGameServer_01 = require(__dirname + '/../games/01/server/DartGameServer_01');
+var game = new DartGameServer_01({
+  variation: 501,
+  //variation: 31,
+  modifiers: {
+    limit: 10
+  },
+  players: {
+    2: {"id":2,"firstName":"Matthew","lastName":"Rossetta","displayName":"Matt"},
+    3: {"id":3,"firstName":"Emily","lastName":"Ross","displayName":"Em"},
+    4: {"id":4,"firstName":"Leonidas","lastName":"Lucas","displayName":"Leo"}
+  },
+  playerOrder: [3, 4, 2]
+});
+var gamePausedTill = null;
 
 
 
@@ -12,7 +30,24 @@ router.post('/throw', function(req, res) {
 
   if ('object' == typeof req.body) {
     res.setHeader('Content-Type', 'application/json');
-    res.write(JSON.stringify({success: true}));
+
+    // @todo: this does not check if the game is active or anything
+    if (DartHelper.Test.isValidThrow(req.body)) {
+      res.write(JSON.stringify({success: true}));
+
+
+      let now = (new Date()).getTime();
+      if (now > gamePausedTill) {
+        console.log('throw (good):', data);
+        game.throwDart(req.body);
+        gamePausedTill = now + 3000;
+      } else {
+        console.log('throw (ignored):', data);
+      }
+    } else {
+      res.write(JSON.stringify({success: false}));
+      console.log('throw (bad):', data);
+    }
     res.end();
   } else {
     res.status(400);

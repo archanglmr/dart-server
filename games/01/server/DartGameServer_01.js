@@ -195,7 +195,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
         game.tempScore = 0;
         game.playerOffset += 1;
 
-        game.currentThrows = [];
+        game.widgetThrows = [];
       } else {
         // advance the game normally
         game.currentThrow += 1;
