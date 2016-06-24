@@ -1,7 +1,7 @@
 var models  = require('../models'),
     express = require('express'),
     router = express.Router(),
-    DartHelper = require('../lib/dart-helpers');
+    DartHelpers = require('../lib/dart-helpers');
 
 
 var DartGameServer_01 = require(__dirname + '/../games/01/server/DartGameServer_01');
@@ -20,6 +20,8 @@ var game = new DartGameServer_01({
 });
 var gamePausedTill = null;
 
+game.startGame();
+
 
 
 /**
@@ -32,7 +34,7 @@ router.post('/throw', function(req, res) {
     res.setHeader('Content-Type', 'application/json');
 
     // @todo: this does not check if the game is active or anything
-    if (DartHelper.Test.isValidThrow(req.body)) {
+    if (DartHelpers.Test.isValidThrow(req.body)) {
       res.write(JSON.stringify({success: true}));
 
 
@@ -41,6 +43,9 @@ router.post('/throw', function(req, res) {
         console.log('throw (good):', data);
         game.throwDart(req.body);
         gamePausedTill = now + 3000;
+        console.log(DartHelpers.Test.throwsWidget(game.getState()));
+        console.log(game.getScores());
+        game.advanceGame();
       } else {
         console.log('throw (ignored):', data);
       }
