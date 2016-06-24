@@ -9,10 +9,16 @@ import GameClient from './components/GameClient';
 // Redux dependencies
 import {createStore} from 'redux'
 import {Provider} from 'react-redux'
-import rootReducer from './redux/reducers';
+
+// @fixme Move this to a better spot
+import rootReducer from '../../../clients/display/reducers';
 
 // Create the Redux store
 var store = createStore(rootReducer);
+
+let unsubscribe = store.subscribe(() =>
+    console.log('subscribe:', store.getState())
+);
 
 
 // Render the React root component
@@ -24,3 +30,6 @@ render(
   ),
   document.getElementById('root')
 );
+
+
+top.window.registerGame(store);
