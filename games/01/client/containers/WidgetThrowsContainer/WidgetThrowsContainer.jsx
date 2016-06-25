@@ -7,7 +7,7 @@ import WidgetThrows from '../../components/WidgetThrows';
 const mapStateToProps = (state) => {
   return {
     throws: state.widgetThrows,
-    throwLimit: state.rounds.throws
+    limit: state.rounds.throws
   };
 };
 

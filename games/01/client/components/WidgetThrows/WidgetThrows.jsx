@@ -3,18 +3,18 @@
 import React, {PropTypes} from 'react';
 
 
-function WidgetThrows({throws, throwLimit}) {
+function WidgetThrows({throws, limit}) {
   var throwElements = [],
       throwsLength = throws.length;
 
-  for (let i = 0; i < throwLimit; i += 1) {
+  for (let i = 0; i < limit; i += 1) {
     if (i < throwsLength) {
       throwElements.push(<span>{formatThrowData(throws[i])}</span>);
     } else {
       throwElements.push(<span>-=-&lt;&gt;</span>);
     }
 
-    if ((1 + i) !== throwLimit) {
+    if ((1 + i) !== limit) {
       throwElements.push(' | ');
     }
   }
@@ -28,7 +28,7 @@ WidgetThrows.propTypes = {
         type: PropTypes.string.isRequired
       })
   ).isRequired,
-  throwLimit: PropTypes.number.isRequired
+  limit: PropTypes.number.isRequired
 };
 
 export default WidgetThrows;

@@ -4,7 +4,7 @@ import React, {PropTypes} from 'react';
 
 
 function Heading({text}) {
-  return <h1>Welcome to {text}</h1>;
+  return <h1>{text} Game</h1>;
 }
 
 Heading.propTypes = {
