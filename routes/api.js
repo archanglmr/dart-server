@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = (io) => {
   var models = require('../models'),
       express = require('express'),
@@ -35,7 +37,8 @@ module.exports = (io) => {
     },
     playerOrder: [3, 4, 2]
   });
-  var gamePausedTill = null;
+  var gamePauseLength = 3000,
+      gamePauseTimer = null;
 
   game.startGame();
 
@@ -69,15 +72,18 @@ module.exports = (io) => {
         res.write(JSON.stringify({success: true}));
 
 
-        let now = (new Date()).getTime();
-        if (now > gamePausedTill) {
+        if (null === gamePauseTimer) {
           console.log('throw (good):', data);
           game.throwDart(req.body);
-          gamePausedTill = now + 3000;
           console.log(DartHelpers.Test.widgetThrows(game.getState()));
           console.log(game.getScores());
-          game.advanceGame();
           ioSocket.emit(actions.UPDATE_GAME_STATE, game.getState());
+
+          gamePauseTimer = setTimeout(() => {
+            game.advanceGame();
+            ioSocket.emit(actions.UPDATE_GAME_STATE, game.getState());
+            gamePauseTimer = null;
+          }, gamePauseLength);
         } else {
           console.log('throw (ignored):', data);
         }
