@@ -74,7 +74,7 @@ module.exports = (io) => {
           console.log('throw (good):', data);
           game.throwDart(req.body);
           gamePausedTill = now + 3000;
-          console.log(DartHelpers.Test.throwsWidget(game.getState()));
+          console.log(DartHelpers.Test.widgetThrows(game.getState()));
           console.log(game.getScores());
           game.advanceGame();
           ioSocket.emit(actions.UPDATE_GAME_STATE, game.getState());

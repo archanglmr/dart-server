@@ -9,6 +9,10 @@ import GameClient from './components/GameClient';
 import {Provider} from 'react-redux'
 
 
+// React components
+import HeadingContainer from './containers/HeadingContainer';
+
+
 top.window.registerGame((store) => {
   let unsubscribe = store.subscribe(() => {
     console.log('iframe:', store.getState());
@@ -18,7 +22,9 @@ top.window.registerGame((store) => {
   render(
       (
           <Provider store={store}>
-            <GameClient />
+            <GameClient>
+              <HeadingContainer />
+            </GameClient>
           </Provider>
       ),
       document.getElementById('root')

@@ -1,14 +1,11 @@
 'use strict';
 
 import React, {Component} from 'react';
-import HeadingContainer from '../../containers/HeadingContainer';
 import './GameClient.scss';
 
 
-function GameClient() {
-  return (
-      <HeadingContainer />
-  );
+function GameClient(props) {
+  return <div className="game-client">{props.children}</div>;
 }
 
 export default GameClient;
