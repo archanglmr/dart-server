@@ -21,7 +21,7 @@ WidgetPlayer.propTypes = {
   id: PropTypes.number.isRequired,
   displayName: PropTypes.string.isRequired,
   score: PropTypes.number,
-  current: PropTypes.boolean
+  current: PropTypes.bool
 };
 
 export default WidgetPlayer;

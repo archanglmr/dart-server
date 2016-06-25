@@ -1,11 +1,18 @@
 .widget-temp-score {
+  position: absolute;
+  bottom: 46vh;
+  right: 2vw;
   border: 1px solid black;
-  width: 15vw;
-  height: 20vh;
+  width: 12vw;
+  height: 16vh;
   text-align: center;
+  font-size: 10vh;
+  line-height: 12vh;
+  vertical-align: middle;
 
   div {
     border-bottom: 1px solid black;
-    font-size: 4vh;
+    font-size: 3vh;
+    line-height: 4vh;
   }
 }

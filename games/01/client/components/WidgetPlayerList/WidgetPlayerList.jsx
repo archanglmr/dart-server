@@ -2,6 +2,7 @@
 
 import React, {PropTypes} from 'react';
 import WidgetPlayer from '../WidgetPlayer';
+import './WidgetPlayerList.scss';
 
 function WidgetPlayerList({players}) {
   return (
@@ -22,7 +23,7 @@ WidgetPlayerList.propTypes = {
         id: PropTypes.number.isRequired,
         displayName: PropTypes.string.isRequired,
         score: PropTypes.number,
-        current: PropTypes.boolean
+        current: PropTypes.bool
       })
   ).isRequired
 };

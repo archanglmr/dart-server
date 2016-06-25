@@ -1,18 +1,22 @@
 .widget-player {
   display: inline-block;
-  margin: 0 1vw;
+  margin: 1vh .25vw;
   border: 1px solid black;
   width: 15vw;
   height: 20vh;
   text-align: center;
 
+  line-height: 14vh;
+  font-size: 12vh;
+  vertical-align: middle;
   div {
     border-bottom: 1px solid black;
-    font-size: 4vh;
+    font-size: 5vh;
+    line-height: 6vh;
   }
 
   &.current {
-    border-width: 3px;
+    //border-width: 3px;
     font-weight: bold;
   }
 }
