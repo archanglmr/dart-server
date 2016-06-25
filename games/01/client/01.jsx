@@ -11,6 +11,7 @@ import {Provider} from 'react-redux'
 
 // React components
 import HeadingContainer from './containers/HeadingContainer';
+import WidgetThrowsContainer from './containers/WidgetThrowsContainer';
 
 
 top.window.registerGame((store) => {
@@ -24,6 +25,7 @@ top.window.registerGame((store) => {
           <Provider store={store}>
             <GameClient>
               <HeadingContainer />
+              <WidgetThrowsContainer />
             </GameClient>
           </Provider>
       ),
