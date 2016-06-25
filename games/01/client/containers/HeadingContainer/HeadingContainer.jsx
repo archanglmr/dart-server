@@ -5,7 +5,7 @@ import Heading from '../../components/Heading';
 
 
 const mapStateToProps = (state) => {
-  // prepending '' to prevent warning when game name is a number like 501
+  // pre-pending '' to prevent warning when game name is a number like 501
   return {text: '' + state.gameName};
 };
 

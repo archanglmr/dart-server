@@ -2,7 +2,7 @@
 
 import React, {Component} from 'react';
 import HeadingContainer from '../../containers/HeadingContainer';
-//import './GameClient.scss';
+import './GameClient.scss';
 
 
 function GameClient() {

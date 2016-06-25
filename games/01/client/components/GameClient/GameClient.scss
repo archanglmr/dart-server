@@ -1,0 +1,17 @@
+@charset "utf-8";
+
+@import "reset";
+
+
+body {
+  font-family: -apple-system, Times New Roman, Helvetica Neue, Arial, sans-serif;
+  font-weight: 300;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  font-size: 6vh;
+  line-height: 7vh;
+}
+*, html {
+  font-weight: 300;
+}
