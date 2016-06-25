@@ -2,7 +2,7 @@
 
 import {connect} from 'react-redux';
 import {submitThrow} from '../../throw/actions';
-import ThrowButton from '../ThrowButton';
+import ThrowButton from '../../components/ThrowButton';
 
 
 const mapStateToProps = (state, ownProps) => {

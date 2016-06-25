@@ -2,7 +2,7 @@
 
 import {connect} from 'react-redux';
 import {selectThrowNumber} from '../../throw/actions';
-import ThrowNumbers from '../ThrowNumbers';
+import ThrowNumbers from '../../components/ThrowNumbers';
 
 
 const mapStateToProps = (state) => {

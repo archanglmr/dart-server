@@ -1,9 +1,9 @@
 'use strict';
 
 import React from 'react';
-import ThrowTypesContainer from '../ThrowTypesContainer';
-import ThrowNumbersContainer from '../ThrowNumbersContainer';
-import ThrowSubmitButtonContainer from '../ThrowSubmitButtonContainer';
+import ThrowTypesContainer from '../../containers/ThrowTypesContainer';
+import ThrowNumbersContainer from '../../containers/ThrowNumbersContainer';
+import ThrowSubmitButtonContainer from '../../containers/ThrowSubmitButtonContainer';
 import './ThrowClient.scss';
 
 function ThrowClient() {
