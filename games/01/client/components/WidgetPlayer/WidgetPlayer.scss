@@ -1,0 +1,18 @@
+.widget-player {
+  display: inline-block;
+  margin: 0 1vw;
+  border: 1px solid black;
+  width: 15vw;
+  height: 20vh;
+  text-align: center;
+
+  div {
+    border-bottom: 1px solid black;
+    font-size: 4vh;
+  }
+
+  &.current {
+    border-width: 3px;
+    font-weight: bold;
+  }
+}

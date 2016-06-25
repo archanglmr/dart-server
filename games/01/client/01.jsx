@@ -16,6 +16,7 @@ import WidgetRoundsContainer from './containers/WidgetRoundsContainer';
 import WidgetCurrentScoreContainer from './containers/WidgetCurrentScoreContainer';
 import WidgetTempScoreContainer from './containers/WidgetTempScoreContainer';
 import WidgetThrowsContainer from './containers/WidgetThrowsContainer';
+import WidgetPlayerListContainer from './containers/WidgetPlayerListContainer';
 
 
 top.window.registerGame((store) => {
@@ -34,6 +35,7 @@ top.window.registerGame((store) => {
               <WidgetCurrentScoreContainer />
               <WidgetTempScoreContainer />
               <WidgetThrowsContainer />
+              <WidgetPlayerListContainer />
             </GameClient>
           </Provider>
       ),
