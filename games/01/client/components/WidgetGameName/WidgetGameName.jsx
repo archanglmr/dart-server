@@ -3,12 +3,12 @@
 import React, {PropTypes} from 'react';
 
 
-function Heading({text}) {
+function WidgetGameName({text}) {
   return <h1>{text} Game</h1>;
 }
 
-Heading.propTypes = {
+WidgetGameName.propTypes = {
   text: PropTypes.string.isRequired
 };
 
-export default Heading;
+export default WidgetGameName;

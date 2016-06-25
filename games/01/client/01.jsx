@@ -10,7 +10,8 @@ import {Provider} from 'react-redux'
 
 
 // React components
-import HeadingContainer from './containers/HeadingContainer';
+import WidgetGameNameContainer from './containers/WidgetGameNameContainer';
+import WidgetCurrentPlayerContainer from './containers/WidgetCurrentPlayerContainer';
 import WidgetRoundsContainer from './containers/WidgetRoundsContainer';
 import WidgetCurrentScoreContainer from './containers/WidgetCurrentScoreContainer';
 import WidgetTempScoreContainer from './containers/WidgetTempScoreContainer';
@@ -27,7 +28,8 @@ top.window.registerGame((store) => {
       (
           <Provider store={store}>
             <GameClient>
-              <HeadingContainer />
+              <WidgetGameNameContainer />
+              <WidgetCurrentPlayerContainer />
               <WidgetRoundsContainer />
               <WidgetCurrentScoreContainer />
               <WidgetTempScoreContainer />

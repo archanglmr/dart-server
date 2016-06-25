@@ -1,7 +1,7 @@
 'use strict';
 
 import {connect} from 'react-redux';
-import Heading from '../../components/Heading';
+import WidgetGameName from '../../components/WidgetGameName';
 
 
 const mapStateToProps = (state) => {
@@ -9,8 +9,8 @@ const mapStateToProps = (state) => {
   return {text: '' + state.gameName};
 };
 
-const HeadingContainer = connect(
+const WidgetGameNameContainer = connect(
     mapStateToProps
-)(Heading);
+)(WidgetGameName);
 
-export default HeadingContainer;
+export default WidgetGameNameContainer;
