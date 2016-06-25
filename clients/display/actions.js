@@ -3,7 +3,9 @@
 /**
  * Action types
  */
-export const UPDATE_GAME_STATE = 'UPDATE_GAME_STATE';
+const UPDATE_GAME_STATE = 'UPDATE_GAME_STATE';
+
+module.exports.UPDATE_GAME_STATE = UPDATE_GAME_STATE;
 
 /**
  * ACTIONS
@@ -15,6 +17,6 @@ export const UPDATE_GAME_STATE = 'UPDATE_GAME_STATE';
  * @param state A whole new game state
  * @returns {{type: string, state: *}}
  */
-export function updateGameState(state) {
+module.exports.updateGameState = function updateGameState(state) {
   return {type: UPDATE_GAME_STATE, state};
-}
+};

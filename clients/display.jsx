@@ -23,7 +23,7 @@ render(<Display src="/display/game/01" />, document.getElementById('root'));
 
 
 socket.on(UPDATE_GAME_STATE, (data) => {
-  updateGameState(data);
+  store.dispatch(updateGameState(data));
 });
 
 

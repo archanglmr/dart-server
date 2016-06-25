@@ -1,7 +1,8 @@
 var models  = require('../models'),
     express = require('express'),
     router = express.Router(),
-    DartHelpers = require('../lib/dart-helpers');
+    DartHelpers = require('../lib/dart-helpers'),
+    actions = require('../clients/display/actions');
 
 
 var DartGameServer_01 = require(__dirname + '/../games/01/server/DartGameServer_01');
@@ -46,6 +47,7 @@ router.post('/throw', function(req, res) {
         console.log(DartHelpers.Test.throwsWidget(game.getState()));
         console.log(game.getScores());
         game.advanceGame();
+        req.ioSocket.emit(actions.UPDATE_GAME_STATE, game.getState());
       } else {
         console.log('throw (ignored):', data);
       }
