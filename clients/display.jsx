@@ -34,7 +34,4 @@ socket.on(UPDATE_GAME_STATE, (data) => {
  *
  * @param cb
  */
-window.registerGame = (cb) => {
-  cb(store);
-  store.dispatch(updateGameState({a:'hello world'}));
-};
+window.registerGame = (cb) => cb(store);

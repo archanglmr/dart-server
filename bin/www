@@ -21,25 +21,10 @@ app.set('port', port);
  * Create HTTP server.
  */
 var server = http.createServer(app);
-
-var io = require('socket.io')(server),
-    ioSocket;
-
+var io = require('socket.io')(server);
 
 
 models.sequelize.sync().then(function () {
-  /**
-   * socket.io server
-   */
-  io.on('connection', function(socket) {
-    ioSocket = socket;
-    console.log('A client connected');
-
-    socket.on('disconnect', function(){
-      console.log('user disconnected');
-    });
-  });
-
   /**
    * Listen on provided port, on all network interfaces.
    */
@@ -51,16 +36,9 @@ models.sequelize.sync().then(function () {
   server.on('listening', onListening);
 });
 
-
-
-
-/******************************************************************************/
-app.use((req, res, next) => {
-  req.io = io;
-  req.ioSocket = ioSocket;
-  next();
-});
-app.use('/api', require('../routes/api'));
+// we needed to pass socket.io to the API routes because that's what manages the
+// game.
+app.use('/api', require('../routes/api')(io));
 
 
 /* error handling goes last */

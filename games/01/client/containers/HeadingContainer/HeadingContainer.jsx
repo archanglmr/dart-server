@@ -5,16 +5,12 @@ import Heading from '../../components/Heading';
 
 
 const mapStateToProps = (state) => {
-  return {text: state.gameName};
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {};
+  // prepending '' to prevent warning when game name is a number like 501
+  return {text: '' + state.gameName};
 };
 
 const HeadingContainer = connect(
-    mapStateToProps,
-    mapDispatchToProps
+    mapStateToProps
 )(Heading);
 
 export default HeadingContainer;
