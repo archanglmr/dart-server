@@ -204,8 +204,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       // we're in a valid round
 
       // shallow clone stuff
-      let game = Object.assign({}, state.game),
-          players = Object.assign({}, state.players);
+      let game = Object.assign({}, state.game);
 
 
       game.tempScore += this.calculateThrowDataValue(throwData);
@@ -233,13 +232,11 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       // rebuild the new state
       return Object.assign({}, state, {
         game,
-        players,
         widgetThrows: game.currentThrows.slice(0),
         locked: game.locked,
         finished: game.finished
       });
     }
-    console.log('return default', state.locked, DartHelpers.State.isPlayable(state));
     return state;
   }
 
@@ -268,7 +265,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
         game.playerOffset += 1;
         playerChanged = true;
 
-        game.widgetThrows = [];
+        game.currentThrows = [];
       } else {
         // advance the game normally
         game.currentThrow += 1;
@@ -323,14 +320,13 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       // sync to the global state
       players.current = game.currentPlayer;
       rounds.current = game.currentRound;
-      widgetThrows = game.currentThrows.slice(0);
 
       // rebuild the new state
       return Object.assign({}, state, {
         game,
         players,
         rounds,
-        widgetThrows,
+        widgetThrows: game.currentThrows.slice(0),
         locked: game.locked
       });
     }
