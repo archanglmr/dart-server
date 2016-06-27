@@ -29,7 +29,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
   /**
    * Pretty much just for the command line to see the score after a throw.
    *
-   * @returns {*|game|newState.game|{tempScore, players}|boolean|module.exports.game}
+   * @returns {string}
    */
   getScores() {
     var state = this.getState(),
@@ -119,31 +119,32 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
    * @returns {*}
    */
   actionInit(state) {
-    let {variation, modifiers} = state.config,
+    var {variation, modifiers} = state.config,
     // cloning the part we need because we're going to overwrite stuff
-        newState = {
-          rounds: Object.assign({}, state.rounds),
-          game: {
+          rounds = Object.assign({}, state.rounds),
+          game = {
+            started: state.started,
+            locked: state.locked,
+            finished: state.finished,
             tempScore: 0,
             players: {}
-          }
-        };
+          };
 
     if (modifiers.limit) {
-      newState.rounds.limit = modifiers.limit;
+      rounds.limit = modifiers.limit;
     }
 
     for (let i = 0, c = state.players.order.length; i < c; i += 1) {
       let id = state.players.order[i];
 
-      newState.game.players[id] = {
+      game.players[id] = {
         id,
         score: parseInt(state.config.variation, 10),
         history: [0]
       };
     }
 
-    return Object.assign({}, state, newState);
+    return Object.assign({}, state, {rounds, game});
   }
 
 
@@ -158,8 +159,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       //init the actual game
 
       // shallow clone stuff
-      let newState = Object.assign({}, state),
-          game = Object.assign({}, state.game),
+      let game = Object.assign({}, state.game),
           players = Object.assign({}, state.players);
 
       game.playerOffset = 0;
@@ -173,14 +173,20 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
 
       game.widgetWindicator = [];
 
-      newState.started = true;
-      newState.locked = false;
+      game.started = true;
+      game.locked = false;
+
 
       // sync to the global state
       players.current = game.currentPlayer;
 
       // rebuild the new state
-      return Object.assign(newState, {game, players});
+      return Object.assign({}, state, {
+        game,
+        players,
+        started: game.started,
+        locked: game.locked
+      });
     }
     return state;
   }
@@ -198,10 +204,8 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       // we're in a valid round
 
       // shallow clone stuff
-      let newState = Object.assign({}, state),
-          game = Object.assign({}, state.game),
-          players = Object.assign({}, state.players),
-          widgetThrows;
+      let game = Object.assign({}, state.game),
+          players = Object.assign({}, state.players);
 
 
       game.tempScore += this.calculateThrowDataValue(throwData);
@@ -210,9 +214,9 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       // @todo: check to make sure assigning game.players[x].score is safe
       let score = game.players[game.currentPlayer].score = (game.roundBeginningScore - game.tempScore);
       // set the temp score as in the player score history
-      game.players[game.currentPlayer].history[newState.rounds.current] = game.tempScore;
+      game.players[game.currentPlayer].history[state.rounds.current] = game.tempScore;
       if (0 === score) {
-        newState.finished = true;
+        game.finished = true;
         console.log('WINNER');
       }
 
@@ -222,14 +226,20 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
           state.rounds.throws - (game.currentThrow + 1)
       );
 
-      newState.locked = true;
+      game.locked = true;
 
       // sync to the global state
-      widgetThrows = game.currentThrows.slice(0);
 
       // rebuild the new state
-      return Object.assign(newState, {game, players, widgetThrows});
+      return Object.assign({}, state, {
+        game,
+        players,
+        widgetThrows: game.currentThrows.slice(0),
+        locked: game.locked,
+        finished: game.finished
+      });
     }
+    console.log('return default', state.locked, DartHelpers.State.isPlayable(state));
     return state;
   }
 
@@ -240,8 +250,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       // we're in a valid round
 
       // shallow clone stuff
-      let newState = Object.assign({}, state),
-          game = Object.assign({}, state.game),
+      let game = Object.assign({}, state.game),
           players = Object.assign({}, state.players),
           rounds = Object.assign({}, state.rounds),
           playerChanged = false,
@@ -285,8 +294,13 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
         game.currentPlayer = players.order[game.playerOffset];
 
         if (rounds.limit && game.currentRound >= rounds.limit) {
-          newState.finished = true;
-          return Object.assign(newState, {game, players, rounds});
+          game.finished = true;
+          return Object.assign({}, state, {
+            game,
+            players,
+            rounds,
+            finished: game.finished
+          });
         }
       } else {
 
@@ -304,7 +318,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
           rounds.throws - game.currentThrow
       );
 
-      newState.locked = false;
+      game.locked = false;
 
       // sync to the global state
       players.current = game.currentPlayer;
@@ -312,7 +326,13 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       widgetThrows = game.currentThrows.slice(0);
 
       // rebuild the new state
-      return Object.assign(newState, {game, players, rounds, widgetThrows});
+      return Object.assign({}, state, {
+        game,
+        players,
+        rounds,
+        widgetThrows,
+        locked: game.locked
+      });
     }
     return state;
   }
