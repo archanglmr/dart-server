@@ -121,17 +121,17 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
   actionInit(state) {
     var {variation, modifiers} = state.config,
     // cloning the part we need because we're going to overwrite stuff
-          rounds = Object.assign({}, state.rounds),
           game = {
             started: state.started,
             locked: state.locked,
             finished: state.finished,
             tempScore: 0,
-            players: {}
+            players: {},
+            rounds: Object.assign({}, state.rounds)
           };
 
     if (modifiers.limit) {
-      rounds.limit = modifiers.limit;
+      game.rounds.limit = modifiers.limit;
     }
 
     for (let i = 0, c = state.players.order.length; i < c; i += 1) {
@@ -144,7 +144,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       };
     }
 
-    return Object.assign({}, state, {rounds, game});
+    return Object.assign({}, state, {game, rounds: game.rounds});
   }
 
 
@@ -249,16 +249,14 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       // shallow clone stuff
       let game = Object.assign({}, state.game),
           players = Object.assign({}, state.players),
-          rounds = Object.assign({}, state.rounds),
-          playerChanged = false,
-          widgetThrows;
+          playerChanged = false;
 
 
       // Process BUST
       if (game.players[game.currentPlayer].score < 0) {
         // advance from a bust
         game.players[game.currentPlayer].score = game.roundBeginningScore;
-        game.players[game.currentPlayer].history[rounds.current] = 0;
+        game.players[game.currentPlayer].history[game.rounds.current] = 0;
 
         game.currentThrow = 0;
         game.tempScore = 0;
@@ -269,7 +267,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       } else {
         // advance the game normally
         game.currentThrow += 1;
-        if (game.currentThrow >= rounds.throws) {
+        if (game.currentThrow >= game.rounds.throws) {
           // next player
           game.currentThrow = 0;
           game.tempScore = 0;
@@ -290,12 +288,12 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
         game.currentRound += 1;
         game.currentPlayer = players.order[game.playerOffset];
 
-        if (rounds.limit && game.currentRound >= rounds.limit) {
+        if (game.rounds.limit && game.currentRound >= game.rounds.limit) {
           game.finished = true;
           return Object.assign({}, state, {
             game,
             players,
-            rounds,
+            rounds: game.rounds,
             finished: game.finished
           });
         }
@@ -312,20 +310,20 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       // windicator
       game.widgetWindicator = this.windicator.calculate(
           game.players[game.currentPlayer].score,
-          rounds.throws - game.currentThrow
+          game.rounds.throws - game.currentThrow
       );
 
       game.locked = false;
 
       // sync to the global state
       players.current = game.currentPlayer;
-      rounds.current = game.currentRound;
+      game.rounds.current = game.currentRound;
 
       // rebuild the new state
       return Object.assign({}, state, {
         game,
         players,
-        rounds,
+        rounds: game.rounds,
         widgetThrows: game.currentThrows.slice(0),
         locked: game.locked
       });
