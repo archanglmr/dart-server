@@ -15,4 +15,8 @@
     font-size: 3vh;
     line-height: 4vh;
   }
+
+  &.hidden {
+    display: none;
+  }
 }

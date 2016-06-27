@@ -30,9 +30,11 @@ top.window.registerGame((store) => {
       (
           <Provider store={store}>
             <GameClient>
-              <WidgetGameNameContainer />
-              <WidgetCurrentPlayerContainer />
-              <WidgetRoundsContainer />
+              <div style={{margin: '1vh 1vw'}}>
+                <WidgetGameNameContainer />
+                <WidgetCurrentPlayerContainer />
+                <WidgetRoundsContainer />
+              </div>
               <WidgetWindicatorContainer />
               <WidgetCurrentScoreContainer />
               <WidgetTempScoreContainer />
