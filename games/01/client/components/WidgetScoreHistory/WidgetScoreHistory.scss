@@ -1,0 +1,10 @@
+.widget-score-history {
+  position: absolute;
+  left: .5vw;
+  top: 23vh;
+  border: 1px solid black;
+  span {
+    display: inline-block;
+    width: 5vw;
+  }
+}

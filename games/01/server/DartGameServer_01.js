@@ -110,6 +110,43 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
   /*****************************************************************************
    * HOOKS FOR DEFAULT ACTIONS
    ****************************************************************************/
+
+  /**
+   * After the init is run this will modify the state per the config and return
+   * the new full state.
+   *
+   * @param {object} state
+   * @returns {*}
+   */
+  actionInit(state) {
+    let {variation, modifiers} = state.config,
+    // cloning the part we need because we're going to overwrite stuff
+        newState = {
+          rounds: Object.assign({}, state.rounds),
+          game: {
+            tempScore: 0,
+            players: {}
+          }
+        };
+
+    if (modifiers.limit) {
+      newState.rounds.limit = modifiers.limit;
+    }
+
+    for (let i = 0, c = state.players.order.length; i < c; i += 1) {
+      let id = state.players.order[i];
+
+      newState.game.players[id] = {
+        id,
+        score: parseInt(state.config.variation, 10),
+        history: [0]
+      };
+    }
+
+    return Object.assign({}, state, newState);
+  }
+
+
   /**
    * Start the game (init is handled by the system).
    *
@@ -148,6 +185,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
     return state;
   }
 
+
   /**
    * Where the main game logic works. This responds to the PROCESS_DART action.
    *
@@ -171,6 +209,8 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
 
       // @todo: check to make sure assigning game.players[x].score is safe
       let score = game.players[game.currentPlayer].score = (game.roundBeginningScore - game.tempScore);
+      // set the temp score as in the player score history
+      game.players[game.currentPlayer].history[newState.rounds.current] = game.tempScore;
       if (0 === score) {
         newState.finished = true;
         console.log('WINNER');
@@ -212,6 +252,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       if (game.players[game.currentPlayer].score < 0) {
         // advance from a bust
         game.players[game.currentPlayer].score = game.roundBeginningScore;
+        game.players[game.currentPlayer].history[rounds.current] = 0;
 
         game.currentThrow = 0;
         game.tempScore = 0;
@@ -248,11 +289,13 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
           return Object.assign(newState, {game, players, rounds});
         }
       } else {
+
         game.currentPlayer = players.order[game.playerOffset];
       }
 
       if (playerChanged) {
         game.roundBeginningScore = game.players[game.currentPlayer].score;
+        game.players[game.currentPlayer].history[game.currentRound] = 0;
       }
 
       // windicator
@@ -272,40 +315,5 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       return Object.assign(newState, {game, players, rounds, widgetThrows});
     }
     return state;
-  }
-
-
-  /**
-   * After the init is run this will modify the state per the config and return
-   * the new full state.
-   *
-   * @param {object} state
-   * @returns {*}
-   */
-  actionInit(state) {
-    let {variation, modifiers} = state.config,
-        // cloning the part we need because we're going to overwrite stuff
-        newState = {
-          rounds: Object.assign({}, state.rounds),
-          game: {
-            tempScore: 0,
-            players: {}
-          }
-        };
-
-    if (modifiers.limit) {
-      newState.rounds.limit = modifiers.limit;
-    }
-
-    for (let i = 0, c = state.players.order.length; i < c; i += 1) {
-      let id = state.players.order[i];
-
-      newState.game.players[id] = {
-        id,
-        score: parseInt(state.config.variation, 10)
-      };
-    }
-
-    return Object.assign({}, state, newState);
   }
 };

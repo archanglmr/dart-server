@@ -7,7 +7,7 @@ import WidgetRounds from '../../components/WidgetRounds';
 const mapStateToProps = (state) => {
   return {
     current: state.rounds.current + 1,
-    limit: state.rounds.limit,
+    limit: state.rounds.limit
   };
 };
 
