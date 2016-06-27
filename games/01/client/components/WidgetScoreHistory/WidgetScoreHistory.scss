@@ -1,10 +1,12 @@
 .widget-score-history {
   position: absolute;
-  left: .5vw;
+  left: 1vw;
   top: 23vh;
-  border: 1px solid black;
+  div {
+    border-bottom: 1px solid black;
+  }
   span {
     display: inline-block;
-    width: 5vw;
+    width: 8vw;
   }
 }
