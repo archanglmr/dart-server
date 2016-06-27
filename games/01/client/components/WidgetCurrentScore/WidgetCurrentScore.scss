@@ -6,4 +6,8 @@
   font-size: 60vh;
   line-height: 60vh;
   text-align: center;
+
+  &.winner {
+    font-size: 30vh;
+  }
 }

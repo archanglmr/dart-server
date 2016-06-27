@@ -13,6 +13,7 @@ import {Provider} from 'react-redux'
 import WidgetGameNameContainer from './containers/WidgetGameNameContainer';
 import WidgetCurrentPlayerContainer from './containers/WidgetCurrentPlayerContainer';
 import WidgetRoundsContainer from './containers/WidgetRoundsContainer';
+import WidgetWindicatorContainer from './containers/WidgetWindicatorContainer';
 import WidgetCurrentScoreContainer from './containers/WidgetCurrentScoreContainer';
 import WidgetTempScoreContainer from './containers/WidgetTempScoreContainer';
 import WidgetThrowsContainer from './containers/WidgetThrowsContainer';
@@ -32,6 +33,7 @@ top.window.registerGame((store) => {
               <WidgetGameNameContainer />
               <WidgetCurrentPlayerContainer />
               <WidgetRoundsContainer />
+              <WidgetWindicatorContainer />
               <WidgetCurrentScoreContainer />
               <WidgetTempScoreContainer />
               <WidgetThrowsContainer />

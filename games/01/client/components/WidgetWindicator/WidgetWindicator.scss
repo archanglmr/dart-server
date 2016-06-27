@@ -1,0 +1,10 @@
+.widget-windicator {
+  position: absolute;
+  top: 7vh;
+  width: 100vw;
+  text-align: center;
+
+  &.empty {
+    display: none;
+  }
+}

@@ -1,8 +1,21 @@
 'use strict';
 var DartHelpers = require('../../../lib/dart-helpers'),
-    ThrowTypes = DartHelpers.ThrowTypes;
+    ThrowTypes = DartHelpers.ThrowTypes,
+    Windicator = require('./Windicator');
 
 module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
+  /**
+   * Handle for INIT
+   *
+   * @param config {{variation: string, modifiers: object, players: Array, playerOrder: Array}}
+   */
+  constructor(config) {
+    super(config);
+
+    this.windicator = new Windicator(this.calculateThrowDataValue);
+  }
+
+
   /**
    * Gets the display name for this game type/variation
    *
@@ -121,6 +134,8 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       game.tempScore = 0;
       game.roundBeginningScore = state.game.players[game.currentPlayer].score;
 
+      game.widgetWindicator = [];
+
       newState.started = true;
       newState.locked = false;
 
@@ -161,6 +176,12 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
         console.log('WINNER');
       }
 
+      // windicator
+      game.widgetWindicator = this.windicator.calculate(
+          score,
+          state.rounds.throws - (game.currentThrow + 1)
+      );
+
       newState.locked = true;
 
       // sync to the global state
@@ -183,6 +204,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
           game = Object.assign({}, state.game),
           players = Object.assign({}, state.players),
           rounds = Object.assign({}, state.rounds),
+          playerChanged = false,
           widgetThrows;
 
 
@@ -194,6 +216,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
         game.currentThrow = 0;
         game.tempScore = 0;
         game.playerOffset += 1;
+        playerChanged = true;
 
         game.widgetThrows = [];
       } else {
@@ -204,6 +227,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
           game.currentThrow = 0;
           game.tempScore = 0;
           game.playerOffset += 1;
+          playerChanged = true;
 
           game.currentThrows = [];
         }
@@ -215,9 +239,9 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
 
         // next round actually
         game.playerOffset = 0;
+        playerChanged = true;
         game.currentRound += 1;
         game.currentPlayer = players.order[game.playerOffset];
-        game.roundBeginningScore = game.players[game.currentPlayer].score;
 
         if (rounds.limit && game.currentRound >= rounds.limit) {
           newState.finished = true;
@@ -226,6 +250,16 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       } else {
         game.currentPlayer = players.order[game.playerOffset];
       }
+
+      if (playerChanged) {
+        game.roundBeginningScore = game.players[game.currentPlayer].score;
+      }
+
+      // windicator
+      game.widgetWindicator = this.windicator.calculate(
+          game.players[game.currentPlayer].score,
+          rounds.throws - game.currentThrow
+      );
 
       newState.locked = false;
 

@@ -11,7 +11,6 @@ module.exports = (io) => {
   var DartGameServer_01 = require(__dirname + '/../games/01/server/DartGameServer_01');
   var game = new DartGameServer_01({
     variation: 501,
-    //variation: 31,
     modifiers: {
       limit: 10
     },
@@ -75,12 +74,14 @@ module.exports = (io) => {
         if (null === gamePauseTimer) {
           console.log('throw (good):', data);
           game.throwDart(req.body);
-          console.log(DartHelpers.Test.widgetThrows(game.getState()));
-          console.log(game.getScores());
+          //console.log(DartHelpers.Test.widgetThrows(game.getState()));
+          //console.log(game.getScores());
           ioSocket.emit(actions.UPDATE_GAME_STATE, game.getState());
 
           gamePauseTimer = setTimeout(() => {
             game.advanceGame();
+            console.log(DartHelpers.Test.widgetThrows(game.getState()));
+            console.log(game.getScores());
             ioSocket.emit(actions.UPDATE_GAME_STATE, game.getState());
             gamePauseTimer = null;
           }, gamePauseLength);
