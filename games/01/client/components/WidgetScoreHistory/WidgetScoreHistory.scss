@@ -7,6 +7,12 @@
   }
   span {
     display: inline-block;
-    width: 8vw;
+
+    &.round {
+      width: 6vw;
+    }
+    &.value {
+      width: 7vw;
+    }
   }
 }

@@ -1,6 +1,7 @@
 'use strict';
 
 import React, {PropTypes} from 'react';
+import './WidgetCurrentPlayer.scss';
 
 
 function WidgetCurrentPlayer({text}) {

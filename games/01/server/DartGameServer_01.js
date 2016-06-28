@@ -127,7 +127,8 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
             finished: state.finished,
             tempScore: 0,
             players: {},
-            rounds: Object.assign({}, state.rounds)
+            rounds: Object.assign({}, state.rounds),
+            roundOver: false
           };
 
     if (modifiers && modifiers.limit) {
@@ -226,6 +227,11 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       );
 
       game.locked = true;
+
+
+
+      // Process BUST or advance round
+      game.roundOver = ((score < 0) || ((game.currentThrow + 1) >= game.rounds.throws));
 
       // sync to the global state
 

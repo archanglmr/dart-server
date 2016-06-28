@@ -76,15 +76,28 @@ module.exports = (io) => {
           game.throwDart(req.body);
           //console.log(DartHelpers.Test.widgetThrows(game.getState()));
           //console.log(game.getScores());
-          ioSocket.emit(actions.UPDATE_GAME_STATE, game.getState());
+          let state = game.getState();
 
-          gamePauseTimer = setTimeout(() => {
+          if (state.game.roundOver) {
+            // if the round is we should send an update, then wait to advance
+            // the game
+            ioSocket.emit(actions.UPDATE_GAME_STATE, state);
+
+            gamePauseTimer = setTimeout(() => {
+              game.advanceGame();
+              console.log(DartHelpers.Test.widgetThrows(game.getState()));
+              console.log(game.getScores());
+              ioSocket.emit(actions.UPDATE_GAME_STATE, game.getState());
+              gamePauseTimer = null;
+            }, gamePauseLength);
+          } else {
+            // if the round is not over we can update immediately
             game.advanceGame();
             console.log(DartHelpers.Test.widgetThrows(game.getState()));
             console.log(game.getScores());
             ioSocket.emit(actions.UPDATE_GAME_STATE, game.getState());
-            gamePauseTimer = null;
-          }, gamePauseLength);
+          }
+
         } else {
           console.log('throw (ignored):', data);
         }
