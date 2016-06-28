@@ -10,7 +10,8 @@
   }
   &.selected {
     font-weight: bold;
-    background-color: #ccc;
+    background-color: #000 !important;
+    color: #fff !important;
   }
   &.submit {
     width: 100vw;
