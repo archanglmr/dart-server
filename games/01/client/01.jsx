@@ -16,10 +16,9 @@ import WidgetRoundsContainer from './containers/WidgetRoundsContainer';
 import WidgetScoreHistoryContainer from './containers/WidgetScoreHistoryContainer';
 import WidgetWindicatorContainer from './containers/WidgetWindicatorContainer';
 import WidgetCurrentScoreContainer from './containers/WidgetCurrentScoreContainer';
-//import WidgetTempScoreContainer from './containers/WidgetTempScoreContainer';
-//<WidgetTempScoreContainer />
 import WidgetThrowsContainer from './containers/WidgetThrowsContainer';
 import WidgetPlayerListContainer from './containers/WidgetPlayerListContainer';
+import WidgetDartboard from './components/WidgetDartboard';
 
 
 top.window.registerGame((store) => {
@@ -42,6 +41,7 @@ top.window.registerGame((store) => {
               <WidgetCurrentScoreContainer />
               <WidgetThrowsContainer />
               <WidgetPlayerListContainer />
+              <WidgetDartboard hidden={true} />
             </GameClient>
           </Provider>
       ),

@@ -1,0 +1,64 @@
+@import "colors";
+
+.widget-dartboard {
+  position: absolute;
+  right: 1.5vw;
+  top: 25vh;
+  width: 22vw;
+  height: 22vw;
+
+
+  &.hidden {
+    display: none;
+  }
+
+  .sector {
+    &.light {
+      .double,
+      .triple {
+        fill: green;
+      }
+      .single {
+        fill: white;
+      }
+    }
+    &.dark {
+      .double,
+      .triple {
+        fill: red;
+      }
+      .single {
+        fill: black;
+      }
+    }
+
+    .score {
+      font-size: 50px;
+      fill: $foreground;
+    }
+  }
+
+  .sector_bull {
+    .light {
+      fill: green;
+    }
+    .dark {
+      fill: red
+    }
+  }
+
+  .highlight {
+    fill: #ffc;
+  }
+
+
+
+  .blink {
+    animation: blink-animation 1s steps(3, start) infinite;
+  }
+  @keyframes blink-animation {
+    to {
+      visibility: hidden;
+    }
+  }
+}
