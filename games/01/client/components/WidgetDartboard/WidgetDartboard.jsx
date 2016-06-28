@@ -5,10 +5,10 @@ import Slice from './Slice.jsx';
 import './WidgetDartboard.scss';
 
 
-function WidgetDartboard({hidden}) {
+function WidgetDartboard({dartboard}) {
   var order = [20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5],
       className = ['widget-dartboard'];
-  if (hidden) {
+  if (!dartboard.visible) {
     className.push('hidden');
   }
 
@@ -29,7 +29,27 @@ function WidgetDartboard({hidden}) {
 //394, 387
 
 WidgetDartboard.propTypes = {
-  hidden: PropTypes.bool
+  dartboard: PropTypes.shape({
+    visible: PropTypes.bool,
+    hide: PropTypes.arrayOf(
+      PropTypes.shape({
+        type: PropTypes.string.isRequired,
+        number: PropTypes.number
+      })
+    ),
+    blink: PropTypes.arrayOf(
+      PropTypes.shape({
+        type: PropTypes.string.isRequired,
+        number: PropTypes.number
+      })
+    ),
+    highlight: PropTypes.arrayOf(
+      PropTypes.shape({
+        type: PropTypes.string.isRequired,
+        number: PropTypes.number
+      })
+    )
+  })
 };
 
 export default WidgetDartboard;
