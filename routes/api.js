@@ -88,6 +88,21 @@ module.exports = (io) => {
         } else {
           console.log('throw (ignored):', data);
         }
+      } else if (req.body.undo) {
+        // @fixme Undo doesn't work yet
+        if (!gamePauseTimer && game.undoLastThrow()) {
+          game.advanceGame();
+          console.log(DartHelpers.Test.widgetThrows(game.getState()));
+          console.log(game.getScores());
+          ioSocket.emit(actions.UPDATE_GAME_STATE, game.getState());
+          gamePauseTimer = null;
+
+          res.write(JSON.stringify({success: true}));
+        } else {
+          console.log('undo failed');
+
+          res.status(400);
+        }
       } else {
         res.write(JSON.stringify({success: false}));
         console.log('throw (bad):', data);

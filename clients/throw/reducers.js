@@ -5,6 +5,8 @@ import {
     SELECT_THROW_NUMBER,
     SUBMIT_THROW_START,
     SUBMIT_THROW_COMPLETE,
+    SUBMIT_UNDO_START,
+    SUBMIT_UNDO_COMPLETE,
     ThrowTypesList
 } from './actions';
 
@@ -32,11 +34,12 @@ export default function rootReducer(state, action = {}) {
     return initialState;
   }
 
+  var newState;
   switch(action.type) {
     case SELECT_THROW_TYPE:
       // make sure we have a valid "hit type" and that it's not disabled
       if (ThrowTypesList.hasOwnProperty(action.throwType) && -1 == state.disabledThrowTypes.indexOf(action.throwType)) {
-        let newState = {
+        newState = {
           submittable: false,
           disabledThrowNumbers: []
         };
@@ -78,7 +81,7 @@ export default function rootReducer(state, action = {}) {
     case SELECT_THROW_NUMBER:
       // make sure we have a valid "number" and that it's not disabled
       if (action.throwNumber > 0 && action.throwNumber <= 21 && -1 == state.disabledThrowNumbers.indexOf(action.throwNumber)) {
-        let newState = {submittable: false};
+        newState = {submittable: false};
 
         if (state.throwNumber === action.throwNumber) {
           // same number, disable it
@@ -98,7 +101,7 @@ export default function rootReducer(state, action = {}) {
       break;
 
     case SUBMIT_THROW_START:
-      let newState = {
+      newState = {
         isSubmitting: true, // assign isSubmitting to true here
         disabledThrowTypes: [],
         disabledThrowNumbers: [],
@@ -124,6 +127,34 @@ export default function rootReducer(state, action = {}) {
         } else if (action.response.error) {
           // @todo: handle error here
         }
+      break;
+
+    case SUBMIT_UNDO_START:
+      newState = {
+        isSubmitting: true, // assign isSubmitting to true here
+        disabledThrowTypes: [],
+        disabledThrowNumbers: [],
+        lastState: {
+          disabledThrowTypes:  Object.assign({}, state.disabledThrowTypes),
+          disabledThrowNumbers: Object.assign({}, state.disabledThrowNumbers)
+        }
+      };
+      for (let i = 21; i > 0; i -= 1) {
+        newState.disabledThrowNumbers.push(i);
+      }
+      for (let k in ThrowTypesList) {
+        if (ThrowTypesList.hasOwnProperty(k)) {
+          newState.disabledThrowTypes.push(ThrowTypesList[k]);
+        }
+      }
+      return Object.assign({}, state, newState);
+
+    case SUBMIT_UNDO_COMPLETE:
+      if (action.response.success) {
+        return initialState;
+      } else if (action.response.error) {
+        // @todo: handle error here
+      }
       break;
 
     default:

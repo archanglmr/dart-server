@@ -294,6 +294,8 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
             game,
             players,
             rounds: game.rounds,
+            widgetThrows: game.currentThrows.slice(0),
+            locked: game.locked,
             finished: game.finished
           });
         }
@@ -325,7 +327,8 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
         players,
         rounds: game.rounds,
         widgetThrows: game.currentThrows.slice(0),
-        locked: game.locked
+        locked: game.locked,
+        finished: game.finished
       });
     }
     return state;
