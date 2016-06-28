@@ -11,9 +11,9 @@ module.exports = (io) => {
   var DartGameServer_01 = require(__dirname + '/../games/01/server/DartGameServer_01');
   var game = new DartGameServer_01({
     variation: 501,
-    modifiers: {
-      limit: 10
-    },
+    //modifiers: {
+    //  limit: 25
+    //},
     players: {
       2: {
         "id": 2,

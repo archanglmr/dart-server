@@ -4,5 +4,22 @@
 
   button {
     width: 20vw;
+    font-size: 3vh;
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    &.inner {
+      height: 4vh;
+    }
+    &.triple {
+      height: 6vh;
+      background-color: #eef;
+    }
+    &.outer {
+      height: 8vh;
+    }
+    &.double {
+      background-color: #eef;
+    }
   }
 }

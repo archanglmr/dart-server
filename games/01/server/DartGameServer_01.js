@@ -130,7 +130,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
             rounds: Object.assign({}, state.rounds)
           };
 
-    if (modifiers.limit) {
+    if (modifiers && modifiers.limit) {
       game.rounds.limit = modifiers.limit;
     }
 

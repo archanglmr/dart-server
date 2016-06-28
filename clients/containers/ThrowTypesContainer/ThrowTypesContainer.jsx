@@ -13,27 +13,28 @@ const mapStateToProps = (state) => {
       let button = {id: key};
       switch(key) {
         case ThrowTypesList.SINGLE_INNER:
-          button.text = 'Inner Single';
+          button.text = 'Inner';
+          button.className = 'inner';
           break;
 
         case ThrowTypesList.TRIPLE:
           button.text = 'Triple';
+          button.className = 'triple';
           break;
 
         case ThrowTypesList.SINGLE_OUTER:
-          if (21 === state.throwNumber) {
-            button.text = 'Outer';
-          } else {
-            button.text = 'Outer Single';
-          }
+          button.text = 'Outer';
+          button.className = 'outer';
           break;
 
         case ThrowTypesList.DOUBLE:
           button.text = 'Double';
+          button.className = 'double';
           break;
 
         case ThrowTypesList.MISS:
           button.text = 'Miss';
+          button.className = 'miss';
           break;
 
         default:
