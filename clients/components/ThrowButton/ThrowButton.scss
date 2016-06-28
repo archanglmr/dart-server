@@ -4,6 +4,7 @@
   border: 1px solid black;
   vertical-align: middle;
   background-color: #fff;
+  font-size: 3vh;
 
   &:disabled {
     opacity: .5;
@@ -13,8 +14,15 @@
     background-color: #000 !important;
     color: #fff !important;
   }
+  &.undo {
+    position: absolute;
+    top: 1vh;
+    right: 2vw;
+    width: 28vw;
+    height: 6vh;
+    font-size: 2vh;
+  }
   &.submit {
     width: 100vw;
-    font-size: 3vh;
   }
 }

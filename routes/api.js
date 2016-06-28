@@ -102,7 +102,6 @@ module.exports = (io) => {
           console.log('throw (ignored):', data);
         }
       } else if (req.body.undo) {
-        // @fixme Undo doesn't work yet
         if (!gamePauseTimer && game.undoLastThrow()) {
           game.advanceGame();
           console.log(DartHelpers.Test.widgetThrows(game.getState()));

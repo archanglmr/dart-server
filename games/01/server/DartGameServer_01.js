@@ -145,7 +145,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       };
     }
 
-    return Object.assign({}, state, {game, rounds: game.rounds});
+    return Object.assign({}, state, {game, rounds: Object.assign({}, game.rounds)});
   }
 
 
@@ -214,7 +214,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       // @todo: check to make sure assigning game.players[x].score is safe
       let score = game.players[game.currentPlayer].score = (game.roundBeginningScore - game.tempScore);
       // set the temp score as in the player score history
-      game.players[game.currentPlayer].history[state.rounds.current] = game.tempScore;
+      game.players[game.currentPlayer].history[game.rounds.current] = game.tempScore;
       if (0 === score) {
         game.finished = true;
         console.log('WINNER');
@@ -223,7 +223,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       // windicator
       game.widgetWindicator = this.windicator.calculate(
           score,
-          state.rounds.throws - (game.currentThrow + 1)
+          game.rounds.throws - (game.currentThrow + 1)
       );
 
       game.locked = true;
@@ -238,6 +238,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       // rebuild the new state
       return Object.assign({}, state, {
         game,
+        rounds: Object.assign({}, game.rounds),
         widgetThrows: game.currentThrows.slice(0),
         locked: game.locked,
         finished: game.finished
@@ -248,7 +249,6 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
 
 
   actionAdvanceGame(state) {
-    // @todo implement game advancement here
     if (state.locked && DartHelpers.State.isPlayable(state)) {
       // we're in a valid round
 
@@ -299,14 +299,13 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
           return Object.assign({}, state, {
             game,
             players,
-            rounds: game.rounds,
+            rounds: Object.assign({}, game.rounds),
             widgetThrows: game.currentThrows.slice(0),
             locked: game.locked,
             finished: game.finished
           });
         }
       } else {
-
         game.currentPlayer = players.order[game.playerOffset];
       }
 
@@ -331,7 +330,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       return Object.assign({}, state, {
         game,
         players,
-        rounds: game.rounds,
+        rounds: Object.assign({}, game.rounds),
         widgetThrows: game.currentThrows.slice(0),
         locked: game.locked,
         finished: game.finished

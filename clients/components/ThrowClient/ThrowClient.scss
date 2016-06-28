@@ -14,3 +14,18 @@ body {
 *, html {
   font-weight: 300;
 }
+
+
+.throw-client {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+
+  .controls {
+    position: absolute;
+    bottom: 1vh;
+    left: 0;
+    width: 100vw;
+  }
+}
