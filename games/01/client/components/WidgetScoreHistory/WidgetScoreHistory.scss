@@ -1,9 +1,11 @@
+@import "colors";
+
 .widget-score-history {
   position: absolute;
   left: 1vw;
   top: 23vh;
   div {
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid $foreground;
   }
   span {
     display: inline-block;

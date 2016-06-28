@@ -1,6 +1,7 @@
 @charset "utf-8";
 
 @import "reset";
+@import "colors";
 
 
 body {
@@ -12,8 +13,8 @@ body {
   font-size: 5.5vh;
   line-height: 7vh;
 
-  //color: #fff;
-  //background-color: #000;
+  color: $foreground;
+  background-color: $background;
 }
 *, html {
   font-weight: 300;

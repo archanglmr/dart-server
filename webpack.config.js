@@ -98,7 +98,7 @@ module.exports = [
         }]
     },
     sassLoader: {
-      includePaths: [reset.includePath],
+      includePaths: [reset.includePath, __dirname + '/games/01/client/'],
       outputStyle: 'compressed'
     }
   }

@@ -1,8 +1,10 @@
+@import "colors";
+
 .widget-temp-score {
   position: absolute;
   bottom: 46vh;
   right: 2vw;
-  border: 1px solid black;
+  border: 1px solid $foreground;
   width: 12vw;
   height: 16vh;
   text-align: center;
@@ -11,7 +13,7 @@
   vertical-align: middle;
 
   div {
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid $foreground;
     font-size: 3vh;
     line-height: 4vh;
   }
