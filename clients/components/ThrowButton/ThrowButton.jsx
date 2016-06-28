@@ -4,8 +4,8 @@ import React, {PropTypes} from 'react';
 import './ThrowButton.scss';
 
 
-function ThrowButton({onClick, disabled, selected, text}) {
-  let className = ['throwButton'];
+function ThrowButton({onClick, disabled, selected, text, className}) {
+  var className = [className, 'throwButton'];
 
   if (disabled) {
     className.push('disabled');

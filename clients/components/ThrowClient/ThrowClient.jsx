@@ -13,7 +13,7 @@ function ThrowClient() {
       <div>
         <ThrowTypesContainer />
         <ThrowNumbersContainer />
-        <ThrowSubmitButtonContainer text="Send Throw" />
+        <ThrowSubmitButtonContainer text="Send Throw" className="submit" />
       </div>
   );
 }

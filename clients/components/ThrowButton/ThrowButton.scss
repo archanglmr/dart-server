@@ -1,8 +1,19 @@
 .throwButton {
+  height: 10vh;
+  border-radius: 0;
+  border: 1px solid black;
+  vertical-align: middle;
+  background-color: #fff;
+
   &:disabled {
     opacity: .5;
   }
   &.selected {
     font-weight: bold;
+    background-color: #ccc;
+  }
+  &.submit {
+    width: 100vw;
+    font-size: 3vh;
   }
 }

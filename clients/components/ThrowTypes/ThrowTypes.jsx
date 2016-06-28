@@ -2,11 +2,12 @@
 
 import React, {PropTypes} from 'react';
 import ThrowButton from '../ThrowButton';
+import './ThrowTypes.scss';
 
 
 function ThrowTypes({buttons, onThrowTypeClick}) {
   return (
-      <menu>
+      <menu className="throw-types">
         {buttons.map((button) => (
             <ThrowButton
                 key={button.id}

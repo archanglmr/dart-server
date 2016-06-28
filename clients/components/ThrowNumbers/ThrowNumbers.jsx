@@ -2,11 +2,12 @@
 
 import React, {PropTypes} from 'react';
 import ThrowButton from '../ThrowButton';
+import './ThrowNumbers.scss';
 
 
 function ThrowNumbers({buttons, onThrowNumberClick}) {
   return (
-      <menu>
+      <menu className="throw-numbers">
         {buttons.map((button) => (
             <ThrowButton
                 key={button.id}
