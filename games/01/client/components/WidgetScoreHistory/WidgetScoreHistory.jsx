@@ -21,7 +21,7 @@ function WidgetScoreHistory({history, roundLimit, displayLimit}) {
 
   for (; offset < limit; offset += 1) {
     rendered.push(
-        <div key={offset}>
+        <div key={offset} className={offset + 1 === historyLength ? 'current' : ''}>
           <span className="round">R{offset + 1}</span>
           <span className="value">{(offset <= historyLength) ? history[offset] : ''}</span>
         </div>

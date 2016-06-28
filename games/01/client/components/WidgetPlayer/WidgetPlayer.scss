@@ -18,7 +18,12 @@
   }
 
   &.current {
-    //border-width: 3px;
     font-weight: bold;
+
+    background-color: $foreground;
+    color: $background;
+    div {
+      border-bottom-color: $background;
+    }
   }
 }

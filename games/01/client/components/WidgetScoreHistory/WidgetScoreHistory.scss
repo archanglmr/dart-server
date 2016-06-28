@@ -6,6 +6,10 @@
   top: 23vh;
   div {
     border-bottom: 1px solid $foreground;
+
+    &.current {
+      font-weight: bold;
+    }
   }
   span {
     display: inline-block;
