@@ -104,6 +104,38 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
     return false;
   }
 
+  /**
+   * Will look at the current game state and return an object compatible with
+   * the state.widgetDartboard property and WidgetDartboard component.
+   *
+   * @param {object} targets
+   * @returns {{}}
+   */
+  toWidgetDartboard(targets) {
+    var dartboard = {
+          visible: false,
+          hide: {},
+          blink: {},
+          highlight: {}
+        };
+
+    for (let number in targets) {
+      if (targets.hasOwnProperty(number) && targets[number]) {
+        dartboard.visible = true;
+        dartboard.highlight[number] = [
+          {number: number, type: ThrowTypes.DOUBLE},
+          {number: number, type: ThrowTypes.SINGLE_OUTER}
+        ];
+        if (21 !== number) {
+          dartboard.highlight[number].push({number: number, type: ThrowTypes.TRIPLE});
+          dartboard.highlight[number].push({number: number, type: ThrowTypes.SINGLE_INNER});
+        }
+      }
+    }
+
+    return dartboard;
+  }
+
 
 
   /*****************************************************************************
@@ -196,7 +228,8 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
         game,
         players,
         started: game.started,
-        locked: game.locked
+        locked: game.locked,
+        widgetDartboard: this.toWidgetDartboard(game.targets)
       });
     }
     return state;
@@ -261,7 +294,8 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
         rounds: Object.assign({}, game.rounds),
         widgetThrows: game.currentThrows.slice(0),
         locked: game.locked,
-        finished: game.finished
+        finished: game.finished,
+        widgetDartboard: this.toWidgetDartboard(game.targets)
       });
     }
     return state;
