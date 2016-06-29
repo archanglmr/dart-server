@@ -7,9 +7,28 @@
   width: 22vw;
   height: 22vw;
 
-
   &.hidden {
     display: none;
+  }
+
+  &.highlight {
+    path, text, circle {
+      opacity: .25;
+    }
+
+    path.highlight {
+      opacity: 1;
+      &.single {
+        fill: #ff3 !important;
+      }
+    }
+    circle.highlight {
+      opacity: 1;
+    }
+    text.highlight {
+      opacity: 1;
+      font-weight: bold;
+    }
   }
 
   .sector {
@@ -19,7 +38,7 @@
         fill: green;
       }
       .single {
-        fill: white;
+        fill: #ddd;
       }
     }
     &.dark {
@@ -36,6 +55,13 @@
       font-size: 50px;
       fill: $foreground;
     }
+
+    .hide {
+      display: none;
+    }
+    .blink {
+      animation: blink-animation 1s steps(3, start) infinite;
+    }
   }
 
   .sector_bull {
@@ -47,15 +73,6 @@
     }
   }
 
-  .highlight {
-    fill: #ffc;
-  }
-
-
-
-  .blink {
-    animation: blink-animation 1s steps(3, start) infinite;
-  }
   @keyframes blink-animation {
     to {
       visibility: hidden;

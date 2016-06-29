@@ -1,5 +1,6 @@
 'use strict';
-var DartHelpersTest = require('../../../lib/dart-helpers/test');
+var DartHelpersTest = require('../../../lib/dart-helpers/test'),
+    ThrowTypes = require('../../../lib/throw-types');
 
 
 module.exports = class Windicator {
@@ -9,6 +10,8 @@ module.exports = class Windicator {
     this.throwValues = {};
     this.throwKeys = [];
     this.highestValue = 0;
+
+    this.values = [];
 
     let throws = DartHelpersTest.listAllThrows();
 
@@ -39,8 +42,9 @@ module.exports = class Windicator {
   calculate(goal, throwsRemaining) {
     // make sure it's even possible to find a win
     if ((this.highestValue * throwsRemaining) >= goal) {
-      let values = [],
-          remaining = goal;
+      let remaining = goal;
+
+      this.values = [];
 
       for (let i = 0; i < throwsRemaining; i += 1) {
         // loop through the rounds
@@ -48,10 +52,10 @@ module.exports = class Windicator {
           let key = this.throwKeys[j];
           if (key > 0) {
             if (key === remaining) {
-              values.push(this.throwValues[key].slice(0));
-              return values;
+              this.values.push(this.throwValues[key].slice(0));
+              return this.values;
             } else if (key < remaining) {
-              values.push(this.throwValues[key].slice(0));
+              this.values.push(this.throwValues[key].slice(0));
               remaining -= key;
               break;
             }
@@ -59,6 +63,43 @@ module.exports = class Windicator {
         }
       }
     }
-    return [];
+    this.values = [];
+    return this.values;
+  }
+
+
+  /**
+   * If there is value set this will return an object that is compatible with
+   * the state.widgetDartboard property and WidgetDartboard component.
+   *
+   * @returns {{}}
+   */
+  toWidgetDartboard() {
+    var dartboard = {
+      visible: false,
+      hide: {},
+      blink: {},
+      highlight: {}
+    };
+
+    if (this.values.length) {
+      dartboard.visible = true;
+
+      for (let i = 0, c = this.values.length; i < c; i += 1) {
+        let currentThrow = this.values[i][0];
+        if (!dartboard.highlight[currentThrow.number]) {
+          dartboard.highlight[currentThrow.number] = [];
+        }
+        dartboard.highlight[currentThrow.number].push(currentThrow);
+
+        // special case for singles
+        if (currentThrow.type === ThrowTypes.SINGLE_OUTER) {
+          dartboard.highlight[currentThrow.number].push({number: currentThrow.number, type: ThrowTypes.SINGLE_INNER});
+        } else if (currentThrow.type === ThrowTypes.SINGLE_INNER) {
+          dartboard.highlight[currentThrow.number].push({number: currentThrow.number, type: ThrowTypes.SINGLE_OUTER});
+        }
+      }
+    }
+    return dartboard;
   }
 };

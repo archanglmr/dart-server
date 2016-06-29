@@ -241,7 +241,8 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
         rounds: Object.assign({}, game.rounds),
         widgetThrows: game.currentThrows.slice(0),
         locked: game.locked,
-        finished: game.finished
+        finished: game.finished,
+        widgetDartboard: this.windicator.toWidgetDartboard()
       });
     }
     return state;
@@ -333,7 +334,8 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
         rounds: Object.assign({}, game.rounds),
         widgetThrows: game.currentThrows.slice(0),
         locked: game.locked,
-        finished: game.finished
+        finished: game.finished,
+        widgetDartboard: this.windicator.toWidgetDartboard()
       });
     }
     return state;
