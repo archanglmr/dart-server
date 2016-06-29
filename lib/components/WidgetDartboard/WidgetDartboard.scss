@@ -3,7 +3,7 @@
 .widget-dartboard {
   position: absolute;
   right: 1.5vw;
-  top: 25vh;
+  top: 17vh;
   width: 22vw;
   height: 22vw;
 
@@ -12,21 +12,43 @@
   }
 
   &.highlight {
-    path, text, circle {
-      opacity: .25;
-    }
-
-    path.highlight {
-      opacity: 1;
-      &.single {
-        fill: #ff3 !important;
+    .sector {
+      &.light {
+        .double,
+        .triple {
+          fill: #666;
+        }
+        .single {
+          fill: #aaa;
+        }
+      }
+      &.dark {
+        .double,
+        .triple {
+          fill: #666;
+        }
+        .single {
+          fill: #000;
+        }
       }
     }
-    circle.highlight {
-      opacity: 1;
+    .sector_bull {
+      .light {
+        fill: #666;
+      }
+      .dark {
+        fill: #000
+      }
+    }
+
+    .sector, .sector_bull {
+      path, circle {
+        &.highlight {
+          fill: #ff3 !important;
+        }
+      }
     }
     text.highlight {
-      opacity: 1;
       font-weight: bold;
     }
   }

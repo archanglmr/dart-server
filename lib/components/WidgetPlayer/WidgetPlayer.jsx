@@ -12,7 +12,7 @@ function WidgetPlayer({id, displayName, score, current}) {
   return (
       <div className={className.join(' ')}>
         <div>{displayName}</div>
-        {'0' === score.toString() ? 'WIN': score}
+        {score}
       </div>
   );
 }

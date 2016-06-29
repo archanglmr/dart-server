@@ -35,7 +35,8 @@ function WidgetScoreHistory({history, roundLimit, displayLimit}) {
 }
 
 WidgetScoreHistory.propTypes = {
-  history: PropTypes.arrayOf(PropTypes.number).isRequired,
+  history: PropTypes.array.isRequired,
+  //history: PropTypes.arrayOf(PropTypes.number).isRequired,
   roundLimit: PropTypes.number.isRequired
 };
 

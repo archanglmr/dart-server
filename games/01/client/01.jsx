@@ -15,7 +15,7 @@ import WidgetCurrentPlayerContainer from 'containers/WidgetCurrentPlayerContaine
 import WidgetRoundsContainer from 'containers/WidgetRoundsContainer';
 import WidgetScoreHistoryContainer from 'containers/WidgetScoreHistoryContainer';
 import WidgetWindicatorContainer from 'containers/WidgetWindicatorContainer';
-import WidgetCurrentScoreContainer from 'containers/WidgetCurrentScoreContainer';
+import WidgetCurrentScoreContainer from './containers/WidgetCurrentScoreContainer';
 import WidgetThrowsContainer from 'containers/WidgetThrowsContainer';
 import WidgetPlayerListContainer from 'containers/WidgetPlayerListContainer';
 import WidgetDartboardContainer from 'containers/WidgetDartboardContainer';

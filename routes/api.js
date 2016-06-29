@@ -5,40 +5,59 @@ module.exports = (io) => {
       express = require('express'),
       router = express.Router(),
       DartHelpers = require('../lib/dart-helpers'),
-      actions = require('../clients/display/actions');
+      actions = require('../clients/display/actions'),
 
 
-  var DartGameServer_01 = require(__dirname + '/../games/01/server/DartGameServer_01');
-  var game = new DartGameServer_01({
-    variation: 501,
-    //modifiers: {
-    //  limit: 25
-    //},
-    players: {
-      2: {
-        "id": 2,
-        "firstName": "Matthew",
-        "lastName": "Rossetta",
-        "displayName": "Matt"
+      players = {
+        2: {
+          "id": 2,
+          "firstName": "Matthew",
+          "lastName": "Rossetta",
+          "displayName": "Matt"
+        },
+        3: {
+          "id": 3,
+          "firstName": "Emily",
+          "lastName": "Ross",
+          "displayName": "Em"
+        },
+        4: {
+          "id": 4,
+          "firstName": "Leonidas",
+          "lastName": "Lucas",
+          "displayName": "Leo"
+        }
       },
-      3: {
-        "id": 3,
-        "firstName": "Emily",
-        "lastName": "Ross",
-        "displayName": "Em"
-      },
-      4: {
-        "id": 4,
-        "firstName": "Leonidas",
-        "lastName": "Lucas",
-        "displayName": "Leo"
-      }
-    },
-    playerOrder: [3, 4, 2]
-  });
+      playerOrder = [3, 4, 2];
+
+
+  //var DartGameServer_Cricket = require(__dirname + '/../games/cricket/server/DartGameServer_Cricket'),
+  //    game = new DartGameServer_Cricket({
+  //      variation: 'standard',
+  //      //modifiers: {
+  //      //  limit: 25
+  //      //},
+  //      players,
+  //      playerOrder
+  //    });
+
+  var DartGameServer_01 = require(__dirname + '/../games/01/server/DartGameServer_01'),
+      game = new DartGameServer_01({
+        variation: 501,
+        //modifiers: {
+        //  limit: 25
+        //},
+        players,
+        playerOrder
+      });
+
+  /* don't forget to change /clients/display.jsx */
+
+
   var gamePauseLength = 3000,
       gamePauseTimer = null;
 
+  console.log('Starting ' + game.getDisplayName() + ' Game');
   game.startGame();
 
   /**
@@ -85,16 +104,16 @@ module.exports = (io) => {
 
             gamePauseTimer = setTimeout(() => {
               game.advanceGame();
-              console.log(DartHelpers.Test.widgetThrows(game.getState()));
-              console.log(game.getScores());
+              //console.log(DartHelpers.Test.widgetThrows(game.getState()));
+              //console.log(game.getScores());
               ioSocket.emit(actions.UPDATE_GAME_STATE, game.getState());
               gamePauseTimer = null;
             }, gamePauseLength);
           } else {
             // if the round is not over we can update immediately
             game.advanceGame();
-            console.log(DartHelpers.Test.widgetThrows(game.getState()));
-            console.log(game.getScores());
+            //console.log(DartHelpers.Test.widgetThrows(game.getState()));
+            //console.log(game.getScores());
             ioSocket.emit(actions.UPDATE_GAME_STATE, game.getState());
           }
 
@@ -104,8 +123,8 @@ module.exports = (io) => {
       } else if (req.body.undo) {
         if (!gamePauseTimer && game.undoLastThrow()) {
           game.advanceGame();
-          console.log(DartHelpers.Test.widgetThrows(game.getState()));
-          console.log(game.getScores());
+          //console.log(DartHelpers.Test.widgetThrows(game.getState()));
+          //console.log(game.getScores());
           ioSocket.emit(actions.UPDATE_GAME_STATE, game.getState());
           gamePauseTimer = null;
 
