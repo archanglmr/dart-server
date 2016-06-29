@@ -15,6 +15,9 @@ body {
 
   color: $foreground;
   background-color: $background;
+
+  -webkit-user-select: none;
+  user-select: none;
 }
 *, html {
   font-weight: 300;

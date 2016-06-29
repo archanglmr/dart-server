@@ -57,6 +57,11 @@ module.exports = [
   // game clients
   {
     devtool: 'source-map',
+    resolve: {
+      root: [
+        __dirname + '/lib'
+      ]
+    },
     entry: {
       '01': [__dirname + '/games/01/client/01.jsx', hotMiddlewareScript]
     },
@@ -98,7 +103,7 @@ module.exports = [
         }]
     },
     sassLoader: {
-      includePaths: [reset.includePath, __dirname + '/games/01/client/'],
+      includePaths: [reset.includePath, __dirname + '/lib/scss/'],
       outputStyle: 'compressed'
     }
   }

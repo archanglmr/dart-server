@@ -10,6 +10,9 @@ body {
   width: 100vw;
   overflow: hidden;
   text-align: center;
+
+  -webkit-user-select: none;
+  user-select: none;
 }
 *, html {
   font-weight: 300;
