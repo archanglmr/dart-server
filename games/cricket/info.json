@@ -1,0 +1,18 @@
+{
+  "name": "Cricket Games",
+  "version": "1.0",
+  "instructions": "You must hit a number 3 times before you start scoring. Typically valid numbers are 15-20 and the Bull. If everyone on the board closes out a number it is considered closed out and no one can receive further points on it. To win close all numbers on the board and have the highest score. If you hit the round limit the person with the highest score wins.",
+  "options": {
+    "rounds": 25
+  },
+  "variations": {
+    "random": {
+      "name": "Random Cricket",
+      "instructions": "Same as normal cricket but numbers are randomized"
+    },
+    "hidden": {
+      "name": "Hidden Cricket",
+      "instructions": "Same as normal cricket but the numbers are hidden until you reveal them by exploring the board. Discovering a numbers are worth points. The first number is worth 10, second worth 20, third 30 and so on."
+    }
+  }
+}

@@ -63,7 +63,8 @@ module.exports = [
       ]
     },
     entry: {
-      '01': [__dirname + '/games/01/client/01.jsx', hotMiddlewareScript]
+      '01': [__dirname + '/games/01/client/01.jsx', hotMiddlewareScript],
+      'cricket': [__dirname + '/games/cricket/client/cricket.jsx', hotMiddlewareScript]
     },
     output: {
       path: path.join(__dirname, 'builds/games'),
