@@ -1,0 +1,22 @@
+@import "colors";
+
+.dart-icon {
+  width: 100%;
+  height: 4.5vh;
+  //height: 100%;
+
+  //position: absolute;
+  //top: 0;
+  //bottom: 0;
+  //left: 0;
+  //right: 0;
+  //margin: auto;
+
+  fill: $foreground;
+
+  &.outline {
+    fill: transparent;
+    stroke-width: 1;
+    stroke: $foreground;
+  }
+}

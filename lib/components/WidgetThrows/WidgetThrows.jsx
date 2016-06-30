@@ -2,17 +2,22 @@
 
 import React, {PropTypes} from 'react';
 import './WidgetThrows.scss';
+import DartIcon from '../DartIcon';
 
 
 function WidgetThrows({throws, limit}) {
   var throwElements = [],
-      throwsLength = throws.length;
+      throwsLength = throws.length,
+      outlineOnly = false;
 
   for (let i = 0; i < limit; i += 1) {
     if (i < throwsLength) {
       throwElements.push(<span key={i}>{formatThrowData(throws[i])}</span>);
     } else {
-      throwElements.push(<span key={i}>-=-&lt;&gt;</span>);
+      throwElements.push(<span key={i}><DartIcon outlineOnly={outlineOnly} /></span>);
+      if (!outlineOnly) {
+        outlineOnly = true;
+      }
     }
 
     if ((1 + i) !== limit) {
