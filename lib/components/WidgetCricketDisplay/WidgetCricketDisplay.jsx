@@ -14,8 +14,6 @@ function WidgetCricketDisplay({targets, players, playersDb}) {
       currentPlayer = playersDb.current,
       columns = [];
 
-  console.log(targets);
-
   for (let i = 0, c = players.length; i < c; i += 1) {
     let id = players[i].id,
         className = ['column'];

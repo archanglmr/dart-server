@@ -105,6 +105,21 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
   }
 
   /**
+   * Looks through the targets list and returns true if the game is finished.
+   *
+   * @param targets
+   * @returns {boolean}
+   */
+  isGameFinished(targets) {
+    for (let number in targets) {
+      if (targets.hasOwnProperty(number) && targets[number]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
    * Will look at the current game state and return an object compatible with
    * the state.widgetDartboard property and WidgetDartboard component.
    *
@@ -275,6 +290,10 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
           currentPlayer.marks[throwData.number] += remainingMarks;
           game.tempScore += points;
           currentPlayer.score += points;
+        } else {
+          // @todo: see if this finishes the game here
+          // @fixme: make see if you have the highest points
+          game.finished = this.isGameFinished(game.targets);
         }
       } else {
         currentPlayer.history[game.rounds.current].push(0);
