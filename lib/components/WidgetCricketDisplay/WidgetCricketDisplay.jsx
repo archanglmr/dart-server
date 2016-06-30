@@ -2,13 +2,15 @@
 
 import React, {PropTypes} from 'react';
 import './WidgetCricketDisplay.scss';
+import CricketMark from '../CricketMark';
 
 function WidgetCricketDisplay({targets, players, playersDb}) {
-  var playerColumns = {},
+  var displayClassNames = ['widget-cricket-display'],
+      playerColumns = {},
       targetColumn = (
-          <div className="column" key="cricket_display_targets">
+          <div className="column targets">
             <div className="row name"></div>
-            {buildTargetRows(targets)}
+            <div className="marks" children={buildTargetRows(targets)} />
           </div>
       ),
       currentPlayer = playersDb.current,
@@ -22,20 +24,34 @@ function WidgetCricketDisplay({targets, players, playersDb}) {
       className.push('current');
     }
     columns.push(playerColumns[id] = (
-      <div className={className.join(' ')} key={'cricket_display_' + id}>
+      <div className={className.join(' ')}>
         <div className="row name">{playersDb.data[id].displayName}</div>
-        {buildPlayerRows(targets, players[i])}
+        <div className="marks" children={buildPlayerRows(targets, players[i])} />
       </div>
     ));
   }
 
+  if (columns.length > 4) {
+    displayClassNames.push('narrow');
+  }
+
+  if (columns.length % 2) {
+    columns.push(<div className="column empty" />);
+  }
+
+  columns.splice((columns.length / 2), 0, targetColumn);
+  columns.unshift(
+      <div className="column strike">
+        <div className="row name" />
+        <div className="marks" children={buildStrikeRows(targets)} />
+      </div>
+  );
 
 
   return (
-      <div className="widget-cricket-display">
-        {targetColumn}
-        {columns}
-      </div>
+    <div className="widget-cricket-display-container">
+      <div className={displayClassNames.join(' ')} children={columns} />
+    </div>
   );
 }
 
@@ -52,6 +68,24 @@ export default WidgetCricketDisplay;
 
 
 
+function buildStrikeRows(targets) {
+  var rows = [];
+  for (let i = 0, c = targets.length; i < c; i += 1) {
+    let target = targets[i],
+        className = ['row'];
+
+    if (!target.open) {
+      className.push('closed');
+    }
+    rows.push(
+        <div className={className.join(' ')}>
+          <div className="line" />
+        </div>
+    );
+  }
+  return rows;
+}
+
 function buildPlayerRows(targets, player) {
   var rows = [];
   for (let i = 0, c = targets.length; i < c; i += 1) {
@@ -61,19 +95,10 @@ function buildPlayerRows(targets, player) {
     if (!target.open) {
       className.push('closed');
     }
-    let marks = player.marks[target.number],
-        display = '';
 
-    if (1 === marks) {
-      display = '/';
-    } else if (2 === marks) {
-      display = 'X';
-    } else if (marks > 2) {
-      display = 'O';
-    }
     rows.push(
-        <div key={'cricket_display_' + target.number + '_' + player.id} className={className.join(' ')}>
-          {display}
+        <div className={className.join(' ')}>
+          <CricketMark marks={player.marks[target.number]} />
         </div>
     );
   }
@@ -90,9 +115,12 @@ function buildTargetRows(targets) {
     if (!target.open) {
       className.push('closed');
     }
+    if (21 == target.number) {
+      className.push('bull');
+    }
     rows.push(
       <div key={'cricket_display_targets_' + target.number} className={className.join(' ')}>
-        {(21 == target.number ? 'BULL' : target.number)}
+        <span>{(21 == target.number ? 'BULL' : target.number)}</span>
       </div>
     );
   }

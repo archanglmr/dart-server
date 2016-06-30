@@ -1,0 +1,44 @@
+@import "colors";
+
+.cricket-mark {
+  width: 100%;
+  height: 6.5vh;
+
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+
+  .c0, .c1, .c2, .c3 {
+    display: none;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .c0 {
+    display: inline-block;
+    fill: $foreground;
+  }
+  .c1,
+  .c2,
+  .c3 {
+    stroke-width: 6;
+    stroke: $foreground;
+    fill: transparent;
+  }
+
+  &.c1 {
+    .c0 { display: none; }
+    .c1 { display: inline-block; }
+  }
+  &.c2 {
+    .c0 { display: none; }
+    .c1, .c2 { display: inline-block; }
+  }
+  &.c3 {
+    .c0 { display: none; }
+    .c1, .c2, .c3 { display: inline-block; }
+  }
+}

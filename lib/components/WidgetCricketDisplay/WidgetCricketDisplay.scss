@@ -1,34 +1,99 @@
 @import "colors";
 
-.widget-cricket-display {
+.widget-cricket-display-container {
   position: absolute;
-  top: 0;
+  top: 2vh;
+  width: 100vw;
+  vertical-align: top;
+  text-align: center;
+}
+.widget-cricket-display {
+  position: relative;
+  display: inline-block;
+  margin: 0 auto;
   text-align: center;
   vertical-align: top;
-  height: 22vh;
-  width: 100vw;
 
   .column {
     display: inline-block;
-    width: 10vw;
+    width: 8vw;
     overflow: hidden;
     vertical-align: top;
-    border-right: 1px solid $foreground;
+    margin: 0 .25vw;
 
+    &.strike {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      margin: 0;
+
+      .line {
+        vertical-align: middle;
+        border-top: 1px solid $foreground;
+        border-bottom: 1px solid $foreground;
+        height: 0;
+        width: calc(100% - 2vw);
+      }
+
+      .marks {
+        border: none;
+      }
+      .row {
+        &.closed .line {
+          display: inline-block;
+        }
+        .line {
+          display: none;
+        }
+      }
+    }
+
+    &.targets {
+      //border-left: 1px solid $foreground;
+      //border-right: 1px solid $foreground;
+    }
 
     &.current {
       font-weight: bold;
+      .marks {
+        outline: 2px solid $foreground;
+        outline-offset: -2px;
+        background-color: rgba(0, 0, 0, .1);
+      }
+    }
+
+    .marks {
+      border: 1px solid $foreground;
+      padding: 1vh 0;
     }
 
     .row {
-      height: 9vh;
+      position: relative;
+      height: 8vh;
+      line-height: 8vh;
+      vertical-align: middle;
       &.name  {
-        height: 6vh;
+        height: 7vh;
+        line-height: 7.5vh;
+        border: none;
       }
-      &.closed {
-        opacity: .5;
-        text-decoration: line-through;
+      &.closed * {
+        opacity: .4;
       }
+      &.bull {
+        font-size: 4vh;
+      }
+    }
+  }
+
+
+  &.narrow {
+    .column {
+      width: 6vw;
+    }
+    .row.bull {
+      font-size: 3vh;
     }
   }
 }
