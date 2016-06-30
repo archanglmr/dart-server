@@ -15,7 +15,7 @@ import WidgetCurrentPlayerContainer from 'containers/WidgetCurrentPlayerContaine
 import WidgetRoundsContainer from 'containers/WidgetRoundsContainer';
 import WidgetScoreHistoryContainer from 'containers/WidgetScoreHistoryContainer';
 import WidgetTempScoreContainer from 'containers/WidgetTempScoreContainer';
-/**/ import WidgetCurrentScoreContainer from 'containers/WidgetCurrentScoreContainer';
+import WidgetCricketDisplayContainer from 'containers/WidgetCricketDisplayContainer';
 import WidgetThrowsContainer from 'containers/WidgetThrowsContainer';
 import WidgetPlayerListContainer from 'containers/WidgetPlayerListContainer';
 import WidgetDartboardContainer from 'containers/WidgetDartboardContainer';
@@ -38,7 +38,7 @@ top.window.registerGame((store) => {
               </div>
               <WidgetScoreHistoryContainer displayLimit={8} />
               <WidgetTempScoreContainer />
-              <WidgetCurrentScoreContainer />
+              <WidgetCricketDisplayContainer />
               <WidgetThrowsContainer />
               <WidgetPlayerListContainer />
               <WidgetDartboardContainer />
