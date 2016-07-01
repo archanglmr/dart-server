@@ -17,6 +17,10 @@
     stroke-width: 6;
     stroke: $foreground;
     fill: transparent;
+
+    &.highlight {
+      stroke: $highlight;
+    }
   }
 
   &.c1 {

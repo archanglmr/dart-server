@@ -44,7 +44,7 @@
     .sector, .sector_bull {
       path, circle {
         &.highlight {
-          fill: #19b5fc !important;
+          fill: $highlight !important;
         }
       }
     }
