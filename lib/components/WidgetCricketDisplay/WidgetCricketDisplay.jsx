@@ -35,17 +35,25 @@ function WidgetCricketDisplay({targets, players, playersDb}) {
     displayClassNames.push('narrow');
   }
 
-  if (columns.length % 2) {
-    columns.push(<div className="column empty" />);
-  }
+  let appendEmpty = columns.length % 2;
+  //if (columns.length % 2) {
+  //  columns.push(<div className="column empty" />);
+  //}
 
-  columns.splice((columns.length / 2), 0, targetColumn);
+  columns.splice(Math.ceil(columns.length / 2), 0, targetColumn);
   columns.unshift(
       <div className="column strike">
         <div className="row name" />
         <div className="marks" children={buildStrikeRows(targets)} />
       </div>
   );
+
+  if (appendEmpty) {
+    columns = [
+      <div className="emptyWrapper" children={columns}/>,
+      <div className="column empty" />
+    ];
+  }
 
 
   return (

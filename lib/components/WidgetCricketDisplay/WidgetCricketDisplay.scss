@@ -50,8 +50,9 @@
     }
 
     &.targets {
-      //border-left: 1px solid $foreground;
-      //border-right: 1px solid $foreground;
+      font-weight: bold;
+      border-left: 1px solid $foreground;
+      border-right: 1px solid $foreground;
     }
 
     &.current {
@@ -64,7 +65,7 @@
     }
 
     .marks {
-      border: 1px solid $foreground;
+      //border: 1px solid $foreground;
       padding: 1vh 0;
     }
 
@@ -87,6 +88,10 @@
     }
   }
 
+  .emptyWrapper {
+    position: relative;
+    display: inline-block;
+  }
 
   &.narrow {
     .column {
