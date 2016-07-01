@@ -206,7 +206,10 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       game.tempScore = 0;
       game.roundBeginningScore = state.game.players[game.currentPlayer].score;
 
-      game.widgetWindicator = [];
+      game.widgetWindicator = this.windicator.calculate(
+          game.roundBeginningScore,
+          game.rounds.throws - (game.currentThrow)
+      );
 
       game.started = true;
       game.locked = false;
@@ -220,7 +223,8 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
         game,
         players,
         started: game.started,
-        locked: game.locked
+        locked: game.locked,
+        widgetDartboard: this.windicator.toWidgetDartboard()
       });
     }
     return state;

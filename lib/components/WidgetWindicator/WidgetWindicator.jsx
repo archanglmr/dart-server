@@ -10,9 +10,11 @@ function WidgetWindicator({throws, limit}) {
       className = ['widget-windicator'];
 
   if (throwsLength) {
+    let currentThrow = throws[0];
+    let currentThrowLength = currentThrow.length;
     for (let i = 0; i < limit; i += 1) {
-      if (i < throwsLength) {
-        throwElements.push(<span key={i}>{formatThrowData(throws[i][0])}</span>);
+      if (i < currentThrowLength) {
+        throwElements.push(<span key={i}>{formatThrowData(currentThrow[i])}</span>);
       } else {
         throwElements.push(<span key={i} className="empty">----</span>);
       }
