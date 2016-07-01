@@ -18,14 +18,15 @@ function WidgetCricketDisplay({targets, players, playersDb}) {
 
   for (let i = 0, c = players.length; i < c; i += 1) {
     let id = players[i].id,
-        className = ['column'];
+        className = ['column'],
+        name = playersDb.data[id].firstName.substr(0, 1) + playersDb.data[id].lastName.substr(0, 1);
 
     if (currentPlayer === id) {
       className.push('current');
     }
     columns.push(playerColumns[id] = (
       <div className={className.join(' ')}>
-        <div className="row name">{playersDb.data[id].displayName}</div>
+        <div className="row name">{name}</div>
         <div className="marks" children={buildPlayerRows(targets, players[i])} />
       </div>
     ));
@@ -36,9 +37,6 @@ function WidgetCricketDisplay({targets, players, playersDb}) {
   }
 
   let appendEmpty = columns.length % 2;
-  //if (columns.length % 2) {
-  //  columns.push(<div className="column empty" />);
-  //}
 
   columns.splice(Math.ceil(columns.length / 2), 0, targetColumn);
   columns.unshift(

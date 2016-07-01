@@ -5,8 +5,12 @@ import WidgetPlayer from '../WidgetPlayer';
 import './WidgetPlayerList.scss';
 
 function WidgetPlayerList({players}) {
+  var className = ['widget-player-list'];
+  if (players.length > 4) {
+    className.push('compact');
+  }
   return (
-      <div className="widget-player-list">
+      <div className={className.join(' ')}>
         {players.map((player) => (
             <WidgetPlayer
                 key={player.id}

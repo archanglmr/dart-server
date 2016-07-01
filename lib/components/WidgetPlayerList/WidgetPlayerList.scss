@@ -5,4 +5,18 @@
   //border-top: 1px solid black;
   height: 22vh;
   width: 100vw;
+
+  &.compact {
+    .widget-player {
+      width: 10vw;
+      height: 20vh;
+
+      line-height: 14vh;
+      font-size: 9vh;
+      div {
+        font-size: 5vh;
+        line-height: 6vh;
+      }
+    }
+  }
 }

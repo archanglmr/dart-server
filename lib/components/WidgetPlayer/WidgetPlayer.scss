@@ -12,6 +12,11 @@
   font-size: 12vh;
   vertical-align: middle;
   div {
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
     border-bottom: 1px solid $foreground;
     font-size: 5vh;
     line-height: 6vh;
