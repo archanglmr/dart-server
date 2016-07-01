@@ -26,17 +26,29 @@ module.exports = (io) => {
           "firstName": "Leonidas",
           "lastName": "Lucas",
           "displayName": "Leo"
+        },
+        5: {
+          "id": 5,
+          "firstName": "Dennis",
+          "lastName": "De Cristo",
+          "displayName": "Dennis"
+        },
+        6: {
+          "id": 6,
+          "firstName": "Jerry",
+          "lastName": "Dwelle",
+          "displayName": "Jerry"
         }
       },
-      playerOrder = [3, 4, 2];
+      playerOrder = [2, 4];
 
 
   //var DartGameServer_Cricket = require(__dirname + '/../games/cricket/server/DartGameServer_Cricket'),
   //    game = new DartGameServer_Cricket({
   //      variation: 'standard',
-  //      //modifiers: {
-  //      //  limit: 25
-  //      //},
+  //      modifiers: {
+  //        limit: 25
+  //      },
   //      players,
   //      playerOrder
   //    });
@@ -66,7 +78,7 @@ module.exports = (io) => {
   var ioSocket;
   io.on('connection', function(socket) {
     console.log('A client connected');
-    socket.emit(actions.UPDATE_GAME_STATE, game.getState());
+    socket.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game.getState()));
 
     socket.on('disconnect', function(){
       console.log('user disconnected');
@@ -100,13 +112,13 @@ module.exports = (io) => {
           if (state.game.roundOver) {
             // if the round is we should send an update, then wait to advance
             // the game
-            ioSocket.emit(actions.UPDATE_GAME_STATE, state);
+            ioSocket.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(state));
 
             gamePauseTimer = setTimeout(() => {
               game.advanceGame();
               //console.log(DartHelpers.Test.widgetThrows(game.getState()));
               //console.log(game.getScores());
-              ioSocket.emit(actions.UPDATE_GAME_STATE, game.getState());
+              ioSocket.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game.getState()));
               gamePauseTimer = null;
             }, gamePauseLength);
           } else {
@@ -114,7 +126,7 @@ module.exports = (io) => {
             game.advanceGame();
             //console.log(DartHelpers.Test.widgetThrows(game.getState()));
             //console.log(game.getScores());
-            ioSocket.emit(actions.UPDATE_GAME_STATE, game.getState());
+            ioSocket.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game.getState()));
           }
 
         } else {
@@ -125,7 +137,7 @@ module.exports = (io) => {
           game.advanceGame();
           //console.log(DartHelpers.Test.widgetThrows(game.getState()));
           //console.log(game.getScores());
-          ioSocket.emit(actions.UPDATE_GAME_STATE, game.getState());
+          ioSocket.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game.getState()));
           gamePauseTimer = null;
 
           res.write(JSON.stringify({success: true}));
@@ -144,6 +156,39 @@ module.exports = (io) => {
       res.end();
     }
   });
+
+
+  /**
+   * @todo: This helper could be planned out a bit better....
+   *
+   * @param state
+   * @returns {{display: string, state: *}}
+   */
+  function io_response_wrapper(state) {
+    return {
+      display: '/display/game/' + game.getClientDisplayKey(),
+      state: state
+    };
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   /**

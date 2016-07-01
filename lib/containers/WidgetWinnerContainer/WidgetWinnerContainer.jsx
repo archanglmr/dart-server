@@ -1,18 +1,30 @@
 'use strict';
 
 import {connect} from 'react-redux';
-import WidgetWinner from '../../components/WidgetWinner';
+import FullScreenMessage from '../../components/FullScreenMessage';
 
 
 const mapStateToProps = (state) => {
-  return {
-    winner: state.winner,
-    playersData: state.players.data
-  };
+  var text = '';
+
+  if (state.winner) {
+    text = 'CONFUSED...';
+    if (-1 === state.winner) {
+      text = 'DRAW';
+    } else if (state.winner > 0) {
+      let player = state.players.data[state.winner];
+      if (player && player.displayName) {
+        text = `${player.displayName} Wins!`;
+      }
+    }
+  }
+
+
+  return { text };
 };
 
 const WidgetWinnerContainer = connect(
     mapStateToProps
-)(WidgetWinner);
+)(FullScreenMessage);
 
 export default WidgetWinnerContainer;
