@@ -13,14 +13,25 @@ function ThrowButton({onClick, disabled, selected, text, className}) {
     className.push('selected');
   }
 
+  if (window.navigator.standalone) {
+    return (
+        <button
+            onTouchEnd={onClick}
+            className={className.join(' ')}
+            disabled={disabled}
+            >
+          {text}
+        </button>
+    );
+  }
   return (
-    <button
-      onClick={onClick}
-      className={className.join(' ')}
-      disabled={disabled}
-    >
-      {text}
-    </button>
+      <button
+          onClick={onClick}
+          className={className.join(' ')}
+          disabled={disabled}
+          >
+        {text}
+      </button>
   );
 }
 
