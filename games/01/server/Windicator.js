@@ -222,7 +222,7 @@ module.exports = class Windicator {
       list.push({type: ThrowTypes.TRIPLE, number: i, value: i * 3});
     }
     list.push({type: ThrowTypes.SINGLE_OUTER, number: 21, value: 25});
-    list.push({type: ThrowTypes.DOUBLE, number: 21, value: 25});
+    list.push({type: ThrowTypes.DOUBLE, number: 21, value: 50});
   
     return list;
   }
