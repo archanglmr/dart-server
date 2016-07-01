@@ -81,14 +81,44 @@ module.exports = class Windicator {
     // make sure it's even possible to find a win
     if ((this.highestValue * throwsRemaining) >= goal) {
       let remaining = goal;
-      let combinations = this.combsWithRep(throwsRemaining, this.allPossibleValues);
-      this.values = this.findCombinationsForTarget(remaining, combinations, []);
+      let combinations = this.combsWithRepOuter(throwsRemaining, this.allPossibleValues);
+      this.values = this.reWeigh(this.findCombinationsForTarget(remaining, combinations, []));
       return this.values;
     }
     this.values = [];
     return this.values;
   }
 
+  reWeigh(choices) {
+    let weigher = (val) => {
+      switch (val.type) {
+        case ThrowTypes.SINGLE_OUTER:
+        case ThrowTypes.SINGLE_INNER:
+          if (val.number == 21) {
+            val.weight = .4;
+          } else {
+            val.weight = .9;
+          }
+          break;
+        case ThrowTypes.DOUBLE:
+          if (val.number == 21) {
+            val.weight = .3;
+          } else {
+            val.weight = .4;
+          }
+          break;
+        case ThrowTypes.TRIPLE:
+          val.weight = .5;
+          break;
+        case ThrowTypes.MISS:
+          val.weight = 1;
+          break;
+      }
+      return val;
+    };
+    let choicesWithWeights = _.map(choices, (throws) => _.map(throws, weigher));
+    return _.sortBy(choicesWithWeights, (throws) => _.reduce(throws, (acc, val) => acc * val.weight, 1)).reverse();
+  }
   /**
    * This is the algorithm to select from the available throw choices the ones that will get us to our desire target
    *
@@ -114,6 +144,19 @@ module.exports = class Windicator {
     return this.findCombinationsForTarget(target, rest, res1);
   }
 
+  /**
+   * Algorithm for taking a list of available choices and returning all combinations (with repetitions) of the length we want
+   *
+   * @param count {number}
+   * @param listOfAllChoices {Array{number}}
+   * @returns {Array{Array{number}}}
+   */
+  // Find all combinations of listOfAllChoices with length of count. Returns a list of lists of choices
+  combsWithRepOuter(count /* integer */, listOfAllChoices /* list of choices */) {
+    let combinations = this.combsWithRep(count, listOfAllChoices);
+    let resortedCombinations = _.map(combinations, (choices) => _.sortBy(choices, (choice) => ThrowTypes.ordering(choice.type)));
+    return resortedCombinations;
+  }
   /**
    * Algorithm for taking a list of available choices and returning all combinations (with repetitions) of the length we want
    *
@@ -151,7 +194,7 @@ module.exports = class Windicator {
   generate() {
     var list = [];
     list.push({type: ThrowTypes.MISS, number: 0, value: 0});
-    for (let i = 1, c = 20; i <= c; i += 1) {
+    for (let i = 20, c = 20; i <= c; i += 1) {
       list.push({type: ThrowTypes.SINGLE_OUTER, number: i, value: i});
       list.push({type: ThrowTypes.DOUBLE, number: i, value: i * 2});
       list.push({type: ThrowTypes.TRIPLE, number: i, value: i * 3});
