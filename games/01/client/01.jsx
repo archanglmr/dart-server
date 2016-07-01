@@ -16,7 +16,7 @@ import WidgetRoundsContainer from 'containers/WidgetRoundsContainer';
 import WidgetScoreHistoryContainer from 'containers/WidgetScoreHistoryContainer';
 import ScoreHistoryNumber from 'components/ScoreHistoryNumber';
 import WidgetWindicatorContainer from 'containers/WidgetWindicatorContainer';
-import WidgetCurrentScoreContainer from './containers/WidgetCurrentScoreContainer';
+import WidgetCurrentScoreContainer from 'containers/WidgetCurrentScoreContainer';
 import WidgetThrowsContainer from 'containers/WidgetThrowsContainer';
 import WidgetPlayerListContainer from 'containers/WidgetPlayerListContainer';
 import WidgetDartboardContainer from 'containers/WidgetDartboardContainer';
@@ -33,6 +33,7 @@ top.window.registerGame((store) => {
       (
           <Provider store={store}>
             <GameClient>
+              <WidgetCurrentScoreContainer />
               <div style={{margin: '1vh 1vw'}}>
                 <WidgetGameNameContainer />
                 <WidgetCurrentPlayerContainer />
@@ -40,7 +41,6 @@ top.window.registerGame((store) => {
               </div>
               <WidgetScoreHistoryContainer displayLimit={8} valueComponent={ScoreHistoryNumber} />
               <WidgetWindicatorContainer />
-              <WidgetCurrentScoreContainer />
               <WidgetThrowsContainer />
               <WidgetPlayerListContainer />
               <WidgetDartboardContainer />

@@ -5,6 +5,7 @@ import CricketMark from '../CricketMark';
 import './ScoreHistoryCricket.scss';
 
 function ScoreHistoryCricket({history}) {
+  var history = history || [];
   return <span className="value score-history-cricket" children={history.map(mark => <CricketMark marks={mark} defaultText="--" /> )} />;
 }
 

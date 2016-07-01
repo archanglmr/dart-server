@@ -26,47 +26,47 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
   }
 
 
-  /**
-   * Pretty much just for the command line to see the score after a throw.
-   *
-   * @returns {string}
-   */
-  getScores() {
-    var state = this.getState(),
-        player = DartHelpers.State.getPlayer(state, state.players.current),
-        lines = [],
-        conditions = [],
-        score = state.game.players[player.id].score;
-
-    if (0 === score) {
-      conditions.push('WIN');
-    } if (score < 0) {
-      conditions.push('BUST');
-    }
-    if (state.rounds.limit && ((state.rounds.current + 1) === state.rounds.limit)) {
-      conditions.push('ROUND LIMIT');
-    }
-    lines.push(`Temp Score: ${state.game.tempScore} ${conditions.join(' ')}`);
-    lines.push('----------------------------------------');
-    lines.push(
-        `${player.displayName}: ` +
-        `throw ${state.game.currentThrow + 1}:${state.rounds.throws} ` +
-        `round ${state.rounds.current + 1}:${state.rounds.limit}`);
-    for (let i = 0, c = state.players.order.length; i < c; i += 1) {
-      let id = state.players.order[i],
-          player = DartHelpers.State.getPlayer(state, id);
-
-      lines.push(
-          (state.players.current === id ? ' > ' : ' - ') +
-          `${player.displayName}: ${state.game.players[id].score}`
-      );
-    }
-    //lines.push('----------------------------------------');
-    lines.push("");
-    lines.push("");
-
-    return lines.join("\n");
-  }
+  ///**
+  // * Pretty much just for the command line to see the score after a throw.
+  // *
+  // * @returns {string}
+  // */
+  //getScores() {
+  //  var state = this.getState(),
+  //      player = DartHelpers.State.getPlayer(state, state.players.current),
+  //      lines = [],
+  //      conditions = [],
+  //      score = state.game.players[player.id].score;
+  //
+  //  if (0 === score) {
+  //    conditions.push('WIN');
+  //  } if (score < 0) {
+  //    conditions.push('BUST');
+  //  }
+  //  if (state.rounds.limit && ((state.rounds.current + 1) === state.rounds.limit)) {
+  //    conditions.push('ROUND LIMIT');
+  //  }
+  //  lines.push(`Temp Score: ${state.game.tempScore} ${conditions.join(' ')}`);
+  //  lines.push('----------------------------------------');
+  //  lines.push(
+  //      `${player.displayName}: ` +
+  //      `throw ${state.game.currentThrow + 1}:${state.rounds.throws} ` +
+  //      `round ${state.rounds.current + 1}:${state.rounds.limit}`);
+  //  for (let i = 0, c = state.players.order.length; i < c; i += 1) {
+  //    let id = state.players.order[i],
+  //        player = DartHelpers.State.getPlayer(state, id);
+  //
+  //    lines.push(
+  //        (state.players.current === id ? ' > ' : ' - ') +
+  //        `${player.displayName}: ${state.game.players[id].score}`
+  //    );
+  //  }
+  //  //lines.push('----------------------------------------');
+  //  lines.push("");
+  //  lines.push("");
+  //
+  //  return lines.join("\n");
+  //}
 
 
   /**
@@ -105,6 +105,39 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
     return value;
   }
 
+  /**
+   * Gets the player id of the person with the lowest score. If no low score
+   * or tie then -1 is returned.
+   *
+   * @param players
+   * @returns {number}
+   */
+  getPlayerIdWithLowestScore(players) {
+    var lowScore = null,
+        playerId = -1,
+        tied = false;
+
+    for (let id in players) {
+      if (players.hasOwnProperty(id)) {
+        let player = players[id],
+            score = player.score;
+
+        if (null === lowScore) {
+          playerId = player.id;
+          lowScore = score;
+        } else if (score < lowScore) {
+          playerId = player.id;
+          tied = false;
+          lowScore = score;
+        } else if (score === lowScore) {
+          playerId = -1;
+          tied = true;
+        }
+      }
+    }
+    return playerId;
+  }
+
 
 
   /*****************************************************************************
@@ -125,6 +158,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
             started: state.started,
             locked: state.locked,
             finished: state.finished,
+            winner: state.winner,
             tempScore: 0,
             players: {},
             rounds: Object.assign({}, state.rounds),
@@ -217,6 +251,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       game.players[game.currentPlayer].history[game.rounds.current] = game.tempScore;
       if (0 === score) {
         game.finished = true;
+        game.winner = game.currentPlayer;
         console.log('WINNER');
       }
 
@@ -242,6 +277,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
         widgetThrows: game.currentThrows.slice(0),
         locked: game.locked,
         finished: game.finished,
+        winner: game.winner,
         widgetDartboard: this.windicator.toWidgetDartboard()
       });
     }
@@ -297,13 +333,15 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
 
         if (game.rounds.limit && game.currentRound >= game.rounds.limit) {
           game.finished = true;
+          game.winner = this.getPlayerIdWithLowestScore(game.players);
           return Object.assign({}, state, {
             game,
             players,
             rounds: Object.assign({}, game.rounds),
             widgetThrows: game.currentThrows.slice(0),
             locked: game.locked,
-            finished: game.finished
+            finished: game.finished,
+            winner: game.winner
           });
         }
       } else {
@@ -335,6 +373,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
         widgetThrows: game.currentThrows.slice(0),
         locked: game.locked,
         finished: game.finished,
+        winner: game.winner,
         widgetDartboard: this.windicator.toWidgetDartboard()
       });
     }

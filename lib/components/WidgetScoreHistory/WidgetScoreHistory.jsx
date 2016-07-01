@@ -23,7 +23,7 @@ function WidgetScoreHistory({history, roundLimit, displayLimit, valueComponent})
     let value = <span className="value" />;
     if (offset <= historyLength) {
       let current = history[offset];
-      if (valueComponent && current) {
+      if (valueComponent) {
         value = valueComponent({history: current});
       } else {
         value = <span className="value">{current}</span>;
