@@ -96,7 +96,10 @@ function buildPlayerRows(targets, player) {
   var rows = [];
   for (let i = 0, c = targets.length; i < c; i += 1) {
     let target = targets[i],
-        className = ['row'];
+        className = ['row'],
+        highlightMarks = (player.highlightMarks && player.highlightMarks[target.number]) ?
+            player.highlightMarks[target.number] :
+            0;
 
     if (!target.open) {
       className.push('closed');
@@ -104,7 +107,7 @@ function buildPlayerRows(targets, player) {
 
     rows.push(
         <div className={className.join(' ')}>
-          <CricketMark marks={player.marks[target.number]} />
+          <CricketMark marks={player.marks[target.number]} highlight={highlightMarks} />
         </div>
     );
   }

@@ -198,6 +198,7 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
         id,
         score: 0,
         marks: Object.assign({}, marks),
+        highlightMarks: {},
         history: [[]]
       };
     }
@@ -280,6 +281,7 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
             remainingMarks = throwStats.marks - applyMarks;
 
         currentPlayer.marks[throwData.number] += applyMarks;
+        currentPlayer.highlightMarks[throwData.number] = (currentPlayer.highlightMarks[throwData.number] || 0) + applyMarks;
         // @todo: this only apply how many you closed not how many you hit, not sure if this is correct
         currentPlayer.history[game.rounds.current].push(applyMarks);
 
@@ -341,6 +343,7 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
         playerChanged = true;
 
         game.currentThrows = [];
+        game.players[game.currentPlayer].highlightMarks = {};
       }
 
 
