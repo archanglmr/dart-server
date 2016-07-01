@@ -5,7 +5,7 @@ import React from 'react';
 import {render} from 'react-dom';
 
 // Redux dependencies
-import {Provider} from 'react-redux'
+import {Provider} from 'react-redux';
 
 
 // React components

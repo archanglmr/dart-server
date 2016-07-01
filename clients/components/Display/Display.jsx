@@ -62,7 +62,7 @@ export default class Display extends Component {
       height: this.state.height + 'px'
     };
     return (
-        <iframe src={this.props.src} style={styles} />
+        <iframe src={this.props.src || ''} style={styles} />
     );
   }
 }

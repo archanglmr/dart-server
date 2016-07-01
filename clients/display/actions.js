@@ -4,8 +4,10 @@
  * Action types
  */
 const UPDATE_GAME_STATE = 'UPDATE_GAME_STATE';
+const UPDATE_DISPLAY_URL = 'UPDATE_DISPLAY_URL';
 
 module.exports.UPDATE_GAME_STATE = UPDATE_GAME_STATE;
+module.exports.UPDATE_DISPLAY_URL = UPDATE_DISPLAY_URL;
 
 /**
  * ACTIONS
@@ -19,4 +21,9 @@ module.exports.UPDATE_GAME_STATE = UPDATE_GAME_STATE;
  */
 module.exports.updateGameState = function updateGameState(state) {
   return {type: UPDATE_GAME_STATE, state};
+};
+
+
+module.exports.updateDisplayUrl = function updteDisplayUrl(url) {
+  return {type: UPDATE_DISPLAY_URL, url};
 };

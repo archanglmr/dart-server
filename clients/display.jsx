@@ -3,27 +3,42 @@
 // React dependencies
 import React from 'react';
 import {render} from 'react-dom';
-import Display from './components/Display';
+import DisplayContainer from './containers/DisplayContainer';
 
 
 // Redux dependencies
-import {createStore} from 'redux'
-import {updateGameState, UPDATE_GAME_STATE} from './display/actions';
-import rootReducer from './display/reducers';
+import {createStore} from 'redux';
+import {Provider} from 'react-redux';
+import {updateDisplayUrl, updateGameState, UPDATE_GAME_STATE} from './display/actions';
+import {clientRootReducer, displayRootReducer} from './display/reducers';
 
 // Create the Redux store
-var store = createStore(rootReducer);
-var socket = io();
+var clientStore = createStore(clientRootReducer),
+    displayStore = createStore(displayRootReducer),
+    socket = io(),
+    currentDisplay = '';
 
-//let unsubscribe = store.subscribe(() => console.log('display:', store.getState()));
+let unsubscribe = displayStore.subscribe((store) => console.log('display:', displayStore.getState()));
 
-render(<Display src="/display/game/01" />, document.getElementById('root'));
+render(
+  (
+    <Provider store={displayStore}>
+      <DisplayContainer />
+    </Provider>
+  ),
+  document.getElementById('root')
+);
 
 
 
 
 socket.on(UPDATE_GAME_STATE, (data) => {
-  store.dispatch(updateGameState(data));
+  if (currentDisplay !== data.display) {
+    currentDisplay = data.display;
+    displayStore.dispatch(updateDisplayUrl(currentDisplay));
+    console.log('update display and cause redraw');
+  }
+  clientStore.dispatch(updateGameState(data.state));
 });
 
 
@@ -34,4 +49,4 @@ socket.on(UPDATE_GAME_STATE, (data) => {
  *
  * @param cb
  */
-window.registerGame = (cb) => cb(store);
+window.registerGame = (cb) => cb(clientStore);

@@ -10,7 +10,7 @@ import ThrowClient from './components/ThrowClient';
 // Redux dependencies
 import thunkMiddleware from 'redux-thunk';
 import {createStore, applyMiddleware} from 'redux'
-import {Provider} from 'react-redux'
+import {Provider} from 'react-redux';
 import rootReducer from './throw/reducers';
 
 // Create the Redux store
