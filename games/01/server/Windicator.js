@@ -194,7 +194,7 @@ module.exports = class Windicator {
   generate() {
     var list = [];
     list.push({type: ThrowTypes.MISS, number: 0, value: 0});
-    for (let i = 20, c = 20; i <= c; i += 1) {
+    for (let i = 1, c = 20; i <= c; i += 1) {
       list.push({type: ThrowTypes.SINGLE_OUTER, number: i, value: i});
       list.push({type: ThrowTypes.DOUBLE, number: i, value: i * 2});
       list.push({type: ThrowTypes.TRIPLE, number: i, value: i * 3});
