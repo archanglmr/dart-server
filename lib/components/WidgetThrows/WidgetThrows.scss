@@ -7,6 +7,18 @@
   span {
     display: inline-block;
     width: 12vw;
+    height: 7vh;
+    position: relative;
+    vertical-align: middle;
     font-size: 4vh;
+
+    .dart-icon {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+    }
   }
 }

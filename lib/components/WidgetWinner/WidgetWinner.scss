@@ -1,0 +1,15 @@
+@import 'colors';
+
+.widget-winner {
+  position: absolute;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  font-size: 20vh;
+  line-height: 100vh;
+  text-align: center;
+  vertical-align: middle;
+
+  background-color: $foreground;
+  color: $background;
+}
