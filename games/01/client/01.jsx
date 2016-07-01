@@ -14,6 +14,7 @@ import WidgetGameNameContainer from 'containers/WidgetGameNameContainer';
 import WidgetCurrentPlayerContainer from 'containers/WidgetCurrentPlayerContainer';
 import WidgetRoundsContainer from 'containers/WidgetRoundsContainer';
 import WidgetScoreHistoryContainer from 'containers/WidgetScoreHistoryContainer';
+import ScoreHistoryNumber from 'components/ScoreHistoryNumber';
 import WidgetWindicatorContainer from 'containers/WidgetWindicatorContainer';
 import WidgetCurrentScoreContainer from './containers/WidgetCurrentScoreContainer';
 import WidgetThrowsContainer from 'containers/WidgetThrowsContainer';
@@ -36,7 +37,7 @@ top.window.registerGame((store) => {
                 <WidgetCurrentPlayerContainer />
                 <WidgetRoundsContainer />
               </div>
-              <WidgetScoreHistoryContainer displayLimit={8} />
+              <WidgetScoreHistoryContainer displayLimit={8} valueComponent={ScoreHistoryNumber} />
               <WidgetWindicatorContainer />
               <WidgetCurrentScoreContainer />
               <WidgetThrowsContainer />
