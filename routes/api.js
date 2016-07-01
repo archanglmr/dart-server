@@ -63,8 +63,6 @@ module.exports = (io) => {
         playerOrder
       });
 
-  /* don't forget to change /clients/display.jsx */
-
 
   var gamePauseLength = 3000,
       gamePauseTimer = null;

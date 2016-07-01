@@ -7,6 +7,11 @@ var webpack = require('webpack'),
 module.exports = [
   { // system clients
     devtool: 'source-map',
+    resolve: {
+      root: [
+        __dirname + '/lib'
+      ]
+    },
     entry: {
       display: [__dirname + '/clients/display.jsx', hotMiddlewareScript],
       throw: [__dirname + '/clients/throw.jsx', hotMiddlewareScript]
@@ -49,7 +54,7 @@ module.exports = [
         }]
     },
     sassLoader: {
-      includePaths: [reset.includePath],
+      includePaths: [reset.includePath, __dirname + '/lib/scss/'],
       outputStyle: 'compressed'
     }
   },

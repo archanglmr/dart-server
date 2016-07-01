@@ -1,6 +1,6 @@
 'use strict';
 
-import { UPDATE_GAME_STATE, UPDATE_DISPLAY_URL } from './actions';
+import { UPDATE_GAME_STATE, UPDATE_DISPLAY_URL, CLIENT_LOADED } from './actions';
 
 const initialState = {};
 
@@ -41,15 +41,18 @@ export function clientRootReducer(state, action = {}) {
  */
 export function displayRootReducer(state, action = {}) {
   if ('undefined' === typeof state) {
-    return {display: false};
+    return {loading: true, display: false};
   }
 
   switch(action.type) {
     case UPDATE_DISPLAY_URL:
       if (action.url) {
-        return Object.assign({}, state, {display: action.url});
+        return Object.assign({}, state, {loading: true, display: action.url});
       }
       break;
+
+    case CLIENT_LOADED:
+      return Object.assign({}, state, {loading: false});
 
     default:
       return state;

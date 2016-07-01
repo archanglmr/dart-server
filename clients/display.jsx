@@ -3,17 +3,19 @@
 // React dependencies
 import React from 'react';
 import {render} from 'react-dom';
+import GameClient from 'components/GameClient';
 import DisplayContainer from './containers/DisplayContainer';
+import LoadingContainer from './containers/LoadingContainer';
 
 
 // Redux dependencies
 import {createStore} from 'redux';
 import {Provider} from 'react-redux';
-import {updateDisplayUrl, updateGameState, UPDATE_GAME_STATE} from './display/actions';
+import {updateDisplayUrl, clientLoaded, updateGameState, UPDATE_GAME_STATE} from './display/actions';
 import {clientRootReducer, displayRootReducer} from './display/reducers';
 
 // Create the Redux store
-var clientStore = createStore(clientRootReducer),
+var clientStore = null,
     displayStore = createStore(displayRootReducer),
     socket = io(),
     currentDisplay = '';
@@ -23,7 +25,10 @@ let unsubscribe = displayStore.subscribe((store) => console.log('display:', disp
 render(
   (
     <Provider store={displayStore}>
-      <DisplayContainer />
+      <GameClient>
+        <DisplayContainer />
+        <LoadingContainer />
+      </GameClient>
     </Provider>
   ),
   document.getElementById('root')
@@ -34,11 +39,15 @@ render(
 
 socket.on(UPDATE_GAME_STATE, (data) => {
   if (currentDisplay !== data.display) {
-    currentDisplay = data.display;
-    displayStore.dispatch(updateDisplayUrl(currentDisplay));
     console.log('update display and cause redraw');
+    clientStore = null;
+    displayStore.dispatch(updateDisplayUrl((currentDisplay = data.display)));
+    clientStore = createStore(clientRootReducer);
+    clientStore.dispatch(updateGameState(data.state));
+  } else {
+    console.log('normal client dispatch');
+    clientStore.dispatch(updateGameState(data.state));
   }
-  clientStore.dispatch(updateGameState(data.state));
 });
 
 
@@ -49,4 +58,7 @@ socket.on(UPDATE_GAME_STATE, (data) => {
  *
  * @param cb
  */
-window.registerGame = (cb) => cb(clientStore);
+window.registerGame = (cb) => {
+  cb(clientStore);
+  displayStore.dispatch(clientLoaded());
+};
