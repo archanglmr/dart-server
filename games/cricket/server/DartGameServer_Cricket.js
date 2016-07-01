@@ -105,14 +105,67 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
   }
 
   /**
-   * Looks through the targets list and returns true if the game is finished.
+   * Takes a list of players and checks the high score (excluding the passed
+   * player id)
    *
-   * @param targets
+   * @param players
+   * @param excludePlayerId
+   * @returns {number}
+   */
+  getHighestScore(players, excludePlayerId = 0) {
+    var highScore = 0;
+
+    for (let id in players) {
+      if (players.hasOwnProperty(id)) {
+        let player = players[id];
+        if (player.id !== excludePlayerId) {
+          highScore = Math.max(highScore, player.score);
+        }
+      }
+    }
+    return highScore;
+  }
+
+  /**
+   * Gets the player id of the person with the highest score. If no high score
+   * or tie then -1 is returned.
+   *
+   * @param players
+   * @returns {number}
+   */
+  getPlayerIdWithHighestScore(players) {
+    var highScore = 0,
+        playerId = -1,
+        tied = false;
+
+    for (let id in players) {
+      if (players.hasOwnProperty(id)) {
+        let player = players[id],
+            score = player.score;
+
+          if (score > highScore) {
+            playerId = player.id;
+            tied = false;
+            highScore = score;
+          } else if (score === highScore) {
+            playerId = -1;
+            tied = true;
+          }
+      }
+    }
+    return playerId;
+  }
+
+  /**
+   * Checks a marks object to see if there are three or more marks for each
+   * number.
+   *
+   * @param {object} marks
    * @returns {boolean}
    */
-  isGameFinished(targets) {
-    for (let number in targets) {
-      if (targets.hasOwnProperty(number) && targets[number]) {
+  areAllMarksClosed(marks) {
+    for (let number in marks) {
+      if (marks.hasOwnProperty(number) && marks[number] < 3) {
         return false;
       }
     }
@@ -171,6 +224,7 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
           started: state.started,
           locked: state.locked,
           finished: state.finished,
+          winner: state.winner,
           tempScore: 0,
           players: {},
           rounds: Object.assign({}, state.rounds),
@@ -274,35 +328,43 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
         // process only if the number is open
         let throwStats = this.calculateThrowDataValue(throwData),
             currentMarks = currentPlayer.marks[throwData.number],
-            neededMarks = Math.max(0, (3 - currentMarks));
+            neededMarks = Math.max(0, (3 - currentMarks)),
 
-        // give marks
-        let applyMarks = Math.min(neededMarks, throwStats.marks),
-            remainingMarks = throwStats.marks - applyMarks;
+            // give marks
+            earnedMarks = Math.min(neededMarks, throwStats.marks),
+            excessMarks = throwStats.marks - earnedMarks;
 
-        currentPlayer.marks[throwData.number] += applyMarks;
-        currentPlayer.highlightMarks[throwData.number] = (currentPlayer.highlightMarks[throwData.number] || 0) + applyMarks;
-        // @todo: this only apply how many you closed not how many you hit, not sure if this is correct
-        currentPlayer.history[game.rounds.current].push(applyMarks);
+        currentPlayer.marks[throwData.number] += earnedMarks;
+        currentPlayer.highlightMarks[throwData.number] = (currentPlayer.highlightMarks[throwData.number] || 0) + earnedMarks;
+        currentPlayer.history[game.rounds.current].push(earnedMarks);
 
         // check to see if this closes the number globally and assign the value
         if ((game.targets[throwData.number] = this.isNumberOpenInPlayers(throwData.number))) {
           // give points if allowed
-          let points = remainingMarks * throwStats.value;
-          currentPlayer.marks[throwData.number] += remainingMarks;
+          let points = excessMarks * throwStats.value;
+          currentPlayer.marks[throwData.number] += excessMarks;
           game.tempScore += points;
           currentPlayer.score += points;
-        } else {
-          // @todo: see if this finishes the game here
-          // @fixme: make see if you have the highest points
-          game.finished = this.isGameFinished(game.targets);
+        }
+
+        // do this early so we can use the updated game object
+        game.players[game.currentPlayer] = currentPlayer;
+
+        // check win condition
+        if (
+          this.areAllMarksClosed(currentPlayer.marks) &&
+          (currentPlayer.score >= this.getHighestScore(game.players, currentPlayer.id))
+        ) {
+            game.winner = currentPlayer.id;
+            game.finished = true;
         }
       } else {
         currentPlayer.history[game.rounds.current].push(0);
+        game.players[game.currentPlayer] = currentPlayer;
       }
 
       game.locked = true;
-      game.players[game.currentPlayer] = currentPlayer;
+
 
       // Process advance round
       game.roundOver = ((game.currentThrow + 1) >= game.rounds.throws);
@@ -316,6 +378,7 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
         widgetThrows: game.currentThrows.slice(0),
         locked: game.locked,
         finished: game.finished,
+        winner: game.winner,
         widgetDartboard: this.toWidgetDartboard(game.targets)
       });
     }
@@ -357,14 +420,16 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
         game.currentPlayer = players.order[game.playerOffset];
 
         if (game.rounds.limit && game.currentRound >= game.rounds.limit) {
+          game.winner = this.getPlayerIdWithHighestScore(game.players);
           game.finished = true;
           return Object.assign({}, state, {
             game,
             players,
             rounds: Object.assign({}, game.rounds),
-            widgetThrows: game.currentThrows.slice(0),
             locked: game.locked,
-            finished: game.finished
+            finished: game.finished,
+            winner: game.winner,
+            widgetThrows: game.currentThrows.slice(0)
           });
         }
       } else {
@@ -387,9 +452,10 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
         game,
         players,
         rounds: Object.assign({}, game.rounds),
-        widgetThrows: game.currentThrows.slice(0),
         locked: game.locked,
-        finished: game.finished
+        finished: game.finished,
+        winner: game.winner,
+        widgetThrows: game.currentThrows.slice(0)
       });
     }
     return state;

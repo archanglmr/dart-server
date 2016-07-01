@@ -22,7 +22,7 @@ function WidgetWinner({winner, playersData}) {
 }
 
 WidgetWinner.propTypes = {
-  winner: PropTypes.isRequired,
+  winner: PropTypes.number.isRequired,
   playersData: PropTypes.object.isRequired
 };
 

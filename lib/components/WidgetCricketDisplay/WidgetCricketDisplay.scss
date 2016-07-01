@@ -60,7 +60,7 @@
       .marks {
         outline: 2px solid $foreground;
         outline-offset: -2px;
-        background-color: rgba(0, 0, 0, .1);
+        background-color: rgba($foreground, 0.1);
       }
     }
 
@@ -80,7 +80,7 @@
         border: none;
       }
       &.closed * {
-        opacity: .4;
+        opacity: .7;
       }
       &.bull {
         font-size: 4vh;
