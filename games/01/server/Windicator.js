@@ -109,7 +109,10 @@ module.exports = class Windicator {
   // Find all combinations of listOfAllChoices with length of count. Returns a list of lists of choices
   combsWithRepOuter(count /* integer */, listOfAllChoices /* list of choices */) {
     let combinations = this.combsWithRep(count, listOfAllChoices);
-    let resortedCombinations = _.map(combinations, (choices) => _.sortBy(choices, (choice) => this.throwTypeOrdering(choice.type)));
+    let resortedCombinations = _.map(combinations, (choices) => {
+        let ord = _.sortBy(choices, (choice) => this.throwTypeOrdering(choice.type));
+        return _.filter(ord, (elem) => elem.type != ThrowTypes.MISS);
+    });
     return resortedCombinations;
   }
   /**
