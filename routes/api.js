@@ -43,6 +43,15 @@ module.exports = (io) => {
       playerOrder = [2, 4];
 
 
+  //var DartGameServer_Shanghai = require(__dirname + '/../games/shanghai/server/DartGameServer_Shanghai'),
+  //    game = new DartGameServer_Shanghai({
+  //      modifiers: {
+  //        limit: 7 // innings
+  //      },
+  //      players,
+  //      playerOrder
+  //    });
+
   //var DartGameServer_Cricket = require(__dirname + '/../games/cricket/server/DartGameServer_Cricket'),
   //    game = new DartGameServer_Cricket({
   //      variation: 'standard',
