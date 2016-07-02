@@ -46,7 +46,7 @@ module.exports = class Windicator {
     if ((this.highestValue * throwsRemaining) >= goal) {
       let remaining = goal;
       let combinations = this.combsWithRepOuter(throwsRemaining, this.allPossibleValues);
-      this.values = this.findCombinationsForTarget(remaining, combinations, []);
+      this.values = _.filter(this.reWeigh(this.findCombinationsForTarget(remaining, combinations, [])), (elem) => elem.type != ThrowTypes.MISS);
       return this.values;
     }
     this.values = [];
@@ -108,10 +108,11 @@ module.exports = class Windicator {
    */
   // Find all combinations of listOfAllChoices with length of count. Returns a list of lists of choices
   combsWithRepOuter(count /* integer */, listOfAllChoices /* list of choices */) {
-    let combinations = this.reWeigh(this.combsWithRep(count, listOfAllChoices));
+    let combinations = this.combsWithRep(count, listOfAllChoices);
     let resortedCombinations = _.map(combinations, (choices) => {
         let ord = _.sortBy(choices, (choice) => this.throwTypeOrdering(choice.type));
-        return _.filter(ord, (elem) => elem.type != ThrowTypes.MISS);
+        //return _.filter(ord, (elem) => elem.type != ThrowTypes.MISS);
+        return ord;
     });
     return resortedCombinations;
   }
