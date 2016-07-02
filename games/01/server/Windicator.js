@@ -39,42 +39,6 @@ module.exports = class Windicator {
    *
    * @param goal {number}
    * @param throwsRemaining {number}
-   * @returns {Array}
-   */
-  calculate2(goal, throwsRemaining) {
-    // make sure it's even possible to find a win
-    if ((this.highestValue * throwsRemaining) >= goal) {
-      let remaining = goal;
-
-      this.values = [];
-
-      for (let i = 0; i < throwsRemaining; i += 1) {
-        // loop through the rounds
-        for (let j = 0, c = this.throwKeys.length; j < c; j += 1) {
-          let key = this.throwKeys[j];
-          if (key > 0) {
-            if (key === remaining) {
-              this.values.push(this.throwValues[key].slice(0));
-              return this.values;
-            } else if (key < remaining) {
-              this.values.push(this.throwValues[key].slice(0));
-              remaining -= key;
-              break;
-            }
-          }
-        }
-      }
-    }
-    this.values = [];
-    return this.values;
-  }
-
-  /**
-   * Takes in the goal number and and rounds remaining then returns the throws
-   * needed to get to 0 (if possible)
-   *
-   * @param goal {number}
-   * @param throwsRemaining {number}
    * @returns {Array{Array{}}
    */
   calculate(goal, throwsRemaining) {
@@ -89,33 +53,24 @@ module.exports = class Windicator {
     return this.values;
   }
 
+  getWeights(val) {
+    let singleChooser = () => val.number == 21 ? .4 : .9;
+    let doubleChooser = () => val.number == 21 ? .3 : .4;
+
+    let weights = {};
+    weights[ThrowTypes.SINGLE_OUTER] = singleChooser;
+    weights[ThrowTypes.SINGLE_INNER] = singleChooser;
+    weights[ThrowTypes.DOUBLE] = doubleChooser;
+    weights[ThrowTypes.TRIPLE] = () => .5;
+    weights[ThrowTypes.MISS] = () => 1;
+    return weights[val.type]();
+  }
+
   reWeigh(choices) {
     let weigher = (val) => {
-      switch (val.type) {
-        case ThrowTypes.SINGLE_OUTER:
-        case ThrowTypes.SINGLE_INNER:
-          if (val.number == 21) {
-            val.weight = .4;
-          } else {
-            val.weight = .9;
-          }
-          break;
-        case ThrowTypes.DOUBLE:
-          if (val.number == 21) {
-            val.weight = .3;
-          } else {
-            val.weight = .4;
-          }
-          break;
-        case ThrowTypes.TRIPLE:
-          val.weight = .5;
-          break;
-        case ThrowTypes.MISS:
-          val.weight = 1;
-          break;
-      }
+      val.weight = this.getWeights(val);
       return val;
-    };
+    }
     let choicesWithWeights = _.map(choices, (throws) => _.map(throws, weigher));
     return _.sortBy(choicesWithWeights, (throws) => _.reduce(throws, (acc, val) => acc * val.weight, 1)).reverse();
   }
@@ -192,25 +147,13 @@ module.exports = class Windicator {
   }
 
   throwTypeOrdering(throwType) {
-      let ord = -1;
-      switch (throwType) {
-        case ThrowTypes.MISS:
-          ord = 5;
-          break;
-        case ThrowTypes.TRIPLE:
-          ord = 4;
-          break;
-        case ThrowTypes.DOUBLE:
-          ord = 3;
-          break;
-        case ThrowTypes.SINGLE_INNER:
-          ord = 2;
-          break;
-        case ThrowTypes.SINGLE_OUTER:
-          ord = 1;
-          break;
-      }
-      return ord;
+    let order = {};
+    order[ThrowTypes.MISS] = 5;
+    order[ThrowTypes.TRIPLE] = 4;
+    order[ThrowTypes.DOUBLE] = 3;
+    order[ThrowTypes.SINGLE_INNER] = 2;
+    order[ThrowTypes.SINGLE_OUTER] = 1;
+    return order[throwType];
   }
 
   generate() {
