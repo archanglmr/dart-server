@@ -10,6 +10,10 @@ function WidgetScoreHistory({history, roundLimit, displayLimit, valueComponent})
       offset = 0,
       limit = roundLimit;
 
+  if (roundLimit && roundLimit < displayLimit) {
+    displayLimit = roundLimit;
+  }
+
   if (displayLimit) {
     if (historyLength > displayLimit) {
       offset = historyLength - displayLimit;
