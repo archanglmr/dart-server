@@ -25,11 +25,8 @@ body {
   height: 100vh;
   overflow: hidden;
 
-  .current-info {
-    position: absolute;
-    top: 2vh;
+  .corner-dash {
     left: 2vw;
-    text-align: left;
   }
   .widget-temp-score {
     top: 18vh;

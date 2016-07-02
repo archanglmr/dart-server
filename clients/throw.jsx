@@ -7,6 +7,7 @@ import React from 'react';
 import {render} from 'react-dom';
 import ThrowClient from './components/ThrowClient';
 
+import CornerDash from 'components/CornerDash';
 import GameStateReadyContainer from 'containers/GameStateReadyContainer';
 import WidgetGameNameContainer from 'containers/WidgetGameNameContainer';
 import WidgetCurrentPlayerContainer from 'containers/WidgetCurrentPlayerContainer';
@@ -46,11 +47,11 @@ render(
         <ThrowClient>
           <Provider store={gameStore}>
             <GameStateReadyContainer>
-              <div className="current-info">
+              <CornerDash>
                 <WidgetGameNameContainer />
                 <WidgetCurrentPlayerContainer />
                 <WidgetRoundsContainer />
-              </div>
+              </CornerDash>
               <WidgetScoreContainer />
               <WidgetTempScoreContainer />
               <WidgetThrowsContainer />
