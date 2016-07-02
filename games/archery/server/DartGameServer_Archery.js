@@ -2,7 +2,7 @@
 var DartHelpers = require('../../../lib/dart-helpers'),
     ThrowTypes = DartHelpers.ThrowTypes;
 
-module.exports = class DartGameServer_Shanghai extends DartHelpers.DartGameServer {
+module.exports = class DartGameServer_Archery extends DartHelpers.DartGameServer {
   /**
    * Handle for INIT
    *
@@ -19,68 +19,43 @@ module.exports = class DartGameServer_Shanghai extends DartHelpers.DartGameServe
    * @returns {string}
    */
   getDisplayName() {
-    return 'Shanghai';
+    return 'Archery';
   }
-
 
   /**
    * Calculates the value in this game of the current throw.
    *
    * @param throwData {{type: string, number: number}}
-   * @param target {number}
    * @returns {number}
    */
-  calculateThrowDataValue(throwData, target) {
+  calculateThrowDataValue(throwData) {
     var value = 0;
 
-    if (target === throwData.number) {
-      value = throwData.number;
-      switch(throwData.type) {
-        case ThrowTypes.TRIPLE:
-          value *= 3;
-          break;
-        case ThrowTypes.DOUBLE:
-          value *= 2;
-          break;
-
-        case ThrowTypes.MISS:
-        case ThrowTypes.SINGLE_INNER:
-        case ThrowTypes.SINGLE_OUTER:
-          break;
-      }
+    switch(throwData.type) {
+      case ThrowTypes.DOUBLE:
+        if (21 === throwData.number) {
+          value = 100;
+        } else {
+          value = 5;
+        }
+        break;
+      case ThrowTypes.SINGLE_OUTER:
+        if (21 === throwData.number) {
+          value = 50;
+        } else {
+          value = 10;
+        }
+        break;
+      case ThrowTypes.TRIPLE:
+        value = 15;
+        break;
+      case ThrowTypes.SINGLE_INNER:
+        value = 30;
+        break;
+      default:
+        break;
     }
     return value;
-  }
-
-  /**
-   * Checks a list of throws and determines if it's considered a shanghai.
-   *
-   * @param throwList
-   * @returns {number}
-   */
-  isShanghai(throwList) {
-    var types = {
-      triple: 0,
-      double: 0,
-      single: 0
-    };
-    for (let i = 0, c = throwList.length; i < c; i += 1) {
-      switch(throwList[i].type) {
-        case ThrowTypes.TRIPLE:
-          types.triple += 1;
-          break;
-        case ThrowTypes.DOUBLE:
-          types.double += 1;
-          break;
-
-        case ThrowTypes.SINGLE_INNER:
-        case ThrowTypes.SINGLE_OUTER:
-          types.single += 1;
-          break;
-      }
-    }
-
-    return types.triple && types.double && types.single;
   }
 
   /**
@@ -117,24 +92,23 @@ module.exports = class DartGameServer_Shanghai extends DartHelpers.DartGameServe
    * Will look at the current game state and return an object compatible with
    * the state.widgetDartboard property and WidgetDartboard component.
    *
-   * @param {object} targets
    * @returns {{}}
    */
-  toWidgetDartboard(target) {
+  toWidgetDartboard() {
     var dartboard = {
       visible: false,
-      hide: {},
-      blink: {},
-      highlight: {}
+      //hide: {},
+      //blink: {},
+      //highlight: {}
     };
 
     dartboard.visible = true;
-    dartboard.highlight[target] = [
-      {number: target, type: ThrowTypes.DOUBLE},
-      {number: target, type: ThrowTypes.SINGLE_OUTER},
-      {number: target, type: ThrowTypes.TRIPLE},
-      {number: target, type: ThrowTypes.SINGLE_INNER}
-    ];
+    //dartboard.highlight[target] = [
+    //  {number: target, type: ThrowTypes.DOUBLE},
+    //  {number: target, type: ThrowTypes.SINGLE_OUTER},
+    //  {number: target, type: ThrowTypes.TRIPLE},
+    //  {number: target, type: ThrowTypes.SINGLE_INNER}
+    //];
 
     return dartboard;
   }
@@ -162,16 +136,9 @@ module.exports = class DartGameServer_Shanghai extends DartHelpers.DartGameServe
             winner: state.winner,
             tempScore: 0,
             players: {},
-            rounds: Object.assign({}, state.rounds),
-            roundOver: false,
-            target: 0
+            rounds: Object.assign({}, state.rounds, {limit: 8}),
+            roundOver: false
           };
-
-    if (modifiers && modifiers.limit) {
-      game.rounds.limit = modifiers.limit;
-    }
-    game.rounds.limit = Math.min(20, game.rounds.limit);
-    game.target = (20 - game.rounds.limit) + 1;
 
     for (let i = 0, c = state.players.order.length; i < c; i += 1) {
       let id = state.players.order[i];
@@ -183,7 +150,7 @@ module.exports = class DartGameServer_Shanghai extends DartHelpers.DartGameServe
       };
     }
 
-    return Object.assign({}, state, {game, rounds: Object.assign({}, game.rounds)});
+    return Object.assign({}, state, {game, rounds: Object.assign({}, game.rounds), widgetDartboard: this.toWidgetDartboard()});
   }
 
 
@@ -222,8 +189,7 @@ module.exports = class DartGameServer_Shanghai extends DartHelpers.DartGameServe
         game,
         players,
         started: game.started,
-        locked: game.locked,
-        widgetDartboard: this.toWidgetDartboard(game.target)
+        locked: game.locked
       });
     }
     return state;
@@ -245,18 +211,13 @@ module.exports = class DartGameServer_Shanghai extends DartHelpers.DartGameServe
       let game = Object.assign({}, state.game);
 
 
-      game.tempScore += this.calculateThrowDataValue(throwData, game.target);
+      game.tempScore += this.calculateThrowDataValue(throwData);
       game.currentThrows.push(throwData);
 
+      // @todo: check to make sure assigning game.players[x].score is safe
       let score = game.players[game.currentPlayer].score = (game.roundBeginningScore + game.tempScore);
       // set the temp score as in the player score history
       game.players[game.currentPlayer].history[game.rounds.current] = game.tempScore;
-
-      /* @fixme: check for shanghai here */
-      if (game.currentThrows.length >= 3 && this.isShanghai(game.currentThrows)) {
-        game.finished = true;
-        game.winner = game.currentPlayer;
-      }
 
       game.locked = true;
 
@@ -274,8 +235,7 @@ module.exports = class DartGameServer_Shanghai extends DartHelpers.DartGameServe
         widgetThrows: game.currentThrows.slice(0),
         locked: game.locked,
         finished: game.finished,
-        winner: game.winner,
-        widgetDartboard: this.toWidgetDartboard(game.target)
+        winner: game.winner
       });
     }
     return state;
@@ -290,7 +250,6 @@ module.exports = class DartGameServer_Shanghai extends DartHelpers.DartGameServe
       let game = Object.assign({}, state.game),
           players = Object.assign({}, state.players),
           playerChanged = false;
-
 
       // advance the game normally
       game.currentThrow += 1;
@@ -311,7 +270,6 @@ module.exports = class DartGameServer_Shanghai extends DartHelpers.DartGameServe
         playerChanged = true;
         game.currentRound += 1;
         game.currentPlayer = players.order[game.playerOffset];
-        game.target += 1;
 
         if (game.rounds.limit && game.currentRound >= game.rounds.limit) {
           game.finished = true;
@@ -349,8 +307,7 @@ module.exports = class DartGameServer_Shanghai extends DartHelpers.DartGameServe
         widgetThrows: game.currentThrows.slice(0),
         locked: game.locked,
         finished: game.finished,
-        winner: game.winner,
-        widgetDartboard: this.toWidgetDartboard(game.target)
+        winner: game.winner
       });
     }
     return state;

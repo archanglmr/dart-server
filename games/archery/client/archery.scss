@@ -1,0 +1,32 @@
+.widget-dartboard {
+  top: 1vh;
+  right: 30.5vw;
+  width: 39vw;
+  height: 39vw;
+
+}
+.widget-temp-score {
+  bottom: 50vh;
+}
+
+
+$double_bull: yellow;
+$outer_bull: orange;
+$single_inner: red;
+$triple: blue;
+$single_outer: black;
+$double: grey;
+
+.widget-dartboard {
+  .sector {
+    .little { fill: $single_inner !important; }
+    .fat { fill: $single_outer !important; }
+    .double { fill: $double !important; }
+    .triple { fill: $triple !important; }
+    .score { display: none; }
+  }
+  .sector_bull {
+    .single { fill: $outer_bull !important; }
+    .double { fill: $double_bull !important; }
+  }
+}
