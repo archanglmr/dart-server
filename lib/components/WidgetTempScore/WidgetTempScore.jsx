@@ -4,22 +4,27 @@ import React, {PropTypes} from 'react';
 import './WidgetTempScore.scss';
 
 
-function WidgetTempScore({text, gameOver}) {
-  var className = ['widget-temp-score'];
-  if (gameOver) {
-    className.push('hidden');
+function WidgetTempScore({text, className, label, hide = false}) {
+  var classNames = ['widget-temp-score'];
+  if (className) {
+    classNames.push(className);
+  }
+  if (hide) {
+    classNames.push('hidden');
   }
   return (
-      <div className={className.join(' ')}>
-        <div>Temp Score:</div>
+      <div className={classNames.join(' ')}>
+        <div>{label}</div>
         {text}
       </div>
   );
 }
 
 WidgetTempScore.propTypes = {
-  text: PropTypes.string.isRequired,
-  gameOver: PropTypes.bool.isRequired
+  text: PropTypes.string,
+  hide: PropTypes.bool,
+  className: PropTypes.string,
+  label: PropTypes.string
 };
 
 export default WidgetTempScore;

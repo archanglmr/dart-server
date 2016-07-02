@@ -25,6 +25,29 @@ body {
   height: 100vh;
   overflow: hidden;
 
+  .current-info {
+    position: absolute;
+    top: 2vh;
+    left: 2vw;
+    text-align: left;
+  }
+  .widget-temp-score {
+    top: 18vh;
+    left: 52vw;
+    width: 40vw;
+
+    &.score-container {
+      left: 8vw;
+    }
+  }
+  .widget-throws {
+    bottom: 57vh;
+    span {
+      width: 30vw;
+      font-size: 5vw;
+    }
+  }
+
   .controls {
     position: absolute;
     bottom: 1vh;

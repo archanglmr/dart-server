@@ -8,9 +8,10 @@ import ThrowUndoButtonContainer from '../../containers/ThrowUndoButtonContainer'
 
 import './ThrowClient.scss';
 
-function ThrowClient() {
+function ThrowClient({children}) {
   return (
       <div className="throw-client">
+        {children}
         <div className="controls">
           <ThrowTypesContainer />
           <ThrowNumbersContainer />

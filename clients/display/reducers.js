@@ -25,7 +25,7 @@ export function clientRootReducer(state, action = {}) {
       break;
 
     default:
-      return state;
+      break;
   }
   return state;
 }
@@ -55,7 +55,7 @@ export function displayRootReducer(state, action = {}) {
       return Object.assign({}, state, {loading: false});
 
     default:
-      return state;
+      break;
   }
   return state;
 }

@@ -73,7 +73,6 @@ module.exports = (io) => {
   /**
    * socket.io server
    */
-  var ioSocket;
   io.on('connection', function(socket) {
     console.log('A client connected');
     socket.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game.getState()));
@@ -81,8 +80,6 @@ module.exports = (io) => {
     socket.on('disconnect', function(){
       console.log('user disconnected');
     });
-
-    ioSocket = socket;
   });
 
 
@@ -110,13 +107,13 @@ module.exports = (io) => {
           if (state.game.roundOver) {
             // if the round is we should send an update, then wait to advance
             // the game
-            ioSocket.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(state));
+            io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(state));
 
             gamePauseTimer = setTimeout(() => {
               game.advanceGame();
               //console.log(DartHelpers.Test.widgetThrows(game.getState()));
               //console.log(game.getScores());
-              ioSocket.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game.getState()));
+              io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game.getState()));
               gamePauseTimer = null;
             }, gamePauseLength);
           } else {
@@ -124,7 +121,7 @@ module.exports = (io) => {
             game.advanceGame();
             //console.log(DartHelpers.Test.widgetThrows(game.getState()));
             //console.log(game.getScores());
-            ioSocket.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game.getState()));
+            io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game.getState()));
           }
 
         } else {
@@ -135,7 +132,7 @@ module.exports = (io) => {
           game.advanceGame();
           //console.log(DartHelpers.Test.widgetThrows(game.getState()));
           //console.log(game.getScores());
-          ioSocket.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game.getState()));
+          io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game.getState()));
           gamePauseTimer = null;
 
           res.write(JSON.stringify({success: true}));

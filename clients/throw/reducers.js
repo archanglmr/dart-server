@@ -9,6 +9,7 @@ import {
     SUBMIT_UNDO_COMPLETE,
     ThrowTypesList
 } from './actions';
+import {UPDATE_GAME_STATE} from '../display/actions';
 
 const initialState = {
   throwType: null,
@@ -29,7 +30,7 @@ const initialState = {
  * @param action {{type: string}}
  * @returns {{throwType: string, throwNumber: string, isSubmitting: bool, submittable: bool, disabledThrowTypes: Array, disabledThrowNumbers: Array}}
  */
-export default function rootReducer(state, action = {}) {
+export function rootReducer(state, action = {}) {
   if ('undefined' === typeof state) {
     return initialState;
   }
@@ -159,6 +160,33 @@ export default function rootReducer(state, action = {}) {
 
     default:
       return state;
+  }
+  return state;
+}
+
+
+
+/**
+ * The "Root Reducer" for the game client
+ *
+ * @param state {object}
+ * @param action {{type: string}}
+ * @returns {object}
+ */
+export function gameRootReducer(state, action = {}) {
+  if ('undefined' === typeof state) {
+    return {};
+  }
+
+  switch(action.type) {
+    case UPDATE_GAME_STATE:
+      if (action.state) {
+        return action.state;
+      }
+      break;
+
+    default:
+      break;
   }
   return state;
 }

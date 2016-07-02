@@ -8,7 +8,8 @@ const mapStateToProps = (state) => {
   // pre-pending '' to prevent warning since score is typically a number
   return {
     text: '' + state.game.tempScore,
-    gameOver: state.finished
+    hide: state.finished,
+    label: 'Temp Score:'
   };
 };
 
