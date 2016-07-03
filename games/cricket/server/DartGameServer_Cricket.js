@@ -19,7 +19,7 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
    * @returns {string}
    */
   getDisplayName() {
-    var name = this.getState().config.variation;
+    var name = this.getState().config.variation || 'standard';
 
     return name.substr(0, 1).toUpperCase() + name.substr(1) + ' Cricket';
   }
@@ -124,36 +124,6 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
       }
     }
     return highScore;
-  }
-
-  /**
-   * Gets the player id of the person with the highest score. If no high score
-   * or tie then -1 is returned.
-   *
-   * @param players
-   * @returns {number}
-   */
-  getPlayerIdWithHighestScore(players) {
-    var highScore = 0,
-        playerId = -1,
-        tied = false;
-
-    for (let id in players) {
-      if (players.hasOwnProperty(id)) {
-        let player = players[id],
-            score = player.score;
-
-          if (score > highScore) {
-            playerId = player.id;
-            tied = false;
-            highScore = score;
-          } else if (score === highScore) {
-            playerId = -1;
-            tied = true;
-          }
-      }
-    }
-    return playerId;
   }
 
   /**
@@ -420,7 +390,7 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
         game.currentPlayer = players.order[game.playerOffset];
 
         if (game.rounds.limit && game.currentRound >= game.rounds.limit) {
-          game.winner = this.getPlayerIdWithHighestScore(game.players);
+          game.winner = DartHelpers.State.getPlayerIdWithHighestScore(game.players);
           game.finished = true;
           return Object.assign({}, state, {
             game,

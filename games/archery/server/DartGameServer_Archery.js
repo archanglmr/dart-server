@@ -88,36 +88,6 @@ module.exports = class DartGameServer_Archery extends DartHelpers.DartGameServer
   }
 
   /**
-   * Gets the player id of the person with the highest score. If no high score
-   * or tie then -1 is returned.
-   *
-   * @param players
-   * @returns {number}
-   */
-  getPlayerIdWithHighestScore(players) {
-    var highScore = 0,
-        playerId = -1,
-        tied = false;
-
-    for (let id in players) {
-      if (players.hasOwnProperty(id)) {
-        let player = players[id],
-            score = player.score;
-
-        if (score > highScore) {
-          playerId = player.id;
-          tied = false;
-          highScore = score;
-        } else if (score === highScore) {
-          playerId = -1;
-          tied = true;
-        }
-      }
-    }
-    return playerId;
-  }
-
-  /**
    * Will look at the current game state and return an object compatible with
    * the state.widgetDartboard property and WidgetDartboard component.
    *
@@ -164,7 +134,7 @@ module.exports = class DartGameServer_Archery extends DartHelpers.DartGameServer
             winner: state.winner,
             tempScore: 0,
             players: {},
-            rounds: Object.assign({}, state.rounds, {limit: 8}),
+            rounds: Object.assign(state.rounds, {limit: 8}),
             roundOver: false,
             targets: {
               double_bull: 100,
@@ -175,6 +145,10 @@ module.exports = class DartGameServer_Archery extends DartHelpers.DartGameServer
               double: 5
             }
           };
+
+    if (modifiers && modifiers.limit) {
+      game.rounds.limit = modifiers.limit;
+    }
 
     for (let i = 0, c = state.players.order.length; i < c; i += 1) {
       let id = state.players.order[i];
@@ -311,7 +285,7 @@ module.exports = class DartGameServer_Archery extends DartHelpers.DartGameServer
 
         if (game.rounds.limit && game.currentRound >= game.rounds.limit) {
           game.finished = true;
-          game.winner = this.getPlayerIdWithHighestScore(game.players);
+          game.winner = DartHelpers.State.getPlayerIdWithHighestScore(game.players);
           return Object.assign({}, state, {
             game,
             players,

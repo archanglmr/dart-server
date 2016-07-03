@@ -22,7 +22,8 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
    * @returns {string}
    */
   getDisplayName() {
-    return this.getState().config.variation;
+    var state = this.getState();
+    return state.config.variation || state.rounds.limit;
   }
 
 
@@ -105,38 +106,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
     return value;
   }
 
-  /**
-   * Gets the player id of the person with the lowest score. If no low score
-   * or tie then -1 is returned.
-   *
-   * @param players
-   * @returns {number}
-   */
-  getPlayerIdWithLowestScore(players) {
-    var lowScore = null,
-        playerId = -1,
-        tied = false;
 
-    for (let id in players) {
-      if (players.hasOwnProperty(id)) {
-        let player = players[id],
-            score = player.score;
-
-        if (null === lowScore) {
-          playerId = player.id;
-          lowScore = score;
-        } else if (score < lowScore) {
-          playerId = player.id;
-          tied = false;
-          lowScore = score;
-        } else if (score === lowScore) {
-          playerId = -1;
-          tied = true;
-        }
-      }
-    }
-    return playerId;
-  }
 
 
 
@@ -152,7 +122,8 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
    * @returns {*}
    */
   actionInit(state) {
-    var {variation, modifiers} = state.config,
+    var {modifiers} = state.config,
+        config = Object.assign({}, state.config),
     // cloning the part we need because we're going to overwrite stuff
           game = {
             started: state.started,
@@ -165,8 +136,13 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
             roundOver: false
           };
 
-    if (modifiers && modifiers.limit) {
-      game.rounds.limit = modifiers.limit;
+    if (!config.variation) {
+      config.variation = 501;
+    } else {
+      config.variation = parseInt(config.variation, 10);
+    }
+    if (config.modifiers && config.modifiers.limit) {
+      game.rounds.limit = config.modifiers.limit;
     }
 
     for (let i = 0, c = state.players.order.length; i < c; i += 1) {
@@ -174,13 +150,13 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
 
       game.players[id] = {
         id,
-        score: parseInt(state.config.variation, 10),
+        score: config.variation,
         history: [0],
         throwHistory: []
       };
     }
 
-    return Object.assign({}, state, {game, rounds: Object.assign({}, game.rounds)});
+    return Object.assign({}, state, {game, rounds: Object.assign({}, game.rounds), config});
   }
 
 
@@ -340,7 +316,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
 
         if (game.rounds.limit && game.currentRound >= game.rounds.limit) {
           game.finished = true;
-          game.winner = this.getPlayerIdWithLowestScore(game.players);
+          game.winner = DartHelpers.State.getPlayerIdWithLowestScore(game.players);
           return Object.assign({}, state, {
             game,
             players,
