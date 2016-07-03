@@ -58,7 +58,7 @@ module.exports = class Windicator {
       return _.map(choices, (choice) => _.filter(choice, (val) => val.type != ThrowTypes.MISS));
   }
 
-  getWeights(val) {
+  getWeights(val, config) {
     let smear = (num) => {
         let offset = 0;
         // Bias toward cricket numbers
@@ -68,29 +68,80 @@ module.exports = class Windicator {
         return offset + (((num - 1) / (20 - 1)) / 10);
     };
     // bias toward bigger numbers
-    let singleChooser = () => val.number == 21 ? .4 : (.9 + smear(val.number));
-    let doubleChooser = () => val.number == 21 ? .3 : (.4 + smear(val.number));
+    let singleChooser = () => val.number == 21 ? config.singleBull : (config.single + smear(val.number));
+    let doubleChooser = () => val.number == 21 ? config.doubleBull : (config.double + smear(val.number));
 
     let weights = {};
     weights[ThrowTypes.SINGLE_OUTER] = singleChooser;
     weights[ThrowTypes.SINGLE_INNER] = singleChooser;
     weights[ThrowTypes.DOUBLE] = doubleChooser;
-    weights[ThrowTypes.TRIPLE] = () => .5;
-    weights[ThrowTypes.MISS] = () => .9;
+    weights[ThrowTypes.TRIPLE] = () => config.triple;
+    weights[ThrowTypes.MISS] = () => config.miss;
     let w = weights[val.type]();
     return w;
   }
 
+  static get perValueConfig() {
+      return {
+          miss: .9,
+          triple: .5,
+          double: .4,
+          single: .9,
+          doubleBull: .3,
+          singleBull: .4
+      };
+  }
+
+  static get perSetConfig() {
+      return {
+          miss: 0,
+          triple: 0,
+          double: 0,
+          single: 0,
+          doubleBull: 0,
+          singleBull: 0
+      };
+  }
   /*
    * Assign weights to choice values, weigh each set of choices and return sorted by best choice
    */
   reWeigh(choices) {
-    let weigher = (val) => {
-      val.weight = this.getWeights(val);
+    let smear = (num) => {
+        let offset = 0;
+        // Bias toward cricket numbers
+        if (num >= 15) {
+            offset = (num - 1) / (21 - 1) / 10;
+        }
+        return offset + (((num - 1) / (21 - 1)) / 10);
+    };
+    let perValueWeigher = (val) => {
+      val.weight = this.getWeights(val, Windicator.perValueConfig);
       return val;
-    }
-    let choicesWithWeights = _.map(choices, (throws) => _.map(throws, weigher));
-    return _.sortBy(choicesWithWeights, (throws) => _.reduce(throws, (acc, val) => acc * val.weight, 1)).reverse();
+    };
+    let perSetWeigher = (vals) => {
+        let counts = {};
+        vals.forEach((x) => {
+            if (!counts[x.type]) counts[x.type] = {};
+            if (!counts[x.type][x.number]) counts[x.type][x.number] = {};
+            counts[x.type][x.number] = { count: (counts[x.type][x.number].count || 0) + 1, value: x };
+        });
+        let weights = _.reduce(counts, (outerAcc, valPerType, keyT) => {
+            return outerAcc * _.reduce(valPerType, (acc, count, num) => {
+                let weight = this.getWeights(count.value, Windicator.perSetConfig);
+
+                return acc * (weight * count.count);
+            }, 1);
+        }, 1);
+        return weights;
+    };
+
+    let choicesWithWeights = _.map(choices, (throws) => _.map(throws, perValueWeigher));
+    return _.sortBy(choicesWithWeights, (throws) => {
+        let pW = perSetWeigher(throws);
+        let vW = _.reduce(throws, (acc, val) => acc * val.weight, 1);
+        console.log(throws, pW, vW);
+        return pW + vW;
+    }).reverse();
   }
 
   /*
