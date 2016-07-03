@@ -253,7 +253,7 @@ module.exports = class DartGameServer_Archery extends DartHelpers.DartGameServer
       game.currentThrows.push(throwData);
 
       game.players[game.currentPlayer].score = (game.roundBeginningScore + game.tempScore);
-      game.players[game.currentPlayer].bulls = this.countBulls(throwData);
+      game.players[game.currentPlayer].bulls += this.countBulls(throwData);
       game.players[game.currentPlayer].history[game.rounds.current].push(throwStats);
 
       game.locked = true;

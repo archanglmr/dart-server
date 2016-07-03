@@ -5,7 +5,7 @@ import './WidgetThrows.scss';
 import DartIcon from '../DartIcon';
 
 
-function WidgetThrows({throws, limit}) {
+function WidgetThrows({throws, limit, tempScore = false}) {
   var throwElements = [],
       throwsLength = throws.length,
       outlineOnly = false;
@@ -23,6 +23,9 @@ function WidgetThrows({throws, limit}) {
     if ((1 + i) !== limit) {
       throwElements.push(' | ');
     }
+  }
+  if (false !== tempScore) {
+    throwElements.push(<span key="widget-throws-temp-score" className="temp-score"> = {tempScore}</span>);
   }
   return <div className="widget-throws">{throwElements}</div>;
 }

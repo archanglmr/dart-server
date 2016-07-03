@@ -62,19 +62,19 @@ function formatThrowData(throwData) {
   } else {
     switch(throwData.type) {
       case 'DOUBLE':
-        formatted = 'D';
+        formatted = 'Double';
         break;
 
       case 'TRIPLE':
-        formatted = 'T';
+        formatted = 'Triple';
         break;
 
       default:
-        formatted = 'S';
+        formatted = 'Single';
         break;
     }
 
-    formatted += '-' + ((21 === throwData.number) ? 'BULL' : throwData.number);
+    formatted += ' ' + ((21 === throwData.number) ? 'Bull' : throwData.number);
   }
   return formatted;
 }

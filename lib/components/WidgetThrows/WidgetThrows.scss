@@ -21,5 +21,13 @@
       right: 0;
       margin: auto;
     }
+
+    &.temp-score {
+      font-size: 7vh;
+      text-align: left;
+      width: auto;
+      vertical-align: bottom;
+      min-width: 10vw;
+    }
   }
 }

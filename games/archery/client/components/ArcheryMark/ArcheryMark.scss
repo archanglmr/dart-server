@@ -7,5 +7,15 @@
   stroke: $foreground;
   fill: transparent;
 
-  -webkit-svg-shadow: 0 0 2px $foreground;
+  circle { -webkit-svg-shadow: 0 0 2px $foreground; }
+
+  text {
+    display: none;
+    fill: $foreground;
+  }
+  &.miss {
+    stroke-width: 0;
+    text { display: inline-block; }
+    circle { display: none; }
+  }
 }
