@@ -64,9 +64,9 @@ function WidgetDartboard({dartboard}) {
             />
         )}
       </g>
-      <g className="sector sector_bull" transform="translate(-7.5, -2)">
-        <path className={bullClassNames.outer.join(' ')} d="M432.438 389c0 17.087-13.852 30.938-30.938 30.938S370.562 406.1 370.6 389 s13.852-30.938 30.938-30.938S432.438 371.9 432.4 389z M401.5 372.602c-9.057 0-16.398 7.342-16.398 16.4 s7.342 16.4 16.4 16.398s16.398-7.342 16.398-16.398S410.557 372.6 401.5 372.602z" />
-        <circle className={bullClassNames.double.join(' ')} cx="401.5" cy="389" r="13.7"></circle>
+      <g className="sector sector_bull">
+        <path className={bullClassNames.outer.join(' ')} transform="translate(-7.5, -2)" d="M432.438 389c0 17.087-13.852 30.938-30.938 30.938S370.562 406.1 370.6 389 s13.852-30.938 30.938-30.938S432.438 371.9 432.4 389z M401.5 372.602c-9.057 0-16.398 7.342-16.398 16.4 s7.342 16.4 16.4 16.398s16.398-7.342 16.398-16.398S410.557 372.6 401.5 372.602z" />
+        <circle className={bullClassNames.double.join(' ')} cx="394" cy="387" r="13.7"></circle>
       </g>
     </svg>
   );

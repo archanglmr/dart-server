@@ -6,4 +6,6 @@
   stroke-width: 20;
   stroke: $foreground;
   fill: transparent;
+
+  -webkit-svg-shadow: 0 0 2px $foreground;
 }
