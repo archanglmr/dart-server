@@ -1,0 +1,9 @@
+@import "colors";
+
+.archery-mark {
+  text-align: center;
+  vertical-align: middle;
+  stroke-width: 20;
+  stroke: $foreground;
+  fill: transparent;
+}

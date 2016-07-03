@@ -26,36 +26,65 @@ module.exports = class DartGameServer_Archery extends DartHelpers.DartGameServer
    * Calculates the value in this game of the current throw.
    *
    * @param throwData {{type: string, number: number}}
-   * @returns {number}
+   * @param targets {object}
+   * @returns {{markType: string, value: number}}
    */
-  calculateThrowDataValue(throwData) {
-    var value = 0;
+  calculateThrowDataValue(throwData, targets) {
+    var data = {markType: 'miss', value: 0};
 
     switch(throwData.type) {
       case ThrowTypes.DOUBLE:
         if (21 === throwData.number) {
-          value = 100;
+          data.markType = 'double_bull';
+          data.value = targets.double_bull;
         } else {
-          value = 5;
+          data.markType = 'double';
+          data.value = targets.double;
         }
         break;
       case ThrowTypes.SINGLE_OUTER:
         if (21 === throwData.number) {
-          value = 50;
+          data.markType = 'single_bull';
+          data.value = targets.single_bull;
         } else {
-          value = 10;
+          data.markType = 'outer';
+          data.value = targets.outer;
         }
         break;
       case ThrowTypes.TRIPLE:
-        value = 15;
+        data.markType = 'triple';
+        data.value = targets.triple;
         break;
       case ThrowTypes.SINGLE_INNER:
-        value = 30;
+        data.markType = 'inner';
+        data.value = targets.inner;
         break;
       default:
         break;
     }
-    return value;
+    return data;
+  }
+
+  /**
+   * Returns the number of bulls in a throwData
+   *
+   * @param throwData {{type: string, number: number}}
+   * @returns {number}
+   */
+  countBulls(throwData) {
+    var bulls = 0;
+
+    if (21 === throwData.number) {
+      switch(throwData.type) {
+        case ThrowTypes.DOUBLE:
+          bulls = 2;
+          break;
+        case ThrowTypes.SINGLE_OUTER:
+          bulls = 1;
+          break;
+      }
+    }
+    return bulls;
   }
 
   /**
@@ -95,22 +124,7 @@ module.exports = class DartGameServer_Archery extends DartHelpers.DartGameServer
    * @returns {{}}
    */
   toWidgetDartboard() {
-    var dartboard = {
-      visible: false,
-      //hide: {},
-      //blink: {},
-      //highlight: {}
-    };
-
-    dartboard.visible = true;
-    //dartboard.highlight[target] = [
-    //  {number: target, type: ThrowTypes.DOUBLE},
-    //  {number: target, type: ThrowTypes.SINGLE_OUTER},
-    //  {number: target, type: ThrowTypes.TRIPLE},
-    //  {number: target, type: ThrowTypes.SINGLE_INNER}
-    //];
-
-    return dartboard;
+    return {visible: true};
   }
 
 
@@ -137,7 +151,15 @@ module.exports = class DartGameServer_Archery extends DartHelpers.DartGameServer
             tempScore: 0,
             players: {},
             rounds: Object.assign({}, state.rounds, {limit: 8}),
-            roundOver: false
+            roundOver: false,
+            targets: {
+              double_bull: 100,
+              single_bull: 50,
+              inner: 30,
+              triple: 15,
+              outer: 10,
+              double: 5
+            }
           };
 
     for (let i = 0, c = state.players.order.length; i < c; i += 1) {
@@ -146,7 +168,8 @@ module.exports = class DartGameServer_Archery extends DartHelpers.DartGameServer
       game.players[id] = {
         id,
         score: 0,
-        history: [0]
+        history: [[]],
+        bulls: 0
       };
     }
 
@@ -210,14 +233,14 @@ module.exports = class DartGameServer_Archery extends DartHelpers.DartGameServer
       // shallow clone stuff
       let game = Object.assign({}, state.game);
 
+      let throwStats = this.calculateThrowDataValue(throwData, game.targets);
 
-      game.tempScore += this.calculateThrowDataValue(throwData);
+      game.tempScore += throwStats.value;
       game.currentThrows.push(throwData);
 
-      // @todo: check to make sure assigning game.players[x].score is safe
-      let score = game.players[game.currentPlayer].score = (game.roundBeginningScore + game.tempScore);
-      // set the temp score as in the player score history
-      game.players[game.currentPlayer].history[game.rounds.current] = game.tempScore;
+      game.players[game.currentPlayer].score = (game.roundBeginningScore + game.tempScore);
+      game.players[game.currentPlayer].bulls = this.countBulls(throwData);
+      game.players[game.currentPlayer].history[game.rounds.current].push(throwStats);
 
       game.locked = true;
 
@@ -290,7 +313,7 @@ module.exports = class DartGameServer_Archery extends DartHelpers.DartGameServer
 
       if (playerChanged) {
         game.roundBeginningScore = game.players[game.currentPlayer].score;
-        game.players[game.currentPlayer].history[game.currentRound] = 0;
+        game.players[game.currentPlayer].history[game.currentRound] = [];
       }
 
       game.locked = false;

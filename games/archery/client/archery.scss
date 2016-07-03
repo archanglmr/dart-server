@@ -6,27 +6,41 @@
 
 }
 .widget-temp-score {
+  right: 18vw;
   bottom: 50vh;
 }
 
 
 $double_bull: yellow;
-$outer_bull: orange;
-$single_inner: red;
+$single_bull: orange;
+$inner: red;
 $triple: blue;
-$single_outer: black;
+$outer: black;
 $double: grey;
 
 .widget-dartboard {
   .sector {
-    .little { fill: $single_inner !important; }
-    .fat { fill: $single_outer !important; }
+    .little { fill: $inner !important; }
+    .fat { fill: $outer !important; }
     .double { fill: $double !important; }
     .triple { fill: $triple !important; }
     .score { display: none; }
   }
   .sector_bull {
-    .single { fill: $outer_bull !important; }
+    .single { fill: $single_bull !important; }
     .double { fill: $double_bull !important; }
   }
+}
+
+
+.archery-mark {
+  &.double_bull {
+    stroke: $double_bull;
+    fill: $double_bull;
+  }
+  &.single_bull { stroke: $single_bull; }
+  &.inner { stroke: $inner; }
+  &.triple { stroke: $triple; }
+  &.outer { stroke: $outer; }
+  &.double { stroke: $double; }
 }

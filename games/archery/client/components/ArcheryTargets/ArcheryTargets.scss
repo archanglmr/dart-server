@@ -1,0 +1,26 @@
+@import "colors";
+
+
+.archery-targets {
+  background-color: $background;
+  position: absolute;
+  right: 5vw;
+  top: 18vh;
+  border: 1px solid $foreground;
+  font-size: 4vh;
+  line-height: 5vh;
+  padding-bottom: 1vh;
+
+  .label {
+    border-bottom: 1px solid $foreground;
+    padding: 0 1vw;
+  }
+  div {
+    padding: .5vh 0;
+  }
+  .archery-mark {
+    height: 6vh;
+    width: 6vh;
+    margin: 0 1vw;
+  }
+}

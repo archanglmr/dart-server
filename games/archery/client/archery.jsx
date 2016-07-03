@@ -15,12 +15,13 @@ import WidgetGameNameContainer from 'containers/WidgetGameNameContainer';
 import WidgetCurrentPlayerContainer from 'containers/WidgetCurrentPlayerContainer';
 import WidgetRoundsContainer from 'containers/WidgetRoundsContainer';
 import WidgetScoreHistoryContainer from 'containers/WidgetScoreHistoryContainer';
-import ScoreHistoryNumber from 'components/ScoreHistoryNumber';
+import ScoreHistoryArchery from './components/ScoreHistoryArchery';
 import WidgetTempScoreContainer from 'containers/WidgetTempScoreContainer';
 import WidgetThrowsContainer from 'containers/WidgetThrowsContainer';
 import WidgetPlayerListContainer from 'containers/WidgetPlayerListContainer';
 import WidgetDartboardContainer from 'containers/WidgetDartboardContainer';
 import WidgetWinnerContainer from 'containers/WidgetWinnerContainer';
+import ArcheryTargetsContainer from './containers/ArcheryTargetsContainer';
 
 
 import './archery.scss';
@@ -41,11 +42,12 @@ top.window.registerGame((store) => {
                 <WidgetCurrentPlayerContainer />
                 <WidgetRoundsContainer />
               </CornerDash>
-              <WidgetScoreHistoryContainer displayLimit={8} valueComponent={ScoreHistoryNumber} />
+              <WidgetScoreHistoryContainer displayLimit={8} valueComponent={ScoreHistoryArchery} />
               <WidgetTempScoreContainer />
               <WidgetThrowsContainer />
               <WidgetPlayerListContainer />
               <WidgetDartboardContainer />
+              <ArcheryTargetsContainer />
               <WidgetWinnerContainer />
             </GameClient>
           </Provider>
