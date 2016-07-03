@@ -53,7 +53,6 @@ function Slice({dark, number, degrees, hide, blink, highlight}) {
 
   return (
       <g className={classNames.sector.join(' ')} transform={`rotate(${degrees}, 394, 387)`}>
-
         <path className={classNames.inner.join(' ')} d="M401.19,201.6a179,179,0,0,1,22.25,2L399.1,352.72a36.14,36.14,0,0,0-3.73-.35c-1.43,0-2.61.22-4,.35L368.67,203.33A190.88,190.88,0,0,1,401.19,201.6Z" />
         <path className={classNames.outer.join(' ')} d="M350.11,81.6l15.58,102a210.27,210.27,0,0,1,61,.36L443.36,82.15a314.9,314.9,0,0,0-38.21-3.58,307,307,0,0,0-55.09,3Z" />
         <path className={classNames.double.join(' ')} d="M405.29,75.56a320.25,320.25,0,0,1,38.6,3.61l2.55-15.57a331.26,331.26,0,0,0-41.5-4.08,320.1,320.1,0,0,0-57.67,3.54l2.38,15.59A317.11,317.11,0,0,1,405.29,75.56Z" />
