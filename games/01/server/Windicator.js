@@ -47,7 +47,7 @@ module.exports = class Windicator {
     // make sure it's even possible to find a win
     if ((this.highestValue * throwsRemaining) >= goal) {
       let remaining = goal;
-      let combinations = this.combsWithRepOuter(throwsRemaining, this.allPossibleValues);
+      let combinations = this.combsWithRepOuter(throwsRemaining, _.filter(this.allPossibleValues, (val) => val <= goal));
       this.values = this.dropBadValues(this.reWeigh(this.expandDarts(this.findCombinationsForTarget(remaining, combinations, []))));
       return this.values;
     }
