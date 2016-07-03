@@ -44,7 +44,7 @@ function WidgetDartboard({dartboard}) {
   if (dartboard.blink && dartboard.blink[21]) {
     bullClassNames = updateBullClassNames({classNames: bullClassNames, addClass: 'blink', target: dartboard.blink[21]});
   }
-  if (dartboard.hide && dartboard.highlight[21]) {
+  if (dartboard.highlight && dartboard.highlight[21]) {
     bullClassNames = updateBullClassNames({classNames: bullClassNames, addClass: 'highlight', target: dartboard.highlight[21]});
   }
 

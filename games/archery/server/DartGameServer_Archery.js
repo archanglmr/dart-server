@@ -121,10 +121,24 @@ module.exports = class DartGameServer_Archery extends DartHelpers.DartGameServer
    * Will look at the current game state and return an object compatible with
    * the state.widgetDartboard property and WidgetDartboard component.
    *
+   * @param throwList {array}
    * @returns {{}}
    */
-  toWidgetDartboard() {
-    return {visible: true};
+  toWidgetDartboard(throwList = []) {
+    var dartboard = {
+      visible: true,
+      highlight: {}
+    };
+
+    for (let i = 0, c = throwList.length; i < c; i += 1) {
+      let throwData = throwList[i];
+      if (!dartboard.highlight[throwData.number]) {
+        dartboard.highlight[throwData.number] = [];
+      }
+      dartboard.highlight[throwData.number].push(throwData);
+    }
+
+    return dartboard;
   }
 
 
@@ -258,7 +272,8 @@ module.exports = class DartGameServer_Archery extends DartHelpers.DartGameServer
         widgetThrows: game.currentThrows.slice(0),
         locked: game.locked,
         finished: game.finished,
-        winner: game.winner
+        winner: game.winner,
+        widgetDartboard: this.toWidgetDartboard(game.currentThrows)
       });
     }
     return state;
@@ -330,7 +345,8 @@ module.exports = class DartGameServer_Archery extends DartHelpers.DartGameServer
         widgetThrows: game.currentThrows.slice(0),
         locked: game.locked,
         finished: game.finished,
-        winner: game.winner
+        winner: game.winner,
+        widgetDartboard: this.toWidgetDartboard(game.currentThrows)
       });
     }
     return state;

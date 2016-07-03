@@ -82,7 +82,7 @@
       display: none;
     }
     .blink {
-      animation: blink-animation 1s steps(3, start) infinite;
+      animation: blink-animation 1s infinite;
     }
   }
 
@@ -96,8 +96,8 @@
   }
 
   @keyframes blink-animation {
-    to {
-      visibility: hidden;
-    }
+    0% {opacity: 1;}
+    50% {opacity: .25;}
+    100% {opacity: 1;}
   }
 }
