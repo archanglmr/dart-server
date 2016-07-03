@@ -6,94 +6,48 @@ module.exports = (io) => {
       router = express.Router(),
       DartHelpers = require('../lib/dart-helpers'),
       actions = require('../clients/display/actions'),
-
-
-      players = {
-        2: {
-          "id": 2,
-          "firstName": "Matthew",
-          "lastName": "Rossetta",
-          "displayName": "Matt"
-        },
-        3: {
-          "id": 3,
-          "firstName": "Emily",
-          "lastName": "Ross",
-          "displayName": "Em"
-        },
-        4: {
-          "id": 4,
-          "firstName": "Leonidas",
-          "lastName": "Lucas",
-          "displayName": "Leo"
-        },
-        5: {
-          "id": 5,
-          "firstName": "Dennis",
-          "lastName": "De Cristo",
-          "displayName": "Dennis"
-        },
-        6: {
-          "id": 6,
-          "firstName": "Jerry",
-          "lastName": "Dwelle",
-          "displayName": "Jerry"
-        }
-      },
-      playerOrder = [2, 4];
-
-
-  //var DartGameServer_Archery = require(__dirname + '/../games/archery/server/DartGameServer_Archery'),
-  //    game = new DartGameServer_Archery({
-  //      modifiers: {
-  //        limit: 7 // innings
-  //      },
-  //      players,
-  //      playerOrder
-  //    });
-
-  //var DartGameServer_Shanghai = require(__dirname + '/../games/shanghai/server/DartGameServer_Shanghai'),
-  //    game = new DartGameServer_Shanghai({
-  //      modifiers: {
-  //        limit: 7 // innings
-  //      },
-  //      players,
-  //      playerOrder
-  //    });
-
-  //var DartGameServer_Cricket = require(__dirname + '/../games/cricket/server/DartGameServer_Cricket'),
-  //    game = new DartGameServer_Cricket({
-  //      variation: 'standard',
-  //      modifiers: {
-  //        limit: 25
-  //      },
-  //      players,
-  //      playerOrder
-  //    });
-
-  var DartGameServer_01 = require(__dirname + '/../games/01/server/DartGameServer_01'),
-      game = new DartGameServer_01({
-        variation: 501,
-        //modifiers: {
-        //  limit: 25
-        //},
-        players,
-        playerOrder
-      });
-
+      GameManager = require('../lib/game-manager');
 
   var gamePauseLength = 3000,
-      gamePauseTimer = null;
+      gamePauseTimer = null,
+      game = null, // this will be populated with whatever game
+      gameStarted = function(g) {
+        game = g;
+        console.log('Starting ' + game.getDisplayName() + ' Game');
+        game.startGame();
+        io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
+      },
+      gm = new GameManager(__dirname + '/../games', models, gameStarted);
 
-  console.log('Starting ' + game.getDisplayName() + ' Game');
-  game.startGame();
+
+  /**
+   * player order by id (unless you pass randomize: true)
+   */
+  var playerOrder = [4, 2, 9, 8];
+
+  /**
+   * Games we can play
+   */
+  //gm.createGame('archery', {playerOrder});
+  //gm.createGame('shanghai', {modifiers: {limit: 7}, playerOrder});
+  gm.createGame('cricket', {playerOrder, randomize: true});
+  //gm.createGame('01', {variation: 301, playerOrder});
+
+
+
+
+
 
   /**
    * socket.io server
    */
   io.on('connection', function(socket) {
     console.log('A client connected');
-    socket.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game.getState()));
+    if (game) {
+      socket.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
+    } else {
+      console.log('game not ready');
+    }
 
     socket.on('disconnect', function(){
       console.log('user disconnected');
@@ -110,6 +64,12 @@ module.exports = (io) => {
     if ('object' == typeof req.body) {
       res.setHeader('Content-Type', 'application/json');
 
+      if (!game) {
+        res.status(200);
+        res.end();
+        return;
+      }
+
       // @todo: this does not check if the game is active or anything
       if (DartHelpers.Test.isValidThrow(req.body)) {
         res.write(JSON.stringify({success: true}));
@@ -118,28 +78,22 @@ module.exports = (io) => {
         if (null === gamePauseTimer) {
           console.log('throw (good):', data);
           game.throwDart(req.body);
-          //console.log(DartHelpers.Test.widgetThrows(game.getState()));
-          //console.log(game.getScores());
           let state = game.getState();
 
           if (state.game.roundOver) {
             // if the round is we should send an update, then wait to advance
             // the game
-            io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(state));
+            io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
 
             gamePauseTimer = setTimeout(() => {
               game.advanceGame();
-              //console.log(DartHelpers.Test.widgetThrows(game.getState()));
-              //console.log(game.getScores());
-              io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game.getState()));
+              io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
               gamePauseTimer = null;
             }, gamePauseLength);
           } else {
             // if the round is not over we can update immediately
             game.advanceGame();
-            //console.log(DartHelpers.Test.widgetThrows(game.getState()));
-            //console.log(game.getScores());
-            io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game.getState()));
+            io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
           }
 
         } else {
@@ -148,9 +102,7 @@ module.exports = (io) => {
       } else if (req.body.undo) {
         if (!gamePauseTimer && game.undoLastThrow()) {
           game.advanceGame();
-          //console.log(DartHelpers.Test.widgetThrows(game.getState()));
-          //console.log(game.getScores());
-          io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game.getState()));
+          io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
           gamePauseTimer = null;
 
           res.write(JSON.stringify({success: true}));
@@ -174,13 +126,14 @@ module.exports = (io) => {
   /**
    * @todo: This helper could be planned out a bit better....
    *
-   * @param state
+   * @param game {DartGameServer}
+   * @param state {object}
    * @returns {{display: string, state: *}}
    */
-  function io_response_wrapper(state) {
+  function io_response_wrapper(game) {
     return {
       display: '/display/game/' + game.getClientDisplayKey(),
-      state: state
+      state: game.getState()
     };
   }
 
