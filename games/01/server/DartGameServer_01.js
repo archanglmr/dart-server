@@ -175,7 +175,8 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       game.players[id] = {
         id,
         score: parseInt(state.config.variation, 10),
-        history: [0]
+        history: [0],
+        throwHistory: []
       };
     }
 
@@ -253,6 +254,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       let score = game.players[game.currentPlayer].score = (game.roundBeginningScore - game.tempScore);
       // set the temp score as in the player score history
       game.players[game.currentPlayer].history[game.rounds.current] = game.tempScore;
+      game.players[game.currentPlayer].throwHistory.push(throwData);
       if (0 === score) {
         game.finished = true;
         game.winner = game.currentPlayer;
@@ -262,7 +264,8 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       // windicator
       game.widgetWindicator = this.windicator.calculate(
           score,
-          game.rounds.throws - (game.currentThrow + 1)
+          game.rounds.throws - (game.currentThrow + 1),
+          game.players[game.currentPlayer].throwHistory
       );
 
       game.locked = true;
@@ -355,13 +358,14 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       if (playerChanged) {
         game.roundBeginningScore = game.players[game.currentPlayer].score;
         game.players[game.currentPlayer].history[game.currentRound] = 0;
-      }
 
-      // windicator
-      game.widgetWindicator = this.windicator.calculate(
-          game.players[game.currentPlayer].score,
-          game.rounds.throws - game.currentThrow
-      );
+        // windicator
+        game.widgetWindicator = this.windicator.calculate(
+            game.players[game.currentPlayer].score,
+            game.rounds.throws - game.currentThrow,
+            game.players[game.currentPlayer].throwHistory
+        );
+      }
 
       game.locked = false;
 

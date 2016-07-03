@@ -40,9 +40,10 @@ module.exports = class Windicator {
    *
    * @param goal {number}
    * @param throwsRemaining {number}
+   * @param throwHistory {Array}
    * @returns {Array{Array{}}
    */
-  calculate(goal, throwsRemaining) {
+  calculate(goal, throwsRemaining, throwHistory) {
     // make sure it's even possible to find a win
     if ((this.highestValue * throwsRemaining) >= goal) {
       let remaining = goal;
