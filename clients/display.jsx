@@ -39,13 +39,11 @@ render(
 
 socket.on(UPDATE_GAME_STATE, (data) => {
   if (currentDisplay !== data.display) {
-    console.log('update display and cause redraw');
     clientStore = null;
     displayStore.dispatch(updateDisplayUrl((currentDisplay = data.display)));
     clientStore = createStore(clientRootReducer);
     clientStore.dispatch(updateGameState(data.state));
   } else {
-    console.log('normal client dispatch');
     clientStore.dispatch(updateGameState(data.state));
   }
 });
