@@ -1,6 +1,7 @@
 'use strict';
 var DartHelpersTest = require('../../../lib/dart-helpers/test'),
     ThrowTypes = require('../../../lib/throw-types'),
+    util = require('util'),
     _ = require('underscore');
 
 
@@ -46,26 +47,43 @@ module.exports = class Windicator {
     if ((this.highestValue * throwsRemaining) >= goal) {
       let remaining = goal;
       let combinations = this.combsWithRepOuter(throwsRemaining, this.allPossibleValues);
-      this.values = _.filter(this.reWeigh(this.findCombinationsForTarget(remaining, combinations, [])), (elem) => elem.type != ThrowTypes.MISS);
+      this.values = this.dropBadValues(this.reWeigh(this.expandDarts(this.findCombinationsForTarget(remaining, combinations, []))));
       return this.values;
     }
     this.values = [];
     return this.values;
   }
 
+  dropBadValues(choices) {
+      return _.map(choices, (choice) => _.filter(choice, (val) => val.type != ThrowTypes.MISS));
+  }
+
   getWeights(val) {
-    let singleChooser = () => val.number == 21 ? .4 : .9;
-    let doubleChooser = () => val.number == 21 ? .3 : .4;
+    let smear = (num) => {
+        let offset = 0;
+        // Bias toward cricket numbers
+        if (num >= 15) {
+            offset = (num - 1) / (20 - 1) / 10;
+        }
+        return offset + (((num - 1) / (20 - 1)) / 10);
+    };
+    // bias toward bigger numbers
+    let singleChooser = () => val.number == 21 ? .4 : (.9 + smear(val.number));
+    let doubleChooser = () => val.number == 21 ? .3 : (.4 + smear(val.number));
 
     let weights = {};
     weights[ThrowTypes.SINGLE_OUTER] = singleChooser;
     weights[ThrowTypes.SINGLE_INNER] = singleChooser;
     weights[ThrowTypes.DOUBLE] = doubleChooser;
     weights[ThrowTypes.TRIPLE] = () => .5;
-    weights[ThrowTypes.MISS] = () => 1;
-    return weights[val.type]();
+    weights[ThrowTypes.MISS] = () => .9;
+    let w = weights[val.type]();
+    return w;
   }
 
+  /*
+   * Assign weights to choice values, weigh each set of choices and return sorted by best choice
+   */
   reWeigh(choices) {
     let weigher = (val) => {
       val.weight = this.getWeights(val);
@@ -74,6 +92,51 @@ module.exports = class Windicator {
     let choicesWithWeights = _.map(choices, (throws) => _.map(throws, weigher));
     return _.sortBy(choicesWithWeights, (throws) => _.reduce(throws, (acc, val) => acc * val.weight, 1)).reverse();
   }
+
+  /*
+   * Takes any number of lists and makes all combinations
+   * ex:
+   *    cartesianProductOf([1,2],[4],[6,7,8])
+   *    [[1,4,6],[1,4,7],[1,4,8],[2,4,6],[2,4,7],[2,4,8]]
+   *
+   */
+  cartesianProductOf() {
+    return _.reduce(arguments, function(a, b) {
+        return _.flatten(_.map(a, function(x) {
+            return _.map(b, function(y) {
+                return x.concat([y]);
+            });
+        }), true);
+    }, [ [] ]);
+  }
+
+  expandDarts(choices) {
+    let findNumberForValue = (v) => v == 25 ? 21 : v;
+    let generateDartsForValues = (vals) => {
+        let generateDartForSingleValue = (val) => {
+            // Special case for 0 -> MISS
+            if (val == 0) {
+                return [{type: ThrowTypes.MISS, value: 0, number: 0}];
+            }
+            // Build triple if the number is withing the valid range (any number evenly divisible by 3)
+            let three = (val % 3) == 0 ? [Object.assign({}, {type: ThrowTypes.TRIPLE, value: val / 3, number: findNumberForValue(val / 3)})] : [];
+            // Build double if the number is withing the valid range (any number evenly divisible by 2 as long as 40 and under or 50)
+            let two = (val <= 40 || val == 50) && (val % 2) == 0 ? [Object.assign({}, {type: ThrowTypes.DOUBLE, value: val / 2, number: findNumberForValue(val / 2)})] : [];
+            // Build single if the number is withing the valid range (any number 20 and under and 25)
+            let one = val <= 20 || val == 25 ? [Object.assign({}, {type: ThrowTypes.SINGLE_OUTER, value: val, number: findNumberForValue(val)})] : [];
+
+            // drop the empties
+            let res = _.flatten([three, two, one], true);
+            return res;
+        };
+        let res = _.map(vals, generateDartForSingleValue);
+        // Generate all sensible combinations of the resulting lists
+        return this.cartesianProductOf(...res);
+    };
+    let newChoices =  _.map(choices, generateDartsForValues);
+    return _.flatten(newChoices, true);
+  }
+
   /**
    * This is the algorithm to select from the available throw choices the ones that will get us to our desire target
    *
@@ -91,7 +154,7 @@ module.exports = class Windicator {
     var first = _.first(choices);
     var rest = _.rest(choices, 1);
     // Sum the first element and compare it to target
-    var fun = (val) => target == _.reduce(val, (acc,r) => acc + r.value, 0);
+    var fun = (val) => target == _.reduce(val, (acc,r) => acc + r, 0);
     var res = fun(first) ? [first] : [];
     // Accumulate it into our list of results
     var res1 = res.concat(acc);
@@ -110,8 +173,7 @@ module.exports = class Windicator {
   combsWithRepOuter(count /* integer */, listOfAllChoices /* list of choices */) {
     let combinations = this.combsWithRep(count, listOfAllChoices);
     let resortedCombinations = _.map(combinations, (choices) => {
-        let ord = _.sortBy(choices, (choice) => this.throwTypeOrdering(choice.type));
-        //return _.filter(ord, (elem) => elem.type != ThrowTypes.MISS);
+        let ord = _.sortBy(choices, (choice) => choice.value).reverse();
         return ord;
     });
     return resortedCombinations;
@@ -161,17 +223,7 @@ module.exports = class Windicator {
   }
 
   generate() {
-    var list = [];
-    list.push({type: ThrowTypes.MISS, number: 0, value: 0});
-    for (let i = 1, c = 20; i <= c; i += 1) {
-      list.push({type: ThrowTypes.SINGLE_OUTER, number: i, value: i});
-      list.push({type: ThrowTypes.DOUBLE, number: i, value: i * 2});
-      list.push({type: ThrowTypes.TRIPLE, number: i, value: i * 3});
-    }
-    list.push({type: ThrowTypes.SINGLE_OUTER, number: 21, value: 25});
-    list.push({type: ThrowTypes.DOUBLE, number: 21, value: 50});
-  
-    return list;
+    return _.sortBy(_.uniq(_.flatten(Array.from(Array(21).keys(), (x) => [x,x*2,x*3]).concat([25,50]))));
   }
 
   /**
