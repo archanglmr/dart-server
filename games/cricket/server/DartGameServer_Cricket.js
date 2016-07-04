@@ -19,7 +19,8 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
    * @returns {string}
    */
   getDisplayName() {
-    var name = this.getState().config.variation || 'standard';
+    var state = this.getState(),
+    name = state.game.label || state.config.variation || 'standard';
 
     return name.substr(0, 1).toUpperCase() + name.substr(1) + ' Cricket';
   }
@@ -143,19 +144,51 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
   }
 
   /**
+   * Checks a marks object to see if there are three or more marks for each
+   * number.
+   *
+   * @param {object} marks
+   * @returns {number}
+   */
+  countMarksClosed(marks) {
+    var marksClosed = 0;
+    for (let number in marks) {
+      if (marks.hasOwnProperty(number) && marks[number] >= 3) {
+        marksClosed += 1;
+      }
+    }
+    return marksClosed;
+  }
+
+  isCloseout() {
+    if (undefined === this.closeout) {
+      this.closeout = 'Closeout' === this.getState().config.variation;
+    }
+    return this.closeout;
+  }
+
+  /**
    * Will look at the current game state and return an object compatible with
    * the state.widgetDartboard property and WidgetDartboard component.
    *
-   * @param {object} targets
+   * @param {object} game
    * @returns {{}}
    */
-  toWidgetDartboard(targets) {
-    var dartboard = {
+  toWidgetDartboard(game) {
+    var targets = Object.assign({}, game.targets),
+      dartboard = {
           visible: false,
-          hide: {},
-          blink: {},
           highlight: {}
         };
+
+    if (this.isCloseout()) {
+      let currentPlayerMarks = game.players[game.currentPlayer].marks;
+      for (let mark in currentPlayerMarks) {
+        if (currentPlayerMarks.hasOwnProperty(mark)) {
+          targets[mark] = (currentPlayerMarks[mark] < 3);
+        }
+      }
+    }
 
     for (let number in targets) {
       if (targets.hasOwnProperty(number) && targets[number]) {
@@ -188,7 +221,7 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
    * @returns {*}
    */
   actionInit(state) {
-    var {variation, modifiers} = state.config,
+    var {modifiers} = state.config,
         // cloning the part we need because we're going to overwrite stuff
         game = {
           started: state.started,
@@ -269,7 +302,7 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
         players,
         started: game.started,
         locked: game.locked,
-        widgetDartboard: this.toWidgetDartboard(game.targets)
+        widgetDartboard: this.toWidgetDartboard(game)
       });
     }
     return state;
@@ -311,10 +344,19 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
         // check to see if this closes the number globally and assign the value
         if ((game.targets[throwData.number] = this.isNumberOpenInPlayers(throwData.number))) {
           // give points if allowed
-          let points = excessMarks * throwStats.value;
-          currentPlayer.marks[throwData.number] += excessMarks;
-          game.tempScore += points;
-          currentPlayer.score += points;
+          if (!this.isCloseout()) {
+            let points = excessMarks * throwStats.value;
+            currentPlayer.marks[throwData.number] += excessMarks;
+            game.tempScore += points;
+            currentPlayer.score += points;
+          }
+        }
+
+        if (this.isCloseout()) {
+          if (earnedMarks && currentPlayer.marks[throwData.number] >= 3) {
+            game.tempScore += 1;
+            currentPlayer.score += 1;
+          }
         }
 
         // do this early so we can use the updated game object
@@ -323,7 +365,10 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
         // check win condition
         if (
           this.areAllMarksClosed(currentPlayer.marks) &&
-          (currentPlayer.score >= this.getHighestScore(game.players, currentPlayer.id))
+          (
+            this.isCloseout() ||
+            (currentPlayer.score >= this.getHighestScore(game.players, currentPlayer.id))
+          )
         ) {
             game.winner = currentPlayer.id;
             game.finished = true;
@@ -349,7 +394,7 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
         locked: game.locked,
         finished: game.finished,
         winner: game.winner,
-        widgetDartboard: this.toWidgetDartboard(game.targets)
+        widgetDartboard: this.toWidgetDartboard(game)
       });
     }
     return state;
@@ -391,6 +436,7 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
 
         if (game.rounds.limit && game.currentRound >= game.rounds.limit) {
           game.winner = DartHelpers.State.getPlayerIdWithHighestScore(game.players);
+
           game.finished = true;
           return Object.assign({}, state, {
             game,
@@ -425,7 +471,8 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
         locked: game.locked,
         finished: game.finished,
         winner: game.winner,
-        widgetThrows: game.currentThrows.slice(0)
+        widgetThrows: game.currentThrows.slice(0),
+        widgetDartboard: this.toWidgetDartboard(game)
       });
     }
     return state;
