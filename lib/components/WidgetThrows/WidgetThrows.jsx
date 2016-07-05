@@ -5,7 +5,7 @@ import './WidgetThrows.scss';
 import DartIcon from '../DartIcon';
 
 
-function WidgetThrows({throws, limit, tempScore = false}) {
+function WidgetThrows({throws, limit, tempScore = false, noTempScore = false}) {
   var throwElements = [],
       throwsLength = throws.length,
       outlineOnly = false;
@@ -24,7 +24,7 @@ function WidgetThrows({throws, limit, tempScore = false}) {
       throwElements.push(' | ');
     }
   }
-  if (false !== tempScore) {
+  if (false !== tempScore && true !== noTempScore) {
     throwElements.push(<span key="widget-throws-temp-score" className="temp-score"> = {tempScore}</span>);
   }
   return <div className="widget-throws">{throwElements}</div>;
@@ -37,7 +37,9 @@ WidgetThrows.propTypes = {
         type: PropTypes.string.isRequired
       })
   ).isRequired,
-  limit: PropTypes.number.isRequired
+  limit: PropTypes.number.isRequired,
+  tempScore: PropTypes.number,
+  noTempScore: PropTypes.bool
 };
 
 export default WidgetThrows;

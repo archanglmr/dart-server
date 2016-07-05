@@ -4,16 +4,6 @@ var DartHelpers = require('../../../lib/dart-helpers'),
 
 module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer {
   /**
-   * Handle for INIT
-   *
-   * @param config {{variation: string, modifiers: object, players: Array, playerOrder: Array}}
-   */
-  constructor(config) {
-    super(config);
-  }
-
-
-  /**
    * Gets the display name for this game type/variation
    *
    * @returns {string}

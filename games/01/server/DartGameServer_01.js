@@ -22,8 +22,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
    * @returns {string}
    */
   getDisplayName() {
-    var state = this.getState();
-    return state.config.variation || state.rounds.limit;
+    return this.getState().config.variation || super.getDisplayName();
   }
 
 
