@@ -68,6 +68,10 @@ module.exports = class DartGameServer_Slider extends DartHelpers.DartGameServer 
             target: 10
           };
 
+    if (modifiers && modifiers.limit) {
+      game.rounds.limit = modifiers.limit;
+    }
+
     for (let i = 0, c = state.players.order.length; i < c; i += 1) {
       let id = state.players.order[i];
 
