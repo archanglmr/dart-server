@@ -5,11 +5,14 @@ import './WidgetRounds.scss';
 
 
 function WidgetRounds({current, limit}) {
-  return (
-    <div className="widget-rounds">
-      Round <span className="current">{current}</span> / <span className="limit">{limit}</span>
-    </div>
-  );
+  if (limit) {
+    return (
+        <div className="widget-rounds">
+          Round <span className="current">{current}</span> / <span className="limit">{limit}</span>
+        </div>
+    );
+  }
+  return <div className="widget-rounds">Round <span className="current">{current}</span></div>
 }
 
 WidgetRounds.propTypes = {

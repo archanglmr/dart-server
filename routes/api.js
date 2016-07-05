@@ -23,17 +23,18 @@ module.exports = (io) => {
   /**
    * player order by id (unless you pass randomize: true)
    */
-  var playerOrder = [4, 2, 9, 8];
+  var playerOrder = [4, 2],
+      randomize = true;
 
   /**
    * Games we can play
    */
-  //gm.createGame('archery', {playerOrder});
-  //gm.createGame('shanghai', {modifiers: {limit: 7}, playerOrder});
-  gm.createGame('cricket', {playerOrder, randomize: true});
-  //gm.createGame('01', {variation: 301, playerOrder});
-
-
+  gm.createGame('01', {variation: 501, playerOrder, randomize});
+  //gm.createGame('archery', {playerOrder, randomize});
+  //gm.createGame('cricket', {playerOrder, randomize});
+  //gm.createGame('cricket', {variation: 'Closeout', playerOrder, randomize, modifiers: {limit: 18}});
+  //gm.createGame('shanghai', {modifiers: {limit: 7}, playerOrder, randomize});
+  //gm.createGame('slider', {playerOrder, randomize});
 
 
 

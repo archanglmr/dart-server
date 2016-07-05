@@ -9,11 +9,11 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
    *
    * @param config {{variation: string, modifiers: object, players: Array, playerOrder: Array}}
    */
-  constructor(config) {
-    super(config);
-
-    this.windicator = new Windicator(this.calculateThrowDataValue);
-  }
+  //constructor(config) {
+  //  super(config);
+  //
+  //  this.windicator = new Windicator(this.calculateThrowDataValue);
+  //}
 
 
   /**
@@ -121,8 +121,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
    * @returns {*}
    */
   actionInit(state) {
-    var {modifiers} = state.config,
-        config = Object.assign({}, state.config),
+    var config = Object.assign({}, state.config),
     // cloning the part we need because we're going to overwrite stuff
           game = {
             started: state.started,
@@ -134,6 +133,8 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
             rounds: Object.assign({}, state.rounds),
             roundOver: false
           };
+
+    this.windicator = new Windicator(this.calculateThrowDataValue);
 
     if (!config.variation) {
       config.variation = 501;
