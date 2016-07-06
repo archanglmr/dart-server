@@ -85,6 +85,22 @@
         background-color: rgba($player_4_primary, 0.2);
         outline-color: $player_4_primary;
       }
+      &.player_5 .marks {
+        background-color: rgba($player_5_primary, 0.2);
+        outline-color: $player_5_primary;
+      }
+      &.player_6 .marks {
+        background-color: rgba($player_6_primary, 0.2);
+        outline-color: $player_6_primary;
+      }
+      &.player_7 .marks {
+        background-color: rgba($player_7_primary, 0.2);
+        outline-color: $player_7_primary;
+      }
+      &.player_8 .marks {
+        background-color: rgba($player_8_primary, 0.2);
+        outline-color: $player_8_primary;
+      }
     }
 
     .marks {
