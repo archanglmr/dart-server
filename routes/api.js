@@ -35,6 +35,7 @@ module.exports = (io) => {
   //gm.createGame('cricket', {variation: 'Closeout', playerOrder, randomize, modifiers: {limit: 18}});
   //gm.createGame('shanghai', {modifiers: {limit: 7}, playerOrder, randomize});
   //gm.createGame('slider', {playerOrder, randomize});
+  //gm.createGame('warfare', {playerOrder, randomize});
 
 
 

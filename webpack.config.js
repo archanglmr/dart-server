@@ -69,10 +69,11 @@ module.exports = [
     },
     entry: {
       '01': [__dirname + '/games/01/client/01.jsx', hotMiddlewareScript],
+      'archery': [__dirname + '/games/archery/client/archery.jsx', hotMiddlewareScript],
       'cricket': [__dirname + '/games/cricket/client/cricket.jsx', hotMiddlewareScript],
       'shanghai': [__dirname + '/games/shanghai/client/shanghai.jsx', hotMiddlewareScript],
       'slider': [__dirname + '/games/slider/client/slider.jsx', hotMiddlewareScript],
-      'archery': [__dirname + '/games/archery/client/archery.jsx', hotMiddlewareScript]
+      'warfare': [__dirname + '/games/warfare/client/warfare.jsx', hotMiddlewareScript]
     },
     output: {
       path: path.join(__dirname, 'builds/games'),
