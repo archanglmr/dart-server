@@ -4,13 +4,16 @@ import React, {PropTypes} from 'react';
 import './WidgetPlayer.scss';
 
 
-function WidgetPlayer({id, displayName, score, current}) {
-  var className = ['widget-player'];
+function WidgetPlayer({id, displayName, score, current, className}) {
+  var classNames = ['widget-player', 'player_id_' + id];
   if (current) {
-    className.push('current');
+    classNames.push('current');
+  }
+  if (className) {
+    classNames.push(className);
   }
   return (
-      <div className={className.join(' ')}>
+      <div className={classNames.join(' ')}>
         <div>{displayName}</div>
         {score}
       </div>

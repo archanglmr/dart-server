@@ -2,7 +2,7 @@
 
 import React, {PropTypes} from 'react';
 import Slice from './Slice.jsx';
-import './WidgetDartboard.scss';
+import './WidgetDartboardStylized.scss';
 
 
 function updateBullClassNames({classNames, addClass, target}) {
@@ -23,19 +23,22 @@ function updateBullClassNames({classNames, addClass, target}) {
   return classNames;
 }
 
-function WidgetDartboard({dartboard}) {
+function WidgetDartboardStylized({dartboard}) {
   var order = [20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5],
       bullClassNames = {
         double: ['dark', 'double'],
         outer: ['light', 'single']
       },
-      className = ['widget-dartboard'];
+      className = ['widget-dartboard', 'widget-dartboard-stylized'];
 
   if (!dartboard.visible) {
     className.push('hidden');
   }
   if (dartboard.highlight) {
     className.push('highlight');
+  }
+  if (dartboard.backdrop) {
+    className.push('backdrop');
   }
 
   if (dartboard.hide && dartboard.hide[21]) {
@@ -51,12 +54,16 @@ function WidgetDartboard({dartboard}) {
 
 
   return (
-    <svg className={className.join(' ')} version="1.1" x="0px" y="0px" width="787px" height="774px" viewBox="0 0 787 774" enable-background="new 0 0 787 774">
+    <svg className={className.join(' ')} version="1.1" x="0px" y="0px" width="1000px" height="1000px" viewBox="0 0 1000 1000" enable-background="new 0 0 1000 1000">
+      <g className="backdrop">
+        <circle className="outer" fill="black" cx="500" cy="500" r="550"></circle>
+        <circle className="inner" fill="white" cx="500" cy="500" r="435"></circle>
+      </g>
       <g class="island">
         {order.map((value, i) => <Slice
             key={value}
             number={value}
-            degrees={i * 18}
+            degrees={(i * 18) - 9}
             dark={!!((i + 1) % 2)}
             hide={dartboard.hide ? dartboard.hide[value] : null}
             blink={dartboard.blink ? dartboard.blink[value] : null}
@@ -65,16 +72,14 @@ function WidgetDartboard({dartboard}) {
         )}
       </g>
       <g className="sector sector_bull">
-        <path className={bullClassNames.outer.join(' ')} transform="translate(-7.5, -2)" d="M432.438 389c0 17.087-13.852 30.938-30.938 30.938S370.562 406.1 370.6 389 s13.852-30.938 30.938-30.938S432.438 371.9 432.4 389z M401.5 372.602c-9.057 0-16.398 7.342-16.398 16.4 s7.342 16.4 16.4 16.398s16.398-7.342 16.398-16.398S410.557 372.6 401.5 372.602z" />
-        <circle className={bullClassNames.double.join(' ')} cx="394" cy="387" r="13.7"></circle>
+        <path className={bullClassNames.outer.join(' ')} d="M500,598.92a98.42,98.42,0,1,1,98.42-98.42A98.42,98.42,0,0,1,500,598.92Zm0-49.38a49,49,0,1,0-49-49A49,49,0,0,0,500,549.54Z" />
+        <circle className={bullClassNames.double.join(' ')} cx="500" cy="500" r="43"></circle>
       </g>
     </svg>
   );
 }
 
-//394, 387
-
-WidgetDartboard.propTypes = {
+WidgetDartboardStylized.propTypes = {
   dartboard: PropTypes.shape({
     visible: PropTypes.bool,
     hide: PropTypes.object,
@@ -83,4 +88,4 @@ WidgetDartboard.propTypes = {
   })
 };
 
-export default WidgetDartboard;
+export default WidgetDartboardStylized;

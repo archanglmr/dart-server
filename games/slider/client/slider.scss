@@ -3,6 +3,12 @@
   right: 32.5vw;
   width: 35vw;
   height: 35vw;
+  .score {
+    display: none;
+  }
+  .score.highlight {
+    display: block;
+  }
 
 }
 .target-number-container {

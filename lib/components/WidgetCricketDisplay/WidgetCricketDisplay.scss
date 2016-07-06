@@ -68,6 +68,24 @@
         background-color: rgba($foreground, 0.1);
       }
     }
+    &.current {
+      &.player_1 .marks {
+        background-color: rgba($player_1_primary, 0.2);
+        outline-color: $player_1_primary;
+      }
+      &.player_2 .marks {
+        background-color: rgba($player_2_primary, 0.2);
+        outline-color: $player_2_primary;
+      }
+      &.player_3 .marks {
+        background-color: rgba($player_3_primary, 0.2);
+        outline-color: $player_3_primary;
+      }
+      &.player_4 .marks {
+        background-color: rgba($player_4_primary, 0.2);
+        outline-color: $player_4_primary;
+      }
+    }
 
     .marks {
       //border: 1px solid $foreground;

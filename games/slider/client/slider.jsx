@@ -11,11 +11,8 @@ import {Provider} from 'react-redux';
 // React components
 import GameClient from 'components/GameClient';
 import CornerDash from 'components/CornerDash';
-import WidgetGameNameContainer from 'containers/WidgetGameNameContainer';
-import WidgetCurrentPlayerContainer from 'containers/WidgetCurrentPlayerContainer';
-import WidgetRoundsContainer from 'containers/WidgetRoundsContainer';
 import WidgetScoreHistoryContainer from 'containers/WidgetScoreHistoryContainer';
-import ScoreHistoryUpDown from './components/ScoreHistoryUpDown';
+import ScoreHistoryUpDown from 'components/ScoreHistoryUpDown';
 import WidgetTargetNumberContainer from 'containers/WidgetTargetNumberContainer';
 import WidgetThrowsContainer from 'containers/WidgetThrowsContainer';
 import WidgetPlayerListContainer from 'containers/WidgetPlayerListContainer';
@@ -36,11 +33,7 @@ top.window.registerGame((store) => {
       (
           <Provider store={store}>
             <GameClient>
-              <CornerDash>
-                <WidgetGameNameContainer />
-                <WidgetCurrentPlayerContainer />
-                <WidgetRoundsContainer />
-              </CornerDash>
+              <CornerDash />
               <WidgetScoreHistoryContainer displayLimit={8} valueComponent={ScoreHistoryUpDown} />
               <WidgetThrowsContainer noTempScore={true} />
               <WidgetPlayerListContainer />

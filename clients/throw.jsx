@@ -9,9 +9,6 @@ import ThrowClient from './components/ThrowClient';
 
 import CornerDash from 'components/CornerDash';
 import GameStateReadyContainer from 'containers/GameStateReadyContainer';
-import WidgetGameNameContainer from 'containers/WidgetGameNameContainer';
-import WidgetCurrentPlayerContainer from 'containers/WidgetCurrentPlayerContainer';
-import WidgetRoundsContainer from 'containers/WidgetRoundsContainer';
 import WidgetThrowsContainer from 'containers/WidgetThrowsContainer';
 import WidgetScoreContainer from 'containers/WidgetScoreContainer';
 import WidgetTempScoreContainer from 'containers/WidgetTempScoreContainer';
@@ -47,11 +44,7 @@ render(
         <ThrowClient>
           <Provider store={gameStore}>
             <GameStateReadyContainer>
-              <CornerDash>
-                <WidgetGameNameContainer />
-                <WidgetCurrentPlayerContainer />
-                <WidgetRoundsContainer />
-              </CornerDash>
+              <CornerDash />
               <WidgetScoreContainer />
               <WidgetTempScoreContainer />
               <WidgetThrowsContainer />

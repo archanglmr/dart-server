@@ -11,9 +11,6 @@ import {Provider} from 'react-redux';
 // React components
 import GameClient from 'components/GameClient';
 import CornerDash from 'components/CornerDash';
-import WidgetGameNameContainer from 'containers/WidgetGameNameContainer';
-import WidgetCurrentPlayerContainer from 'containers/WidgetCurrentPlayerContainer';
-import WidgetRoundsContainer from 'containers/WidgetRoundsContainer';
 import WidgetScoreHistoryContainer from 'containers/WidgetScoreHistoryContainer';
 import ScoreHistoryCricket from 'components/ScoreHistoryCricket';
 import WidgetCricketDisplayContainer from 'containers/WidgetCricketDisplayContainer';
@@ -34,11 +31,7 @@ top.window.registerGame((store) => {
           <Provider store={store}>
             <GameClient>
               <WidgetCricketDisplayContainer />
-              <CornerDash>
-                <WidgetGameNameContainer />
-                <WidgetCurrentPlayerContainer />
-                <WidgetRoundsContainer />
-              </CornerDash>
+              <CornerDash />
               <WidgetScoreHistoryContainer displayLimit={8} valueComponent={ScoreHistoryCricket} />
               <WidgetThrowsContainer />
               <WidgetPlayerListContainer />

@@ -1,7 +1,7 @@
 'use strict';
 
 import {connect} from 'react-redux';
-import WidgetDartboard from '../../components/WidgetDartboard';
+import WidgetDartboardStylized from '../../components/WidgetDartboardStylized';
 
 
 const mapStateToProps = (state) => {
@@ -10,6 +10,6 @@ const mapStateToProps = (state) => {
 
 const WidgetDartboardContainer = connect(
     mapStateToProps
-)(WidgetDartboard);
+)(WidgetDartboardStylized);
 
 export default WidgetDartboardContainer;

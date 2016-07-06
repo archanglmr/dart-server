@@ -30,7 +30,7 @@ module.exports = class DartGameServer_Slider extends DartHelpers.DartGameServer 
     };
 
     dartboard.visible = true;
-    dartboard.highlight[target] = [
+    dartboard.blink[target] = dartboard.highlight[target] = [
       {number: target, type: ThrowTypes.DOUBLE},
       {number: target, type: ThrowTypes.SINGLE_OUTER},
       {number: target, type: ThrowTypes.TRIPLE},

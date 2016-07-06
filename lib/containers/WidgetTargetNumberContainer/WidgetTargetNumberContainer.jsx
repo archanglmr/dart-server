@@ -10,7 +10,7 @@ const mapStateToProps = (state) => {
     return {
       text: '' + state.game.target,
       hide: state.finished,
-      label: 'Target:',
+      label: 'Throw At:',
       className: 'target-number-container'
     };
   }

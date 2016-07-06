@@ -18,7 +18,7 @@ function WidgetCricketDisplay({targets, players, playersDb}) {
 
   for (let i = 0, c = players.length; i < c; i += 1) {
     let id = players[i].id,
-        className = ['column'],
+        className = ['column', ('player_' + (i + 1)), ('player_id_' + id)],
         name = playersDb.data[id].firstName.substr(0, 1) + playersDb.data[id].lastName.substr(0, 1);
 
     if (currentPlayer === id) {

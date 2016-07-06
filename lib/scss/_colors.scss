@@ -1,7 +1,25 @@
+$apple_watch_white: #ffffff;
+$apple_watch_red: #e10c25;
+$apple_watch_orange: #ff5230;
+$apple_watch_light_orange: #ff9500;
+$apple_watch_yellow: #ffee32;
+$apple_watch_green: #8ce329;
+$apple_watch_turquoise: #9ed5cc;
+$apple_watch_light_blue: #6ac5dd;
+$apple_watch_blue: #19b5fc;
+$apple_watch_midnight_blue: #6084bf;
+$apple_watch_purple: #997cf7;
+$apple_watch_lavender: #b29aa6;
+$apple_watch_pink: #ff5964;
+$apple_watch_vintage_rose: #f4aca5;
+$apple_watch_wallnut: #b08664;
+$apple_watch_stone: #af9980;
+$apple_watch_antique_white: #d4b694;
+
 /* LIGHT*/
 $foreground: #000;
 $background: #fff;
-$highlight: #19b5fc;
+$highlight: $apple_watch_blue;
 
 /* INVERTED */
 //$foreground: #fff;
@@ -12,3 +30,13 @@ $highlight: #19b5fc;
 //$foreground: $highlight;
 //$background: #000;
 //$highlight: #fff;
+
+
+$player_1_primary: $apple_watch_light_blue;
+$player_1_secondary: #000;
+$player_2_primary: $apple_watch_green;
+$player_2_secondary: #000;
+$player_3_primary: $apple_watch_light_orange;
+$player_3_secondary: #000;
+$player_4_primary: $apple_watch_pink;
+$player_4_secondary: #000;

@@ -1,0 +1,116 @@
+@import "colors";
+
+.widget-dartboard-stylized {
+  position: absolute;
+  right: 1.5vw;
+  top: 17vh;
+  width: 22vw;
+  height: 22vw;
+  overflow: visible;
+
+  &.hidden {
+    display: none;
+  }
+
+  .backdrop {
+    display: none;
+  }
+  &.backdrop {
+    text.score { fill: #fff; }
+    .backdrop {
+      display: block;
+      .inner { background-color: #fff; };
+      .outer { background-color: #000; }
+    }
+  }
+
+  &.highlight {
+    .sector {
+      &.light {
+        .double,
+        .triple {
+          fill: #666;
+        }
+        .single {
+          fill: #aaa;
+        }
+      }
+      &.dark {
+        .double,
+        .triple {
+          fill: #666;
+        }
+        .single {
+          fill: #000;
+        }
+      }
+    }
+    .sector_bull {
+      .light {
+        fill: #666;
+      }
+      .dark {
+        fill: #000
+      }
+    }
+
+    .sector, .sector_bull {
+      path, circle {
+        &.highlight {
+          fill: $highlight !important;
+        }
+      }
+    }
+    text.highlight {
+      font-weight: bold;
+    }
+  }
+
+  .sector {
+    &.light {
+      .double,
+      .triple {
+        fill: green;
+      }
+      .single {
+        fill: #ddd;
+      }
+    }
+    &.dark {
+      .double,
+      .triple {
+        fill: red;
+      }
+      .single {
+        fill: black;
+      }
+    }
+
+    .score {
+      font-size: 75px;
+      fill: $foreground;
+    }
+
+    .hide {
+      display: none;
+    }
+    .blink {
+      animation: blink-animation 1s infinite;
+    }
+  }
+
+  .sector_bull {
+    .light {
+      fill: green;
+    }
+    .dark {
+      fill: red
+    }
+  }
+
+  @keyframes blink-animation {
+    0% {opacity: 1;}
+    50% {opacity: .25;}
+    100% {opacity: 1;}
+  }
+}

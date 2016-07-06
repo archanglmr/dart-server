@@ -11,10 +11,11 @@ function WidgetPlayerList({players}) {
   }
   return (
       <div className={className.join(' ')}>
-        {players.map((player) => (
+        {players.map((player, index) => (
             <WidgetPlayer
                 key={player.id}
                 {...player}
+                className={'player_' + (index + 1)}
               />
         ))}
       </div>

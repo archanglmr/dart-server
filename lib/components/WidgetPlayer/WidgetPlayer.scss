@@ -1,5 +1,7 @@
 @import "colors";
 
+$player_color_opacity: .75;
+
 .widget-player {
   display: inline-block;
   margin: 1vh .25vw;
@@ -25,10 +27,24 @@
   &.current {
     font-weight: bold;
 
-    background-color: $foreground;
     color: $background;
-    div {
-      border-bottom-color: $background;
+    background-color: $foreground;
+
+    &.player_1 {
+      background-color: rgba($player_1_primary, $player_color_opacity);
+      color: $player_1_secondary;
+    }
+    &.player_2 {
+      background-color: rgba($player_2_primary, $player_color_opacity);
+      color: $player_2_secondary;
+    }
+    &.player_3 {
+      background-color: rgba($player_3_primary, $player_color_opacity);
+      color: $player_3_secondary;
+    }
+    &.player_4 {
+      background-color: rgba($player_4_primary, $player_color_opacity);
+      color: $player_4_secondary;
     }
   }
 }
