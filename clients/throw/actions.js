@@ -19,6 +19,7 @@ export const SUBMIT_UNDO_COMPLETE = 'SUBMIT_UNDO_COMPLETE';
 export const ThrowTypesList = ThrowTypes;
 
 
+var autoSubmit = (window.location.search && window.location.search.match(/autosubmit/).length);
 /**
  * ACTIONS
  */
@@ -30,6 +31,12 @@ export const ThrowTypesList = ThrowTypes;
  * @returns {{type: string, throwType: *}}
  */
 export function selectThrowType(throwType) {
+  if (autoSubmit) {
+    return (dispatch, getState) => {
+      dispatch({type: SELECT_THROW_TYPE, throwType});
+      dispatch(submitThrow());
+    };
+  }
   return {type: SELECT_THROW_TYPE, throwType};
 }
 
@@ -41,6 +48,12 @@ export function selectThrowType(throwType) {
  * @returns {{type: string, throwNumber: number}}
  */
 export function selectThrowNumber(throwNumber) {
+  if (autoSubmit) {
+    return (dispatch, getState) => {
+      dispatch({type: SELECT_THROW_NUMBER, throwNumber});
+      dispatch(submitThrow());
+    };
+  }
   return {type: SELECT_THROW_NUMBER, throwNumber};
 }
 
