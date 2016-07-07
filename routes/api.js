@@ -139,6 +139,17 @@ module.exports = (io) => {
     };
   }
 
+  router.get('/gameoptions', function (req, res) {
+    var games = gm.listGames();
+
+    models.Player.all()
+        .then(function (players) {
+          // @fixme: dumping to much player info here???
+          res.setHeader('Content-Type', 'application/json');
+          res.write(JSON.stringify({games, players}), 'utf-8');
+          res.end();
+        });
+  });
 
 
 

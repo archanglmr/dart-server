@@ -6,6 +6,9 @@
     "rounds": 25
   },
   "variations": {
+    "Standard": {
+      "name": "Standard Cricket"
+    },
     "Closeout": {
       "name": "Closeout Cricket",
       "instructions": "Same as normal cricket but points are only given for closing out your numbers. Each close out is worth 1 point. First person to close all their numbers wins. If the round limit is hit the person with the highest score wins."

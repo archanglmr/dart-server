@@ -1,13 +1,13 @@
 'use strict';
 
 import {connect} from 'react-redux';
-import {submitThrow} from '../../throw/actions';
+import {submitThrow} from '../../throw/actions-throw-state';
 import ThrowButton from '../../components/ThrowButton';
 
 
 const mapStateToProps = (state, ownProps) => {
-  let newProps = {disabled: (!state.submittable || state.isSubmitting)};
-  if (state.isSubmitting) {
+  let newProps = {disabled: (!state.throwState.submittable || state.throwState.isSubmitting)};
+  if (state.throwState.isSubmitting) {
     newProps.text = 'Submitting...';
   }
   return Object.assign({}, ownProps, newProps);

@@ -1,13 +1,13 @@
 'use strict';
 
 import {connect} from 'react-redux';
-import {submitUndo} from '../../throw/actions';
+import {submitUndo} from '../../throw/actions-throw-state';
 import ThrowButton from '../../components/ThrowButton';
 
 
 const mapStateToProps = (state, ownProps) => {
-  let newProps = {disabled: state.isSubmitting};
-  if (state.isSubmitting) {
+  let newProps = {disabled: state.throwState.isSubmitting};
+  if (state.throwState.isSubmitting) {
     newProps.text = 'Undoing...';
   }
   return Object.assign({}, ownProps, newProps);

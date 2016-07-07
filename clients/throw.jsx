@@ -19,6 +19,7 @@ import {createStore, applyMiddleware} from 'redux'
 import {Provider} from 'react-redux';
 import {updateGameState, UPDATE_GAME_STATE} from './display/actions';
 import {rootReducer, gameRootReducer} from './throw/reducers';
+import {showGamesList} from './throw/actions-new-game';
 
 // Create the Redux store
 var store = createStore(
@@ -29,12 +30,8 @@ var store = createStore(
 var gameStore = createStore(gameRootReducer),
     socket = io();
 
-let unsubscribe = gameStore.subscribe((store) => console.log('game:', gameStore.getState()));
-
-
-//let unsubscribe = store.subscribe(() =>
-//    console.log(store.getState())
-//);
+//gameStore.subscribe((store) => console.log('game:', gameStore.getState()));
+//store.subscribe(() => console.log(store.getState()));
 
 // Render the React root component
 render(
@@ -60,4 +57,8 @@ render(
 
 socket.on(UPDATE_GAME_STATE, (data) => {
   gameStore.dispatch(updateGameState(data.state));
+  if (data.state.finished) {
+    console.log('show new game chooser: showGamesList()');
+    //store.dispatch(showGamesList());
+  }
 });

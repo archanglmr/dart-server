@@ -1,7 +1,7 @@
 'use strict';
 
 import {connect} from 'react-redux';
-import {selectThrowNumber} from '../../throw/actions';
+import {selectThrowNumber} from '../../throw/actions-throw-state';
 import ThrowNumbers from '../../components/ThrowNumbers';
 
 
@@ -13,10 +13,10 @@ const mapStateToProps = (state) => {
       id: i,
       text: '' + (21 === i ? 'B' : i)
     };
-    if (i === state.throwNumber) {
+    if (i === state.throwState.throwNumber) {
       button.selected = true;
     }
-    if (-1 !== state.disabledThrowNumbers.indexOf(i)) {
+    if (-1 !== state.throwState.disabledThrowNumbers.indexOf(i)) {
       button.disabled = true;
     }
     buttons.push(button);

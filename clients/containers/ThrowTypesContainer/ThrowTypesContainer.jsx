@@ -1,7 +1,7 @@
 'use strict';
 
 import {connect} from 'react-redux';
-import {selectThrowType, ThrowTypesList} from '../../throw/actions';
+import {selectThrowType, ThrowTypesList} from '../../throw/actions-throw-state';
 import ThrowTypes from '../../components/ThrowTypes';
 
 
@@ -41,10 +41,10 @@ const mapStateToProps = (state) => {
           break;
       }
 
-      if (key === state.throwType) {
+      if (key === state.throwState.throwType) {
         button.selected = true;
       }
-      if (-1 !== state.disabledThrowTypes.indexOf(key)) {
+      if (-1 !== state.throwState.disabledThrowTypes.indexOf(key)) {
         button.disabled = true;
       }
 
