@@ -15,7 +15,9 @@ module.exports = (io) => {
         game = g;
         console.log('Starting ' + game.getDisplayName() + ' Game');
         game.startGame();
-        io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
+        game.runPlugins(() => {
+          io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
+        });
       },
       gm = new GameManager(__dirname + '/../games', models, gameStarted);
 

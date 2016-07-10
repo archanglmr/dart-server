@@ -63,7 +63,7 @@ module.exports = class DartGameServer_Slider extends DartHelpers.DartGameServer 
             winner: state.winner,
             tempScore: 0,
             players: {},
-            rounds: Object.assign({}, state.rounds, {limit: 0}),
+            rounds: Object.assign({}, state.rounds),
             roundOver: false,
             target: 10
           };
