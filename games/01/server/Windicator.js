@@ -2,11 +2,12 @@
 var DartHelpersTest = require('../../../lib/dart-helpers/test'),
     ThrowTypes = require('../../../lib/throw-types'),
     util = require('util'),
-    _ = require('underscore');
+    _ = require('underscore'),
+    request = require('request-promise');
 
 
 module.exports = class Windicator {
-  constructor(calculateThrowDataValue) {
+  constructor(calculateThrowDataValue, extraConfig) {
 
     /* building a cache of values we can use to calculate the windicator */
     this.allPossibleValues = this.generate();
@@ -32,6 +33,10 @@ module.exports = class Windicator {
     this.throwKeys = this.throwKeys.sort((a, b) => b - a);
 
     this.highestValue = this.throwKeys[0];
+    this.remote = false;
+    if (extraConfig) {
+        this.remote = extraConfig;
+    }
   }
 
   /**
@@ -46,10 +51,30 @@ module.exports = class Windicator {
   calculate(goal, throwsRemaining, throwHistory) {
     // make sure it's even possible to find a win
     if ((this.highestValue * throwsRemaining) >= goal) {
-      let remaining = goal;
-      let combinations = this.combsWithRepOuter(throwsRemaining, _.filter(this.allPossibleValues, (val) => val <= goal));
-      this.values = this.dropBadValues(this.reWeigh(this.expandDarts(this.findCombinationsForTarget(remaining, combinations, []))));
-      return this.values;
+      if (this.remote === false) {
+        console.log("Using local");
+        let remaining = goal;
+        let combinations = this.combsWithRepOuter(throwsRemaining, _.filter(this.allPossibleValues, (val) => val <= goal));
+        this.values = this.dropBadValues(this.reWeigh(this.expandDarts(this.findCombinationsForTarget(remaining, combinations, []))));
+        return this.values;
+      } else {
+          console.log("Using remote");
+          const body = Object.assign({}, { goal: goal,
+                      highest: this.highestValue,
+                      throws: throwsRemaining,
+                      history: throwHistory || [],
+                }, this.remote.extraArgs);
+          const options = {
+              method: 'POST',
+              uri: 'http://' + this.remote.location + ':' + this.remote.port + '/' + this.remote.endpoint,
+              body: body,
+              json: true
+            };
+          request(options).then( (data) => {
+                this.values = data;
+            }
+          );
+      }
     }
     this.values = [];
     return this.values;
@@ -140,7 +165,6 @@ module.exports = class Windicator {
     return _.sortBy(choicesWithWeights, (throws) => {
         let pW = perSetWeigher(throws);
         let vW = _.reduce(throws, (acc, val) => acc * val.weight, 1);
-        console.log(throws, pW, vW);
         return pW + vW;
     }).reverse();
   }

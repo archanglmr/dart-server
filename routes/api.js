@@ -29,7 +29,9 @@ module.exports = (io) => {
   /**
    * Games we can play
    */
-  gm.createGame('01', {variation: 501, playerOrder, randomize});
+  gm.createGame('01', {variation: 501, playerOrder, randomize, extras: { location: "localhost", port: 8888, endpoint: 'windicator', extraArgs: {limit:10}}});
+  //gm.createGame('01', {variation: 50, playerOrder, randomize, extras: { location: "localhost", port: 8888, endpoint: 'windicator', extraArgs: {limit:10}}});
+  //gm.createGame('01', {variation: 50, playerOrder, randomize});
   //gm.createGame('archery', {playerOrder, randomize});
   //gm.createGame('cricket', {playerOrder, randomize});
   //gm.createGame('cricket', {variation: 'Closeout', playerOrder, randomize, modifiers: {limit: 18}});
