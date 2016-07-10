@@ -47,7 +47,7 @@ module.exports = class Windicator {
    * @param goal {number}
    * @param throwsRemaining {number}
    * @param throwHistory {Array}
-   * @returns {Array{Array{}}
+   * @returns Promise.then({Array{Array{}})
    */
   calculate(goal, throwsRemaining, throwHistory) {
     // make sure it's even possible to find a win
@@ -56,8 +56,8 @@ module.exports = class Windicator {
         console.log("Using local");
         let remaining = goal;
         let combinations = this.combsWithRepOuter(throwsRemaining, _.filter(this.allPossibleValues, (val) => val <= goal));
-        this.values = this.dropBadValues(this.reWeigh(this.expandDarts(this.findCombinationsForTarget(remaining, combinations, []))));
-        return this.values;
+        let valP = Promise.resolve(this.dropBadValues(this.reWeigh(this.expandDarts(this.findCombinationsForTarget(remaining, combinations, [])))));
+        return valP;
       } else {
           console.log("Using remote");
           const body = Object.assign({}, { goal: goal,
@@ -71,14 +71,10 @@ module.exports = class Windicator {
               body: body,
               json: true
             };
-          request(options).then( (data) => {
-                this.values = data;
-            }
-          );
+          return request(options);
       }
     }
-    this.values = [];
-    return this.values;
+    return Promise.resolve([]);
   }
 
   dropBadValues(choices) {
@@ -315,19 +311,26 @@ module.exports = class Windicator {
     // setTimeout() is async. Replace with HTTP request or something. Note I
     // bound to "this" for the callback in this example (just watch your
     // bindings). ES2015 syntax I think is automatically bound to "this".
-    setTimeout(function() {
-      // do your work here
-      this.calculate(
-          state.game.players[state.game.currentPlayer].score,
-          state.game.rounds.throws - state.game.currentThrow,
-          state.game.players[state.game.currentPlayer].throwHistory
-      );
+    //setTimeout(function() {
+    //  // do your work here
+    //  this.calculate(
+    //      state.game.players[state.game.currentPlayer].score,
+    //      state.game.rounds.throws - state.game.currentThrow,
+    //      state.game.players[state.game.currentPlayer].throwHistory
+    //  );
 
-      // be sure to dispatch this action with your custom reducer and have it
-      // bound to "this" if you want to access your own properties
-      store.dispatch(dartServerPlugin(this.reducer.bind(this)));
-      next();
-    }.bind(this), 0);
+    //  // be sure to dispatch this action with your custom reducer and have it
+    //  // bound to "this" if you want to access your own properties
+    //  store.dispatch(dartServerPlugin(this.reducer.bind(this)));
+    //  next();
+    //}.bind(this), 0);
+    console.log("in run");
+    this.calculate.then((value) => {
+        this.values = value;
+        store.dispatch(dartServerPlugin(this.reducer.bind(this)));
+        next();
+    });
+
   }
 
 
@@ -360,15 +363,18 @@ module.exports = class Windicator {
       highlight: {}
     };
 
+        console.log(this.values);
     if (this.values.length) {
       dartboard.visible = true;
       let val = this.values[0];
+        console.log(this.values[0]);
 
       for (let i = 0, c = val.length; i < c; i += 1) {
         let currentThrow = val[i];
         if (!dartboard.highlight[currentThrow.number]) {
           dartboard.highlight[currentThrow.number] = [];
         }
+        console.log(currentThrow);
         dartboard.highlight[currentThrow.number].push(currentThrow);
 
         // special case for singles
