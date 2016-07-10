@@ -37,6 +37,8 @@ module.exports = class Windicator {
     this.remote = false;
     if (extraConfig) {
         this.remote = extraConfig;
+        this.remote.upCheck = false;
+        this.remoteConfig = this.remote;
     }
   }
 
@@ -52,25 +54,48 @@ module.exports = class Windicator {
   calculate(goal, throwsRemaining, throwHistory) {
     // make sure it's even possible to find a win
     if ((this.highestValue * throwsRemaining) >= goal) {
-      if (this.remote === false) {
-        let remaining = goal;
-        let combinations = this.combsWithRepOuter(throwsRemaining, _.filter(this.allPossibleValues, (val) => val <= goal));
-        let valP = Promise.resolve(this.dropBadValues(this.reWeigh(this.expandDarts(this.findCombinationsForTarget(remaining, combinations, [])))));
-        return valP;
-      } else {
-          const body = Object.assign({}, { goal: goal,
-                      highest: this.highestValue,
-                      throws: throwsRemaining,
-                      history: throwHistory || [],
-                }, this.remote.extraArgs);
+      let action = () => {
+          if (this.remote === false) {
+            let remaining = goal;
+            let combinations = this.combsWithRepOuter(throwsRemaining, _.filter(this.allPossibleValues, (val) => val <= goal));
+            let valP = Promise.resolve(this.dropBadValues(this.reWeigh(this.expandDarts(this.findCombinationsForTarget(remaining, combinations, [])))));
+            return valP;
+          } else {
+              const body = Object.assign({}, { goal: goal,
+                          highest: this.highestValue,
+                          throws: throwsRemaining,
+                          history: throwHistory || [],
+                    }, this.remote.extraArgs);
+              const options = {
+                  method: 'POST',
+                  uri: 'http://' + this.remote.location + ':' + this.remote.port + '/' + this.remote.endpoint,
+                  body: body,
+                  json: true
+                };
+              return request(options);
+          }
+      };
+
+      if (this.remote !== false && !this.remote.upCheck) {
+          console.log("Performing up check for remote configuration");
           const options = {
-              method: 'POST',
-              uri: 'http://' + this.remote.location + ':' + this.remote.port + '/' + this.remote.endpoint,
-              body: body,
-              json: true
+              method: 'HEAD',
+              uri: 'http://' + this.remote.location + ':' + this.remote.port + '/up'
             };
-          return request(options);
+          return request(options).then((succ) => {
+              console.log("Remote server is up");
+              this.remote.upCheck = true;
+              return action();
+            },
+            (fail) => {
+                console.log("Remote server is down");
+                this.remote = false;
+                return action();
+            });
+      } else {
+          return action();
       }
+
     }
     return Promise.resolve([]);
   }
