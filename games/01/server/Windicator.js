@@ -109,19 +109,20 @@ module.exports = class Windicator {
         let offset = 0;
         // Bias toward cricket numbers
         if (num >= 15) {
-            offset = (num - 1) / (20 - 1) / 10;
+            offset = (num - 1) / (21 - 1) / 10;
         }
-        return offset + (((num - 1) / (20 - 1)) / 10);
+        return offset + (((num - 1) / (21 - 1)) / 10);
     };
     // bias toward bigger numbers
     let singleChooser = () => val.number == 21 ? config.singleBull : (config.single + smear(val.number));
     let doubleChooser = () => val.number == 21 ? config.doubleBull : (config.double + smear(val.number));
+    let tripleChooser = () => config.triple + smear(val.number);
 
     let weights = {};
     weights[ThrowTypes.SINGLE_OUTER] = singleChooser;
     weights[ThrowTypes.SINGLE_INNER] = singleChooser;
     weights[ThrowTypes.DOUBLE] = doubleChooser;
-    weights[ThrowTypes.TRIPLE] = () => config.triple;
+    weights[ThrowTypes.TRIPLE] = tripleChooser;
     weights[ThrowTypes.MISS] = () => config.miss;
     let w = weights[val.type]();
     return w;
