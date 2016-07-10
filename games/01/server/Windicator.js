@@ -53,13 +53,11 @@ module.exports = class Windicator {
     // make sure it's even possible to find a win
     if ((this.highestValue * throwsRemaining) >= goal) {
       if (this.remote === false) {
-        console.log("Using local");
         let remaining = goal;
         let combinations = this.combsWithRepOuter(throwsRemaining, _.filter(this.allPossibleValues, (val) => val <= goal));
         let valP = Promise.resolve(this.dropBadValues(this.reWeigh(this.expandDarts(this.findCombinationsForTarget(remaining, combinations, [])))));
         return valP;
       } else {
-          console.log("Using remote");
           const body = Object.assign({}, { goal: goal,
                       highest: this.highestValue,
                       throws: throwsRemaining,
@@ -324,7 +322,6 @@ module.exports = class Windicator {
     //  store.dispatch(dartServerPlugin(this.reducer.bind(this)));
     //  next();
     //}.bind(this), 0);
-    console.log("in run");
     this.calculate(
           state.game.players[state.game.currentPlayer].score,
           state.game.rounds.throws - state.game.currentThrow,
@@ -367,18 +364,15 @@ module.exports = class Windicator {
       highlight: {}
     };
 
-        console.log(this.values);
     if (this.values.length) {
       dartboard.visible = true;
       let val = this.values[0];
-        console.log(this.values[0]);
 
       for (let i = 0, c = val.length; i < c; i += 1) {
         let currentThrow = val[i];
         if (!dartboard.highlight[currentThrow.number]) {
           dartboard.highlight[currentThrow.number] = [];
         }
-        console.log(currentThrow);
         dartboard.highlight[currentThrow.number].push(currentThrow);
 
         // special case for singles
