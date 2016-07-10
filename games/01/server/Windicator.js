@@ -325,10 +325,14 @@ module.exports = class Windicator {
     //  next();
     //}.bind(this), 0);
     console.log("in run");
-    this.calculate.then((value) => {
-        this.values = value;
-        store.dispatch(dartServerPlugin(this.reducer.bind(this)));
-        next();
+    this.calculate(
+          state.game.players[state.game.currentPlayer].score,
+          state.game.rounds.throws - state.game.currentThrow,
+          state.game.players[state.game.currentPlayer].throwHistory
+        ).then((value) => {
+            this.values = value;
+            store.dispatch(dartServerPlugin(this.reducer.bind(this)));
+            next();
     });
 
   }
