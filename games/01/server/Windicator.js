@@ -1,5 +1,6 @@
 'use strict';
 var DartHelpersTest = require('../../../lib/dart-helpers/test'),
+    dartServerPlugin = require('../../../lib/dart-helpers/dart-game-server/actions').dartServerPlugin,
     ThrowTypes = require('../../../lib/throw-types'),
     util = require('util'),
     _ = require('underscore'),
@@ -300,6 +301,49 @@ module.exports = class Windicator {
 
   generate() {
     return _.sortBy(_.uniq(_.flatten(Array.from(Array(21).keys(), (x) => [x,x*2,x*3]).concat([25,50]))));
+  }
+
+
+  /**
+   * This is where the work happens in the plugin.
+   *
+   * @param store
+   * @param next
+   */
+  run(store, next) {
+    var state = store.getState();
+    // setTimeout() is async. Replace with HTTP request or something. Note I
+    // bound to "this" for the callback in this example (just watch your
+    // bindings). ES2015 syntax I think is automatically bound to "this".
+    setTimeout(function() {
+      // do your work here
+      this.calculate(
+          state.game.players[state.game.currentPlayer].score,
+          state.game.rounds.throws - state.game.currentThrow,
+          state.game.players[state.game.currentPlayer].throwHistory
+      );
+
+      // be sure to dispatch this action with your custom reducer and have it
+      // bound to "this" if you want to access your own properties
+      store.dispatch(dartServerPlugin(this.reducer.bind(this)));
+      next();
+    }.bind(this), 0);
+  }
+
+
+  /**
+   * Takes the full state and returns a new updated version of the state without
+   * operating on the orignail (standard Redux).
+   *
+   * @param state
+   * @returns {*}
+   */
+  reducer(state) {
+    // NO ASYNC STUFF HERE
+    return Object.assign({}, state, {
+      game: Object.assign({}, state.game, {widgetWindicator: this.values}),
+      widgetDartboard: this.toWidgetDartboard()
+    });
   }
 
   /**

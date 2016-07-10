@@ -29,7 +29,7 @@ module.exports = (io) => {
   /**
    * Games we can play
    */
-  gm.createGame('01', {variation: 501, playerOrder, randomize, extras: { location: "localhost", port: 8888, endpoint: 'windicator', extraArgs: {limit:10}}});
+  gm.createGame('01', {variation: 501, playerOrder, randomize});
   //gm.createGame('01', {variation: 50, playerOrder, randomize, extras: { location: "localhost", port: 8888, endpoint: 'windicator', extraArgs: {limit:10}}});
   //gm.createGame('01', {variation: 50, playerOrder, randomize});
   //gm.createGame('archery', {playerOrder, randomize});
@@ -77,28 +77,36 @@ module.exports = (io) => {
       // @todo: this does not check if the game is active or anything
       if (DartHelpers.Test.isValidThrow(req.body)) {
         res.write(JSON.stringify({success: true}));
+        res.end();
 
 
         if (null === gamePauseTimer) {
           console.log('throw (good):', data);
           game.throwDart(req.body);
-          let state = game.getState();
+          game.runPlugins(() => {
+            let state = game.getState();
 
-          if (state.game.roundOver) {
-            // if the round is we should send an update, then wait to advance
-            // the game
-            io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
-
-            gamePauseTimer = setTimeout(() => {
-              game.advanceGame();
+            if (state.game.roundOver) {
+              // if the round is we should send an update, then wait to advance
+              // the game
               io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
-              gamePauseTimer = null;
-            }, gamePauseLength);
-          } else {
-            // if the round is not over we can update immediately
-            game.advanceGame();
-            io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
-          }
+
+              gamePauseTimer = setTimeout(() => {
+                game.advanceGame();
+                game.runPlugins(() => {
+                  io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
+                  gamePauseTimer = null;
+                });
+              }, gamePauseLength);
+            } else {
+              // if the round is not over we can update immediately
+              game.advanceGame();
+              game.runPlugins(() => {
+                io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
+              });
+            }
+          });
+
 
         } else {
           console.log('throw (ignored):', data);
@@ -106,14 +114,18 @@ module.exports = (io) => {
       } else if (req.body.undo) {
         if (!gamePauseTimer && game.undoLastThrow()) {
           game.advanceGame();
-          io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
-          gamePauseTimer = null;
+          game.runPlugins(() => {
+            io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
+            gamePauseTimer = null;
 
-          res.write(JSON.stringify({success: true}));
+            res.write(JSON.stringify({success: true}));
+            res.end();
+          });
         } else {
           console.log('undo failed');
 
           res.status(400);
+          res.end();
         }
       } else {
         res.write(JSON.stringify({success: false}));

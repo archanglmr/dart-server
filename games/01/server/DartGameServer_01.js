@@ -134,7 +134,8 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
             roundOver: false
           };
 
-    this.windicator = new Windicator(this.calculateThrowDataValue, config.extras);
+    //this.windicator = new Windicator(this.calculateThrowDataValue, config.extras);
+    this.registerPlugin(new Windicator(this.calculateThrowDataValue, config.extras));
 
     if (!config.variation) {
       config.variation = 501;
@@ -183,10 +184,11 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       game.tempScore = 0;
       game.roundBeginningScore = state.game.players[game.currentPlayer].score;
 
-      game.widgetWindicator = this.windicator.calculate(
-          game.roundBeginningScore,
-          game.rounds.throws - (game.currentThrow)
-      );
+      game.widgetWindicator = [];
+      //game.widgetWindicator = this.windicator.calculate(
+      //    game.roundBeginningScore,
+      //    game.rounds.throws - (game.currentThrow)
+      //);
 
       game.started = true;
       game.locked = false;
@@ -201,7 +203,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
         players,
         started: game.started,
         locked: game.locked,
-        widgetDartboard: this.windicator.toWidgetDartboard()
+        //widgetDartboard: this.windicator.toWidgetDartboard()
       });
     }
     return state;
@@ -238,11 +240,11 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       }
 
       // windicator
-      game.widgetWindicator = this.windicator.calculate(
-          score,
-          game.rounds.throws - (game.currentThrow + 1),
-          game.players[game.currentPlayer].throwHistory
-      );
+      //game.widgetWindicator = this.windicator.calculate(
+      //    score,
+      //    game.rounds.throws - (game.currentThrow + 1),
+      //    game.players[game.currentPlayer].throwHistory
+      //);
 
       game.locked = true;
 
@@ -260,8 +262,8 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
         widgetThrows: game.currentThrows.slice(0),
         locked: game.locked,
         finished: game.finished,
-        winner: game.winner,
-        widgetDartboard: this.windicator.toWidgetDartboard()
+        winner: game.winner
+        //widgetDartboard: this.windicator.toWidgetDartboard()
       });
     }
     return state;
@@ -336,11 +338,11 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
         game.players[game.currentPlayer].history[game.currentRound] = 0;
 
         // windicator
-        game.widgetWindicator = this.windicator.calculate(
-            game.players[game.currentPlayer].score,
-            game.rounds.throws - game.currentThrow,
-            game.players[game.currentPlayer].throwHistory
-        );
+        //game.widgetWindicator = this.windicator.calculate(
+        //    game.players[game.currentPlayer].score,
+        //    game.rounds.throws - game.currentThrow,
+        //    game.players[game.currentPlayer].throwHistory
+        //);
       }
 
       game.locked = false;
@@ -357,8 +359,8 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
         widgetThrows: game.currentThrows.slice(0),
         locked: game.locked,
         finished: game.finished,
-        winner: game.winner,
-        widgetDartboard: this.windicator.toWidgetDartboard()
+        winner: game.winner
+        //widgetDartboard: this.windicator.toWidgetDartboard()
       });
     }
     return state;
