@@ -25,22 +25,23 @@ module.exports = (io) => {
   /**
    * player order by id (unless you pass randomize: true)
    */
-  var playerOrder = [4, 2],
+  var playerOrder = [4, 3, 2, 6],
       randomize = true;
 
   /**
    * Games we can play
    */
-  gm.createGame('01', {variation: 501, playerOrder, randomize});
+  //gm.createGame('01', {variation: 501, playerOrder, randomize});
+  //gm.createGame('01', {variation: 141, playerOrder, randomize, extras: { location: "192.168.1.137", port: 8888, endpoint: 'windicator', extraArgs: {limit:10}}});
   //gm.createGame('01', {variation: 50, playerOrder, randomize, extras: { location: "localhost", port: 8888, endpoint: 'windicator', extraArgs: {limit:10}}});
   //gm.createGame('01', {variation: 50, playerOrder, randomize});
   //gm.createGame('archery', {playerOrder, randomize});
   //gm.createGame('cricket', {playerOrder, randomize});
   //gm.createGame('cricket', {variation: 'Closeout', playerOrder, randomize, modifiers: {limit: 18}});
-  //gm.createGame('gotcha', {playerOrder, randomize});
   //gm.createGame('shanghai', {modifiers: {limit: 7}, playerOrder, randomize});
   //gm.createGame('slider', {playerOrder, randomize});
   //gm.createGame('warfare', {playerOrder, randomize});
+  gm.createGame('gotcha', {playerOrder, randomize, extras: { location: "192.168.1.137", port: 8888, endpoint: 'windicator', extraArgs: {limit:10}}});
 
 
 
