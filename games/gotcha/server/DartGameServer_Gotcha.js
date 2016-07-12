@@ -101,6 +101,7 @@ module.exports = class DartGameServer_Gotcha extends DartHelpers.DartGameServer 
         };
 
     //this.registerPlugin(new Windicator(this.calculateThrowDataValue, config.extras));
+    this.registerPlugin(new Windicator(this.calculateThrowDataValue, (state) => 301 - state.game.players[state.game.currentPlayer].score, config.extras));
 
     if (config.modifiers && config.modifiers.limit) {
       game.rounds.limit = config.modifiers.limit;

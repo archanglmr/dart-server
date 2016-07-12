@@ -122,7 +122,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
             roundOver: false
           };
 
-    this.registerPlugin(new Windicator(this.calculateThrowDataValue, config.extras));
+    this.registerPlugin(new Windicator(this.calculateThrowDataValue, (state) => state.game.players[state.game.currentPlayer].score, config.extras));
 
     if (!config.variation) {
       config.variation = 501;

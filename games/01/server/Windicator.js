@@ -8,7 +8,7 @@ var DartHelpersTest = require('../../../lib/dart-helpers/test'),
 
 
 module.exports = class Windicator {
-  constructor(calculateThrowDataValue, extraConfig) {
+  constructor(calculateThrowDataValue, calculateScore, extraConfig) {
 
     /* building a cache of values we can use to calculate the windicator */
     this.allPossibleValues = this.generate();
@@ -17,6 +17,7 @@ module.exports = class Windicator {
     this.highestValue = 0;
 
     this.values = [];
+    this.calculateScore = calculateScore;
 
     let throws = DartHelpersTest.listAllThrows();
 
@@ -349,7 +350,8 @@ module.exports = class Windicator {
     //  next();
     //}.bind(this), 0);
     this.calculate(
-          state.game.players[state.game.currentPlayer].score,
+          //state.game.players[state.game.currentPlayer].score,
+          this.calculateScore(state),
           state.game.rounds.throws - state.game.currentThrow,
           state.game.players[state.game.currentPlayer].throwHistory
         ).then((value) => {
