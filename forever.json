@@ -1,0 +1,8 @@
+{
+    "uid": "dart-server",
+    "append": true,
+    "watch": true,
+    "script": "./bin/www",
+    "sourceDir": ".",
+    "args": ["--harmony", "--harmony_tailcalls"]
+}
