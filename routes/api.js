@@ -132,9 +132,9 @@ module.exports = (io) => {
         }
       } else {
         res.write(JSON.stringify({success: false}));
+        res.end();
         console.log('throw (bad):', data);
       }
-      res.end();
     } else {
       res.status(400);
       res.end();
