@@ -4,7 +4,7 @@ import React, {PropTypes} from 'react';
 import WidgetPlayer from '../WidgetPlayer';
 import './WidgetPlayerList.scss';
 
-function WidgetPlayerList({players}) {
+function WidgetPlayerList({players, valueComponent}) {
   var className = ['widget-player-list'];
   if (players.length > 4) {
     className.push('compact');
@@ -14,6 +14,8 @@ function WidgetPlayerList({players}) {
         {players.map((player, index) => (
             <WidgetPlayer
                 key={player.id}
+                player={player}
+                valueComponent={valueComponent}
                 {...player}
                 className={'player_' + (index + 1)}
               />
@@ -30,7 +32,8 @@ WidgetPlayerList.propTypes = {
         score: PropTypes.number,
         current: PropTypes.bool
       })
-  ).isRequired
+  ).isRequired,
+  valueComponent: PropTypes.func
 };
 
 export default WidgetPlayerList;

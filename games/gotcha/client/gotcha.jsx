@@ -19,6 +19,7 @@ import WidgetThrowsContainer from 'containers/WidgetThrowsContainer';
 import WidgetPlayerListContainer from 'containers/WidgetPlayerListContainer';
 import WidgetDartboardContainer from 'containers/WidgetDartboardContainer';
 import WidgetWinnerContainer from 'containers/WidgetWinnerContainer';
+import PlayerWindicator from 'components/PlayerWindicator';
 
 
 top.window.registerGame((store) => {
@@ -36,7 +37,7 @@ top.window.registerGame((store) => {
               <WidgetScoreHistoryContainer displayLimit={8} valueComponent={ScoreHistoryNumber} />
               <WidgetWindicatorContainer />
               <WidgetThrowsContainer />
-              <WidgetPlayerListContainer />
+              <WidgetPlayerListContainer valueComponent={PlayerWindicator} />
               <WidgetDartboardContainer />
               <WidgetWinnerContainer />
             </GameClient>

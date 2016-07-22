@@ -1,21 +1,28 @@
 'use strict';
 
 import React, {PropTypes} from 'react';
+import PlayerScore from '../PlayerScore';
 import './WidgetPlayer.scss';
 
 
-function WidgetPlayer({id, displayName, score, current, className}) {
-  var classNames = ['widget-player', 'player_id_' + id];
+function WidgetPlayer({id, displayName, score, current, className, player, valueComponent}) {
+  var classNames = ['widget-player', 'player_id_' + id],
+      value = null;
   if (current) {
     classNames.push('current');
   }
   if (className) {
     classNames.push(className);
   }
+  if (valueComponent) {
+    value = valueComponent({player});
+  } else {
+    value = <PlayerScore player={player} />
+  }
   return (
       <div className={classNames.join(' ')}>
-        <div>{displayName}</div>
-        {score}
+        <div className="heading">{displayName}</div>
+        {value}
       </div>
   );
 }
@@ -24,7 +31,8 @@ WidgetPlayer.propTypes = {
   id: PropTypes.number.isRequired,
   displayName: PropTypes.string.isRequired,
   score: PropTypes.number,
-  current: PropTypes.bool
+  current: PropTypes.bool,
+  valueComponent: PropTypes.func
 };
 
 export default WidgetPlayer;

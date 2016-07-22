@@ -1,6 +1,7 @@
 'use strict';
 var DartHelpers = require('../../../lib/dart-helpers'),
     ThrowTypes = DartHelpers.ThrowTypes,
+    WindicatorPlugin = require('./WindicatorPlugin'),
     Windicator = require('./Windicator');
 
 module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
@@ -122,7 +123,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
             roundOver: false
           };
 
-    this.registerPlugin(new Windicator(this.calculateThrowDataValue, (state) => state.game.players[state.game.currentPlayer].score, config.extras));
+    this.registerPlugin(new WindicatorPlugin(new Windicator(this.calculateThrowDataValue, config.extras), (state) => state.game.players[state.game.currentPlayer].score));
 
     if (!config.variation) {
       config.variation = 501;

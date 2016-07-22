@@ -1,6 +1,8 @@
 'use strict';
 var DartHelpers = require('../../../lib/dart-helpers'),
     ThrowTypes = DartHelpers.ThrowTypes,
+    WindicatorOpponentPlugin = require('../../01/server/WindicatorOpponentPlugin'),
+    WindicatorPlugin = require('../../01/server/WindicatorPlugin'),
     Windicator = require('../../01/server/Windicator');
 
 module.exports = class DartGameServer_Gotcha extends DartHelpers.DartGameServer {
@@ -101,7 +103,8 @@ module.exports = class DartGameServer_Gotcha extends DartHelpers.DartGameServer 
         };
 
     //this.registerPlugin(new Windicator(this.calculateThrowDataValue, config.extras));
-    this.registerPlugin(new Windicator(this.calculateThrowDataValue, (state) => 301 - state.game.players[state.game.currentPlayer].score, config.extras));
+    this.registerPlugin(new WindicatorPlugin(new Windicator(this.calculateThrowDataValue, config.extras), (state) => 301 - state.game.players[state.game.currentPlayer].score));
+    this.registerPlugin(new WindicatorOpponentPlugin(new Windicator(this.calculateThrowDataValue, config.extras)));
 
     if (config.modifiers && config.modifiers.limit) {
       game.rounds.limit = config.modifiers.limit;
@@ -146,6 +149,7 @@ module.exports = class DartGameServer_Gotcha extends DartHelpers.DartGameServer 
       game.roundBeginningScore = state.game.players[game.currentPlayer].score;
 
       game.widgetWindicator = [];
+      game.opponentWindicators = [];
 
       game.started = true;
       game.locked = false;

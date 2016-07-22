@@ -1,0 +1,26 @@
+@import "colors";
+
+.player-windicator {
+  &.winable {
+    line-height: 6vh;
+
+    .score {
+      font-weight: bold;
+      font-size: 6vh;
+      margin-bottom: .5vh;
+    }
+    .tie-windicator {
+      font-size: 4vh;
+    }
+  }
+}
+.compact {
+  .player-windicator.winable {
+    .score {
+      margin-bottom: 1vh;
+    }
+    .tie-windicator {
+      font-size: 3vh;
+    }
+  }
+}

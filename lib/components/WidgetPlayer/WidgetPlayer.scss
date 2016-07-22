@@ -13,7 +13,7 @@ $player_color_opacity: .75;
   line-height: 14vh;
   font-size: 12vh;
   vertical-align: middle;
-  div {
+  div.heading {
     width: 100%;
     white-space: nowrap;
     overflow: hidden;
@@ -64,35 +64,35 @@ $player_color_opacity: .75;
     }
   }
 
-  &.player_1 div {
+  &.player_1 div.heading {
     background-color: rgba($player_1_primary, $player_color_opacity);
     color: $player_1_secondary;
   }
-  &.player_2 div {
+  &.player_2 div.heading {
     background-color: rgba($player_2_primary, $player_color_opacity);
     color: $player_2_secondary;
   }
-  &.player_3 div {
+  &.player_3 div.heading {
     background-color: rgba($player_3_primary, $player_color_opacity);
     color: $player_3_secondary;
   }
-  &.player_4 div {
+  &.player_4 div.heading {
     background-color: rgba($player_4_primary, $player_color_opacity);
     color: $player_4_secondary;
   }
-  &.player_5 div {
+  &.player_5 div.heading {
     background-color: rgba($player_5_primary, $player_color_opacity);
     color: $player_5_secondary;
   }
-  &.player_6 div {
+  &.player_6 div.heading {
     background-color: rgba($player_6_primary, $player_color_opacity);
     color: $player_6_secondary;
   }
-  &.player_7 div {
+  &.player_7 div.heading {
     background-color: rgba($player_7_primary, $player_color_opacity);
     color: $player_7_secondary;
   }
-  &.player_8 div {
+  &.player_8 div.heading {
     background-color: rgba($player_8_primary, $player_color_opacity);
     color: $player_8_secondary;
   }
