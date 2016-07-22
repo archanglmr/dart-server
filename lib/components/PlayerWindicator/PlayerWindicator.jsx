@@ -8,7 +8,8 @@ function PlayerWindicator({player}) {
   var windicator = player.meta.bombWindicator,
       classNames = ['player-windicator'],
       throwElements = [],
-      formatted = null;
+      formatted = null,
+      diff = null;
   if (windicator.length && windicator[0].length) {
     classNames.push('winable');
     let win = windicator[0];
@@ -16,9 +17,13 @@ function PlayerWindicator({player}) {
       throwElements.push(<span key={'winable_' + player.id + '_' + i}>{formatThrowData(win[i])} </span>);
     }
     formatted = <div className="tie-windicator">{throwElements}</div>;
+    if (player.meta.diff > 0) {
+      diff = <span className="diff">+{player.meta.diff}</span>;
+    }
   }
   return (
       <div className={classNames.join(' ')}>
+        {diff}
         <span className="score">{player.score}</span>
         {formatted}
       </div>

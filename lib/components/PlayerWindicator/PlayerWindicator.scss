@@ -4,13 +4,23 @@
   &.winable {
     line-height: 6vh;
 
+    .diff {
+      float: right;
+      margin-top: 1vh;
+      margin-right: 1vw;
+      font-size: 4.5vh;
+    }
     .score {
+      float: left;
+      margin-top: 1vh;
+      margin-left: 1vw;
       font-weight: bold;
-      font-size: 6vh;
-      margin-bottom: .5vh;
+      font-size: 6.5vh;
     }
     .tie-windicator {
-      font-size: 4vh;
+      clear: both;
+      font-size: 3.5vh;
+      margin-top: 1vh;
     }
   }
 }
