@@ -14,3 +14,13 @@
     }
   }
 }
+.compact {
+  .player-windicator.winable {
+    .score {
+      margin-bottom: 1vh;
+    }
+    .tie-windicator {
+      font-size: 3vh;
+    }
+  }
+}

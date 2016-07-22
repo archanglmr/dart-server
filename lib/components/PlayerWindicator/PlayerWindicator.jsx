@@ -13,7 +13,7 @@ function PlayerWindicator({player}) {
     classNames.push('winable');
     let win = windicator[0];
     for (let i = 0, c = win.length; i < c; i += 1) {
-      throwElements.push(<span>{formatThrowData(win[i])} </span>);
+      throwElements.push(<span key={'winable_' + player.id + '_' + i}>{formatThrowData(win[i])} </span>);
     }
     formatted = <div className="tie-windicator">{throwElements}</div>;
   }
