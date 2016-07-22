@@ -54,12 +54,12 @@ function WidgetDartboardStylized({dartboard}) {
 
 
   return (
-    <svg className={className.join(' ')} version="1.1" x="0px" y="0px" width="1000px" height="1000px" viewBox="0 0 1000 1000" enable-background="new 0 0 1000 1000">
+    <svg className={className.join(' ')} version="1.1" x="0px" y="0px" width="1000px" height="1000px" viewBox="0 0 1000 1000" enableBackground="new 0 0 1000 1000">
       <g className="backdrop">
         <circle className="outer" fill="black" cx="500" cy="500" r="550"></circle>
         <circle className="inner" fill="white" cx="500" cy="500" r="435"></circle>
       </g>
-      <g class="island">
+      <g className="island">
         {order.map((value, i) => <Slice
             key={value}
             number={value}
