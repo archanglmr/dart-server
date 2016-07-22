@@ -10,6 +10,7 @@ const mapStateToProps = (state) => {
     let id = state.players.order[i],
         player = state.players.data[id];
 
+    player.meta = Object.assign({}, state.game.players[id]);
     player.score = state.game.players[id].score;
     player.current = (state.players.current === id);
 

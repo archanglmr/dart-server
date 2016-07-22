@@ -14,7 +14,6 @@ import CornerDash from 'components/CornerDash';
 import WidgetScoreHistoryContainer from 'containers/WidgetScoreHistoryContainer';
 import ScoreHistoryNumber from 'components/ScoreHistoryNumber';
 import WidgetWindicatorContainer from 'containers/WidgetWindicatorContainer';
-import WidgetWindicatorSmallContainer from 'containers/WidgetWindicatorSmallContainer';
 import WidgetCurrentScoreContainer from 'containers/WidgetCurrentScoreContainer';
 import WidgetThrowsContainer from 'containers/WidgetThrowsContainer';
 import WidgetPlayerListContainer from 'containers/WidgetPlayerListContainer';
@@ -37,7 +36,6 @@ top.window.registerGame((store) => {
               <CornerDash />
               <WidgetScoreHistoryContainer displayLimit={8} valueComponent={ScoreHistoryNumber} />
               <WidgetWindicatorContainer />
-              <WidgetWindicatorSmallContainer />
               <WidgetThrowsContainer />
               <WidgetPlayerListContainer valueComponent={PlayerWindicator} />
               <WidgetDartboardContainer />

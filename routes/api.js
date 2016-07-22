@@ -41,7 +41,8 @@ module.exports = (io) => {
   //gm.createGame('shanghai', {modifiers: {limit: 7}, playerOrder, randomize});
   //gm.createGame('slider', {playerOrder, randomize});
   //gm.createGame('warfare', {playerOrder, randomize});
-  gm.createGame('gotcha', {playerOrder, randomize, extras: { location: "192.168.1.137", port: 8888, endpoint: 'windicator', extraArgs: {limit:10}}});
+  gm.createGame('gotcha', {playerOrder, randomize});
+  //gm.createGame('gotcha', {playerOrder, randomize, extras: { location: "192.168.1.137", port: 8888, endpoint: 'windicator', extraArgs: {limit:10}}});
 
 
 

@@ -21,7 +21,7 @@ function WidgetPlayer({id, displayName, score, current, className, player, value
   }
   return (
       <div className={classNames.join(' ')}>
-        <div>{displayName}</div>
+        <div className="heading">{displayName}</div>
         {value}
       </div>
   );
