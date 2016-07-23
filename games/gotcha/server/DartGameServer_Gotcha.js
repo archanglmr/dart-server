@@ -1,9 +1,9 @@
 'use strict';
 var DartHelpers = require('../../../lib/dart-helpers'),
     ThrowTypes = DartHelpers.ThrowTypes,
-    WindicatorOpponentPlugin = require('../../01/server/WindicatorOpponentPlugin'),
-    WindicatorPlugin = require('../../01/server/WindicatorPlugin'),
-    Windicator = require('../../01/server/Windicator');
+    WindicatorOpponentPlugin = require('../../../lib/windicator/WindicatorOpponentPlugin'),
+    WindicatorPlugin = require('../../../lib/windicator/WindicatorPlugin'),
+    Windicator = require('../../../lib/windicator/Windicator');
 
 module.exports = class DartGameServer_Gotcha extends DartHelpers.DartGameServer {
   /**

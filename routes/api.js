@@ -31,7 +31,7 @@ module.exports = (io) => {
   /**
    * Games we can play
    */
-  //gm.createGame('01', {variation: 501, playerOrder, randomize});
+  gm.createGame('01', {variation: 501, playerOrder, randomize});
   //gm.createGame('01', {variation: 141, playerOrder, randomize, extras: { location: "192.168.1.137", port: 8888, endpoint: 'windicator', extraArgs: {limit:10}}});
   //gm.createGame('01', {variation: 50, playerOrder, randomize, extras: { location: "localhost", port: 8888, endpoint: 'windicator', extraArgs: {limit:10}}});
   //gm.createGame('01', {variation: 50, playerOrder, randomize});
@@ -41,7 +41,7 @@ module.exports = (io) => {
   //gm.createGame('shanghai', {modifiers: {limit: 7}, playerOrder, randomize});
   //gm.createGame('slider', {playerOrder, randomize});
   //gm.createGame('warfare', {playerOrder, randomize});
-  gm.createGame('gotcha', {playerOrder, randomize});
+  //gm.createGame('gotcha', {playerOrder, randomize});
   //gm.createGame('gotcha', {playerOrder, randomize, extras: { location: "192.168.1.137", port: 8888, endpoint: 'windicator', extraArgs: {limit:10}}});
 
 

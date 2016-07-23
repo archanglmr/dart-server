@@ -1,8 +1,8 @@
 'use strict';
 var DartHelpers = require('../../../lib/dart-helpers'),
     ThrowTypes = DartHelpers.ThrowTypes,
-    WindicatorPlugin = require('./WindicatorPlugin'),
-    Windicator = require('./Windicator');
+    WindicatorPlugin = require('./../../../lib/windicator/WindicatorPlugin'),
+    Windicator = require('./../../../lib/windicator/Windicator');
 
 module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
   /**
