@@ -8,8 +8,12 @@ module.exports = (io) => {
       actions = require('../clients/display/actions'),
       GameManager = require('../lib/game-manager');
 
-  var gamePauseLength = 3000,
-      gamePauseTimer = null,
+  var roundPauseTimer = null,
+      roundPauseLength = 3000,
+
+      throwPauseTimer = null,
+      throwPauseLength = 3000,
+
       game = null, // this will be populated with whatever game
       gameStarted = function(g) {
         game = g;
@@ -25,7 +29,7 @@ module.exports = (io) => {
   /**
    * player order by id (unless you pass randomize: true)
    */
-  var playerOrder = [4, 3, 2, 6],
+  var playerOrder = [2],
       randomize = true;
 
   /**
@@ -85,43 +89,28 @@ module.exports = (io) => {
         res.end();
 
 
-        if (null === gamePauseTimer) {
+        if (null === roundPauseTimer) {
           console.log('throw (good):', data);
-          game.throwDart(req.body);
-          game.runPlugins(() => {
-            let state = game.getState();
-
-            if (state.game.roundOver) {
-              // if the round is we should send an update, then wait to advance
-              // the game
+          if (throwPauseTimer) {
+            clearTimeout(throwPauseTimer);
+            throwPauseTimer = null;
+            game.advanceGame();
+            game.runPlugins(() => {
               io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
-
-              gamePauseTimer = setTimeout(() => {
-                game.advanceGame();
-                game.runPlugins(() => {
-                  io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
-                  gamePauseTimer = null;
-                });
-              }, gamePauseLength);
-            } else {
-              // if the round is not over we can update immediately
-              game.advanceGame();
-              game.runPlugins(() => {
-                io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
-              });
-            }
-          });
-
-
+              process_throw_dart(req);
+            });
+          } else {
+            process_throw_dart(req);
+          }
         } else {
           console.log('throw (ignored):', data);
         }
       } else if (req.body.undo) {
-        if (!gamePauseTimer && game.undoLastThrow()) {
+        if (!roundPauseTimer && game.undoLastThrow()) {
           game.advanceGame();
           game.runPlugins(() => {
             io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
-            gamePauseTimer = null;
+            roundPauseTimer = null;
 
             res.write(JSON.stringify({success: true}));
             res.end();
@@ -143,6 +132,32 @@ module.exports = (io) => {
     }
   });
 
+  function process_throw_dart(req) {
+    game.throwDart(req.body);
+    game.runPlugins(() => {
+      let state = game.getState();
+      io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
+
+      if (state.game.roundOver) {
+        roundPauseTimer = setTimeout(() => {
+          game.advanceGame();
+          game.runPlugins(() => {
+            io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
+            roundPauseTimer = null;
+          });
+        }, roundPauseLength);
+      } else {
+        // if the round is not over we can update immediately
+        throwPauseTimer = setTimeout(() => {
+          game.advanceGame();
+          game.runPlugins(() => {
+            io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
+            throwPauseTimer = null;
+          });
+        }, throwPauseLength);
+      }
+    });
+  }
 
   /**
    * @todo: This helper could be planned out a bit better....
