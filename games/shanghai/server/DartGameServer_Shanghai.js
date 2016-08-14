@@ -36,9 +36,10 @@ module.exports = class DartGameServer_Shanghai extends DartHelpers.DartGameServe
    * Checks a list of throws and determines if it's considered a shanghai.
    *
    * @param throwList
+   * @param target
    * @returns {number}
    */
-  isShanghai(throwList) {
+  isShanghai(throwList, target) {
     var types = {
       triple: 0,
       double: 0,
@@ -47,15 +48,21 @@ module.exports = class DartGameServer_Shanghai extends DartHelpers.DartGameServe
     for (let i = 0, c = throwList.length; i < c; i += 1) {
       switch(throwList[i].type) {
         case ThrowTypes.TRIPLE:
-          types.triple += 1;
+          if (throwList[i].number === target) {
+            types.triple += 1;
+          }
           break;
         case ThrowTypes.DOUBLE:
-          types.double += 1;
+          if (throwList[i].number === target) {
+            types.double += 1;
+          }
           break;
 
         case ThrowTypes.SINGLE_INNER:
         case ThrowTypes.SINGLE_OUTER:
-          types.single += 1;
+          if (throwList[i].number === target) {
+            types.single += 1;
+          }
           break;
       }
     }
@@ -198,12 +205,12 @@ module.exports = class DartGameServer_Shanghai extends DartHelpers.DartGameServe
       game.tempScore += this.calculateThrowDataValue(throwData, game.target);
       game.currentThrows.push(throwData);
 
-      let score = game.players[game.currentPlayer].score = (game.roundBeginningScore + game.tempScore);
+      game.players[game.currentPlayer].score = (game.roundBeginningScore + game.tempScore);
       // set the temp score as in the player score history
       game.players[game.currentPlayer].history[game.rounds.current] = game.tempScore;
 
       // check for shanghai here
-      if (game.currentThrows.length >= 3 && this.isShanghai(game.currentThrows)) {
+      if (game.currentThrows.length >= 3 && this.isShanghai(game.currentThrows, game.target)) {
         game.finished = true;
         game.winner = game.currentPlayer;
       }
