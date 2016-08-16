@@ -228,6 +228,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
 
       // Process BUST or advance round
       game.roundOver = ((score < 0) || ((game.currentThrow + 1) >= game.rounds.throws));
+      // @todo: bust notification here
 
       // sync to the global state
 
@@ -238,7 +239,8 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
         widgetThrows: game.currentThrows.slice(0),
         locked: game.locked,
         finished: game.finished,
-        winner: game.winner
+        winner: game.winner,
+        notificationQueue: [{type: 'throw', data: throwData}]
       });
     }
     return state;
@@ -252,7 +254,8 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       // shallow clone stuff
       let game = Object.assign({}, state.game),
           players = Object.assign({}, state.players),
-          playerChanged = false;
+          playerChanged = false,
+          notificationQueue = state.notificationQueue;
 
 
       // Process BUST
@@ -294,6 +297,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
         if (game.rounds.limit && game.currentRound >= game.rounds.limit) {
           game.finished = true;
           game.winner = DartHelpers.State.getPlayerIdWithLowestScore(game.players);
+          notificationQueue = [];
           return Object.assign({}, state, {
             game,
             players,
@@ -301,7 +305,8 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
             widgetThrows: game.currentThrows.slice(0),
             locked: game.locked,
             finished: game.finished,
-            winner: game.winner
+            winner: game.winner,
+            notificationQueue
           });
         }
       } else {
@@ -311,6 +316,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       if (playerChanged) {
         game.roundBeginningScore = game.players[game.currentPlayer].score;
         game.players[game.currentPlayer].history[game.currentRound] = 0;
+        notificationQueue = [];
       }
 
       game.locked = false;
@@ -327,7 +333,8 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
         widgetThrows: game.currentThrows.slice(0),
         locked: game.locked,
         finished: game.finished,
-        winner: game.winner
+        winner: game.winner,
+        notificationQueue
       });
     }
     return state;
