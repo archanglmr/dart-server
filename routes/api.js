@@ -37,7 +37,7 @@ module.exports = (io) => {
   //gm.createGame('01', {variation: 50, playerOrder, randomize});
   //gm.createGame('archery', {playerOrder, randomize});
   //gm.createGame('cricket', {playerOrder, randomize});
-  //gm.createGame('cricket', {variation: 'Closeout', playerOrder, randomize, modifiers: {limit: 18}});
+  //gm.createGame('cricket', {variation: 'Closeout', playerOrder, randomize});
   //gm.createGame('shanghai', {modifiers: {limit: 7}, playerOrder, randomize});
   //gm.createGame('slider', {playerOrder, randomize});
   //gm.createGame('warfare', {playerOrder, randomize});
@@ -86,31 +86,44 @@ module.exports = (io) => {
 
 
         if (null === gamePauseTimer) {
-          console.log('throw (good):', data);
-          game.throwDart(req.body);
-          game.runPlugins(() => {
-            let state = game.getState();
+          let initialState = game.getState();
 
-            if (state.game.roundOver) {
-              // if the round is we should send an update, then wait to advance
-              // the game
-              io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
+          if (initialState.finished) {
+            console.log('game is over, hit MISS to start a new one.');
+            if (req.body.type === DartHelpers.ThrowTypes.MISS) {
+              console.log('restart game');
+              gm.restartLastGame();
+            } else {
+              console.log('ignore throw');
+            }
+          } else {
+            console.log('throw (good):', data);
+            game.throwDart(req.body);
+            game.runPlugins(() => {
+              let state = game.getState();
 
-              gamePauseTimer = setTimeout(() => {
+              if (state.game.roundOver) {
+                // if the round is we should send an update, then wait to advance
+                // the game
+                io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
+
+                gamePauseTimer = setTimeout(() => {
+                  game.advanceGame();
+                  game.runPlugins(() => {
+                    io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
+                    gamePauseTimer = null;
+                  });
+                }, gamePauseLength);
+              } else {
+                // if the round is not over we can update immediately
                 game.advanceGame();
                 game.runPlugins(() => {
                   io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
-                  gamePauseTimer = null;
                 });
-              }, gamePauseLength);
-            } else {
-              // if the round is not over we can update immediately
-              game.advanceGame();
-              game.runPlugins(() => {
-                io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
-              });
-            }
-          });
+              }
+            });
+
+          }
 
 
         } else {

@@ -84,7 +84,14 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
    * @returns {boolean}
    */
   isNumberOpenInPlayers(number) {
-    let players = this.getState().game.players;
+    let state = this.getState();
+
+    // Never close a number if there is only one player
+    if (1 === state.players.order.length) {
+      return true;
+    }
+
+    let players = state.game.players;
 
     for (let id in players) {
       if (players.hasOwnProperty(id) && players[id].marks[number] < 3) {
@@ -312,7 +319,8 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
 
       // shallow clone stuff
       let game = Object.assign({}, state.game),
-          currentPlayer = Object.assign({}, game.players[game.currentPlayer]);
+          currentPlayer = Object.assign({}, game.players[game.currentPlayer]),
+          notificationQueue = [{type: 'throw', data: throwData}];
 
       // recorded the throw and init the history if needed
       game.currentThrows.push(throwData);
@@ -366,6 +374,7 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
       } else {
         currentPlayer.history[game.rounds.current].push(0);
         game.players[game.currentPlayer] = currentPlayer;
+        notificationQueue = [{type: 'throw', data: {type: ThrowTypes.MISS, number: 0}}];
       }
 
       game.locked = true;
@@ -384,7 +393,8 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
         locked: game.locked,
         finished: game.finished,
         winner: game.winner,
-        widgetDartboard: this.toWidgetDartboard(game)
+        widgetDartboard: this.toWidgetDartboard(game),
+        notificationQueue: notificationQueue
       });
     }
     return state;
@@ -398,7 +408,8 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
       // shallow clone stuff
       let game = Object.assign({}, state.game),
           players = Object.assign({}, state.players),
-          playerChanged = false;
+          playerChanged = false,
+          notificationQueue = state.notificationQueue;
 
 
       // advance the game normally
@@ -425,9 +436,9 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
         game.currentPlayer = players.order[game.playerOffset];
 
         if (game.rounds.limit && game.currentRound >= game.rounds.limit) {
-          game.winner = DartHelpers.State.getPlayerIdWithHighestScore(game.players);
-
           game.finished = true;
+          game.winner = DartHelpers.State.getPlayerIdWithHighestScore(game.players);
+          notificationQueue = [];
           return Object.assign({}, state, {
             game,
             players,
@@ -435,7 +446,8 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
             locked: game.locked,
             finished: game.finished,
             winner: game.winner,
-            widgetThrows: game.currentThrows.slice(0)
+            widgetThrows: game.currentThrows.slice(0),
+            notificationQueue
           });
         }
       } else {
@@ -445,6 +457,7 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
       if (playerChanged) {
         game.roundBeginningScore = game.players[game.currentPlayer].score;
         game.players[game.currentPlayer].history[game.currentRound] = [];
+        notificationQueue = [];
       }
 
       game.locked = false;
@@ -462,7 +475,8 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
         finished: game.finished,
         winner: game.winner,
         widgetThrows: game.currentThrows.slice(0),
-        widgetDartboard: this.toWidgetDartboard(game)
+        widgetDartboard: this.toWidgetDartboard(game),
+        notificationQueue
       });
     }
     return state;

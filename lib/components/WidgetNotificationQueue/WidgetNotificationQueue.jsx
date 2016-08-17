@@ -22,6 +22,7 @@ console.log('args:', arguments);
                 } else {
                   return <Sound url="/sounds/single.mp3" playStatus={Sound.status.PLAYING} />;
                 }
+                break;
 
               case 'DOUBLE':
                 if (21 === notification.data.number) {
@@ -31,11 +32,13 @@ console.log('args:', arguments);
                   console.log('double');
                   return <Sound url="/sounds/double.mp3" playStatus={Sound.status.PLAYING} />;
                 }
+                break;
 
 
               case 'TRIPLE':
                 console.log('triple');
                 return <Sound url="/sounds/triple.mp3" playStatus={Sound.status.PLAYING} />;
+                break;
 
               case 'MISS':
                 console.log('miss');
