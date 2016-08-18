@@ -3,6 +3,8 @@
 import React, {PropTypes} from 'react';
 import './WidgetScoreHistory.scss';
 
+import WidgetRoundsContainer from 'containers/WidgetRoundsContainer';
+
 
 function WidgetScoreHistory({history, roundLimit, displayLimit, valueComponent}) {
   var rendered = [],
@@ -35,7 +37,7 @@ function WidgetScoreHistory({history, roundLimit, displayLimit, valueComponent})
     }
 
     rendered.push(
-        <div key={offset} className={offset + 1 === historyLength ? 'current' : ''}>
+        <div key={offset} className={'row ' + (offset + 1 === historyLength ? 'current' : '')}>
           <span className="round">R{offset + 1}</span>
           {value}
         </div>
@@ -46,6 +48,7 @@ function WidgetScoreHistory({history, roundLimit, displayLimit, valueComponent})
   }
   return (
       <section className="widget-score-history">
+        <WidgetRoundsContainer />
         {rendered}
       </section>
   );

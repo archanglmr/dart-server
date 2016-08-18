@@ -5,6 +5,9 @@
   //border-top: 1px solid black;
   height: 22vh;
   width: 100vw;
+  .widget-player {
+    width: 24vw;
+  }
 
   &.compact {
     .widget-player {

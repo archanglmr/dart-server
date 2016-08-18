@@ -1,6 +1,11 @@
 .corner-dash {
   position: absolute;
-  top: 1vh;
+  top: 0;
   left: 1vw;
   text-align: left;
+  font-size: 4vh;
+
+  h1 {
+    margin-bottom: 1vh;
+  }
 }

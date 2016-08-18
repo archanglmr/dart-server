@@ -3,23 +3,34 @@
 .widget-score-history {
   position: absolute;
   left: 1vw;
-  top: 24vh;
-  div {
-    line-height: 6.5vh;
+  top: 17vh;
+  div.row {
+    line-height: 6vh;
     border-bottom: 1px solid $foreground;
 
     &.current {
       font-weight: bold;
     }
-  }
-  span {
-    display: inline-block;
 
-    &.round {
-      width: 5vw;
+
+    span {
+      display: inline-block;
+
+      &.round {
+        width: 5vw;
+        vertical-align: bottom;
+        font-size: 4vh;
+      }
+      &.value {
+        width: 10vw;
+      }
     }
-    &.value {
-      width: 10vw;
-    }
+  }
+
+  div.widget-rounds {
+    font-size: 4vh;
+    line-height: 5vh;
+    padding-bottom: .5vh;
+    border-bottom: 1px solid $foreground;
   }
 }

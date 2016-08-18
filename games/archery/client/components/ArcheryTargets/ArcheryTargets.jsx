@@ -10,7 +10,7 @@ function ArcheryTargets({targets}) {
   for (let className in targets) {
     if (targets.hasOwnProperty(className)) {
       targetsList.push(
-          <div key={className}>
+          <div key={className} className="row">
             <ArcheryMark className={className} />
             {targets[className]}
           </div>

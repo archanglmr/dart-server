@@ -12,25 +12,39 @@
     }
     .score {
       float: left;
-      margin-top: 1vh;
+      margin-top: .75vh;
       margin-left: 1vw;
       font-weight: bold;
-      font-size: 6.5vh;
+      font-size: 9vh;
+      line-height: 9vh;
     }
     .tie-windicator {
       clear: both;
       font-size: 3.5vh;
-      margin-top: 1vh;
+      line-height: 4vh;
     }
   }
 }
 .compact {
   .player-windicator.winable {
+    .diff {
+      margin: .25vh .25vw 0 .25vw;
+      font-size: 3.5vh;
+      line-height: 3.5vh;
+    }
     .score {
-      margin-bottom: 1vh;
+      width: 100%;
+      text-align: center;
+      margin: 0 auto;
+      font-size: 6.5vh;
+      line-height: 6.5vh;
     }
     .tie-windicator {
+      white-space: nowrap;
+      overflow: visible;
       font-size: 3vh;
+      margin: 0;
+      text-align: center;
     }
   }
 }
