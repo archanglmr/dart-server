@@ -8,7 +8,7 @@ function FullScreenMessage({text}) {
   if (text) {
     return <div className="full-screen-message">{text}</div>;
   }
-  return <div style={{display: 'none'}} />;
+  return null;
 }
 
 FullScreenMessage.propTypes = {

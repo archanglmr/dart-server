@@ -19,7 +19,7 @@ function WidgetNotificationQueue({notifications}) {
     }
   }
 
-  return <span style={{display: 'none'}} />;
+  return null;
 }
 
 WidgetNotificationQueue.propTypes = {
