@@ -51,7 +51,7 @@ function WidgetNotificationQueue({notifications, customNotifications = {}}) {
           let customNotification = customNotifications[notification.type];
 
           if (customNotification) {
-            components.push(customNotification({key: notification.type, data: notification.data}));
+            components.push(React.createElement(customNotification, {key: notification.type, data: notification.data}));
           } else {
             console.log('Unhandled');
           }

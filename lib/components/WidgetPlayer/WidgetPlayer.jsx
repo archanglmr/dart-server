@@ -15,7 +15,7 @@ function WidgetPlayer({id, displayName, score, current, className, player, value
     classNames.push(className);
   }
   if (valueComponent) {
-    value = valueComponent({player});
+    value = React.createElement(valueComponent, {player});
   } else {
     value = <PlayerScore player={player} />
   }

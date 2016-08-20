@@ -14,7 +14,7 @@ function ScoreHistoryUpDown({history}) {
 }
 
 ScoreHistoryUpDown.propTypes = {
-  history: PropTypes.array.isRequired
+  history: PropTypes.number.isRequired
 };
 
 export default ScoreHistoryUpDown;
