@@ -6,7 +6,7 @@ import WidgetScoreHistory from '../../components/WidgetScoreHistory';
 
 const mapStateToProps = (state) => {
   return {
-    history: state.game.players[state.game.currentPlayer].history,
+    history: state.game.players[state.players.current].history,
     roundLimit: state.rounds.limit
   };
 };

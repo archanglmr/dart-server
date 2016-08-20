@@ -7,7 +7,7 @@ import WidgetTempScore from 'components/WidgetTempScore';
 const mapStateToProps = (state) => {
   // pre-pending '' to prevent warning since score is typically a number
   return {
-    text: '' + state.game.players[state.game.currentPlayer].bulls,
+    text: '' + state.game.players[state.players.current].bulls,
     label: 'Bulls Hit:'
   };
 };

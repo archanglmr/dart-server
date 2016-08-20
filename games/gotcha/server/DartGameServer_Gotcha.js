@@ -103,7 +103,7 @@ module.exports = class DartGameServer_Gotcha extends DartHelpers.DartGameServer 
         };
 
     //this.registerPlugin(new Windicator(this.calculateThrowDataValue, config.extras));
-    this.registerPlugin(new WindicatorPlugin(new Windicator(this.calculateThrowDataValue, config.extras), (state) => 301 - state.game.players[state.game.currentPlayer].score));
+    this.registerPlugin(new WindicatorPlugin(new Windicator(this.calculateThrowDataValue, config.extras), (state) => 301 - state.game.players[state.players.current].score));
     this.registerPlugin(new WindicatorOpponentPlugin(new Windicator(this.calculateThrowDataValue, config.extras)));
 
     if (config.modifiers && config.modifiers.limit) {
