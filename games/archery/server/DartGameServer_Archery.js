@@ -200,9 +200,10 @@ module.exports = class DartGameServer_Archery extends DartHelpers.DartGameServer
       // we're in a valid round
 
       // shallow clone stuff
-      let game = Object.assign({}, state.game);
+      let game = Object.assign({}, state.game),
+          notificationQueue = [{type: 'throw', data: throwData}],
+          throwStats = this.calculateThrowDataValue(throwData, game.targets);
 
-      let throwStats = this.calculateThrowDataValue(throwData, game.targets);
 
       game.tempScore += throwStats.value;
       game.currentThrows.push(throwData);
@@ -218,6 +219,13 @@ module.exports = class DartGameServer_Archery extends DartHelpers.DartGameServer
       // Process advance round
       game.roundOver = ((game.currentThrow + 1) >= game.rounds.throws);
 
+      if (game.roundOver) {
+        notificationQueue = notificationQueue.concat(
+            this.checkForHatTrickNotifications(game.currentThrows),
+            [{type: 'remove_darts'}]
+        );
+      }
+
       // sync to the global state
 
       // rebuild the new state
@@ -228,7 +236,8 @@ module.exports = class DartGameServer_Archery extends DartHelpers.DartGameServer
         locked: game.locked,
         finished: game.finished,
         winner: game.winner,
-        widgetDartboard: this.toWidgetDartboard(game.currentThrows)
+        widgetDartboard: this.toWidgetDartboard(game.currentThrows),
+        notificationQueue
       });
     }
     return state;
@@ -242,7 +251,8 @@ module.exports = class DartGameServer_Archery extends DartHelpers.DartGameServer
       // shallow clone stuff
       let game = Object.assign({}, state.game),
           players = Object.assign({}, state.players),
-          playerChanged = false;
+          playerChanged = false,
+          notificationQueue = state.notificationQueue;
 
       // advance the game normally
       game.currentThrow += 1;
@@ -267,6 +277,7 @@ module.exports = class DartGameServer_Archery extends DartHelpers.DartGameServer
         if (game.rounds.limit && game.currentRound >= game.rounds.limit) {
           game.finished = true;
           game.winner = DartHelpers.State.getPlayerIdWithHighestScore(game.players);
+          notificationQueue = [];
           return Object.assign({}, state, {
             game,
             players,
@@ -274,7 +285,8 @@ module.exports = class DartGameServer_Archery extends DartHelpers.DartGameServer
             widgetThrows: game.currentThrows.slice(0),
             locked: game.locked,
             finished: game.finished,
-            winner: game.winner
+            winner: game.winner,
+            notificationQueue
           });
         }
       } else {
@@ -284,6 +296,7 @@ module.exports = class DartGameServer_Archery extends DartHelpers.DartGameServer
       if (playerChanged) {
         game.roundBeginningScore = game.players[game.currentPlayer].score;
         game.players[game.currentPlayer].history[game.currentRound] = [];
+        notificationQueue = [];
       }
 
       game.locked = false;
@@ -301,7 +314,8 @@ module.exports = class DartGameServer_Archery extends DartHelpers.DartGameServer
         locked: game.locked,
         finished: game.finished,
         winner: game.winner,
-        widgetDartboard: this.toWidgetDartboard(game.currentThrows)
+        widgetDartboard: this.toWidgetDartboard(game.currentThrows),
+        notificationQueue
       });
     }
     return state;

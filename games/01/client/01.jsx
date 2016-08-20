@@ -11,6 +11,7 @@ import {Provider} from 'react-redux';
 // React components
 import GameClient from 'components/GameClient';
 import CornerDash from 'components/CornerDash';
+import NotificationBust from 'components/NotificationBust';
 import WidgetScoreHistoryContainer from 'containers/WidgetScoreHistoryContainer';
 import ScoreHistoryNumber from 'components/ScoreHistoryNumber';
 import WidgetWindicatorContainer from 'containers/WidgetWindicatorContainer';
@@ -40,7 +41,7 @@ top.window.registerGame((store) => {
               <WidgetPlayerListContainer />
               <WidgetDartboardContainer />
               <WidgetWinnerContainer />
-              <WidgetNotificationQueueContainer />
+              <WidgetNotificationQueueContainer customNotifications={{bust: NotificationBust}} />
             </GameClient>
           </Provider>
       ),

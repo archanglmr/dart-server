@@ -205,9 +205,11 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       // we're in a valid round
 
       // shallow clone stuff
-      let game = Object.assign({}, state.game);
+      let game = Object.assign({}, state.game),
+          notificationQueue = [{type: 'throw', data: throwData}];
 
 
+      game.roundOver = false;
       game.tempScore += this.calculateThrowDataValue(throwData);
       game.currentThrows.push(throwData);
 
@@ -225,10 +227,25 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       game.locked = true;
 
 
-
       // Process BUST or advance round
-      game.roundOver = ((score < 0) || ((game.currentThrow + 1) >= game.rounds.throws));
-      // @todo: bust notification here
+      //game.roundOver = ((score < 0) || ((game.currentThrow + 1) >= game.rounds.throws));
+      if (score < 0) {
+        // bust
+        game.roundOver = true;
+        notificationQueue.push({type: 'bust'});
+      } else if ((game.currentThrow + 1) >= game.rounds.throws) {
+        // round over
+        game.roundOver = true;
+        notificationQueue = notificationQueue.concat(
+            this.checkForHatTrickNotifications(game.currentThrows) ||
+            this.checkForTonNotifications(game.tempScore) ||
+            []
+        );
+      }
+
+      if (game.roundOver) {
+        notificationQueue.push({type: 'remove_darts'});
+      }
 
       // sync to the global state
 
@@ -240,7 +257,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
         locked: game.locked,
         finished: game.finished,
         winner: game.winner,
-        notificationQueue: [{type: 'throw', data: throwData}]
+        notificationQueue
       });
     }
     return state;

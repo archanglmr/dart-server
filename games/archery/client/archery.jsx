@@ -18,6 +18,7 @@ import WidgetThrowsContainer from 'containers/WidgetThrowsContainer';
 import WidgetPlayerListContainer from 'containers/WidgetPlayerListContainer';
 import WidgetDartboardContainer from 'containers/WidgetDartboardContainer';
 import WidgetWinnerContainer from 'containers/WidgetWinnerContainer';
+import WidgetNotificationQueueContainer from 'containers/WidgetNotificationQueueContainer';
 import ArcheryTargetsContainer from './containers/ArcheryTargetsContainer';
 
 
@@ -42,6 +43,7 @@ top.window.registerGame((store) => {
               <WidgetDartboardContainer />
               <ArcheryTargetsContainer />
               <WidgetWinnerContainer />
+              <WidgetNotificationQueueContainer />
             </GameClient>
           </Provider>
       ),
