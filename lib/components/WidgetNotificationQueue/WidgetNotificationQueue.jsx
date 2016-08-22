@@ -15,47 +15,46 @@ function WidgetNotificationQueue({notifications, customNotifications = {}}) {
   if (notifications && notifications.length) {
     // @todo: Cancel all existing notifications
     for (let i = 0, c = notifications.length; i < c; i += 1) {
-      let notification = notifications[i];
+      let notification = notifications[i],
+          customNotification = customNotifications[notification.type];
       console.log('NOTIFICATION:', notification);
 
-      switch (notification.type) {
-        case 'throw':
-          components.push(<NotificationThrow key={notification.type} data={notification.data} />);
-          break;
+      if (customNotification) {
+        components.push(React.createElement(customNotification, {key: notification.type, data: notification.data}));
+      } else {
+        switch (notification.type) {
+          case 'throw':
+            components.push(<NotificationThrow key={notification.type} data={notification.data} />);
+            break;
 
-        case 'three_in_bed':
-          console.log('Three in a Bed');
-          components.push(<NotificationThreeInBed key={notification.type} />);
-          break;
+          case 'three_in_bed':
+            console.log('Three in a Bed');
+            components.push(<NotificationThreeInBed key={notification.type} />);
+            break;
 
-        case 'three_in_black':
-          console.log('Three in the Black');
-          components.push(<NotificationThreeInBlack key={notification.type} />);
-          break;
+          case 'three_in_black':
+            console.log('Three in the Black');
+            components.push(<NotificationThreeInBlack key={notification.type} />);
+            break;
 
-        case 'hat_trick':
-          console.log('Hat Trick');
-          components.push(<NotificationHatTrick key={notification.type} />);
-          break;
+          case 'hat_trick':
+            console.log('Hat Trick');
+            components.push(<NotificationHatTrick key={notification.type} />);
+            break;
 
-        case 'ton':
-          console.log('Ton ' + notification.data);
-          components.push(<NotificationTon key={notification.type} data={'' + notification.data} />);
-          break;
+          case 'ton':
+            console.log('Ton ' + notification.data);
+            components.push(<NotificationTon key={notification.type} data={'' + notification.data} />);
+            break;
 
-        case 'remove_darts':
-          console.log('Remove Darts');
-          break;
+          case 'remove_darts':
+            console.log('Remove Darts');
+            break;
 
-        default:
-          let customNotification = customNotifications[notification.type];
-
-          if (customNotification) {
-            components.push(React.createElement(customNotification, {key: notification.type, data: notification.data}));
-          } else {
+          default:
             console.log('Unhandled');
-          }
-          break;
+            break;
+        }
       }
     }
   }
