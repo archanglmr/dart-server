@@ -10,9 +10,14 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
    */
   getDisplayName() {
     var state = this.getState(),
-    name = state.game.label || state.config.variation || 'standard';
+        name = state.game.label || state.config.variation || 'standard',
+        modifiers = [];
 
-    return name.substr(0, 1).toUpperCase() + name.substr(1) + ' Cricket';
+    if (state.config.modifiers.triples) {
+      modifiers = ['[Triples]'];
+    }
+
+    return name.substr(0, 1).toUpperCase() + name.substr(1) + ' Cricket' + (modifiers.length ? (' ' + modifiers.join(' ')) : '');
   }
 
 
@@ -29,25 +34,37 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
     if (this.getState().game.targets.hasOwnProperty(number)) {
       data.value = 21 === number ? 25 : number;
 
-      switch(throwData.type) {
-        case ThrowTypes.TRIPLE:
-          if (25 !== data.value) {
-            data.marks = 3;
+      if (this.isTriples()) {
+        if (25 === data.value) {
+          if (ThrowTypes.DOUBLE === throwData.type) {
+            data.marks = 2;
+          } else if (ThrowTypes.SINGLE_OUTER) {
+            data.marks = 1;
           }
-          break;
+        } else if (ThrowTypes.TRIPLE === throwData.type) {
+          data.marks = 3;
+        }
+      } else {
+        switch(throwData.type) {
+          case ThrowTypes.TRIPLE:
+            if (25 !== data.value) {
+              data.marks = 3;
+            }
+            break;
 
-        case ThrowTypes.DOUBLE:
-          /*
-           if you wanted different rules for double bull this is the place to
-           put them
-           */
-          data.marks = 2;
-          break;
+          case ThrowTypes.DOUBLE:
+            /*
+             if you wanted different rules for double bull this is the place to
+             put them
+             */
+            data.marks = 2;
+            break;
 
-        case ThrowTypes.SINGLE_INNER:
-        case ThrowTypes.SINGLE_OUTER:
-          data.marks = 1;
-          break;
+          case ThrowTypes.SINGLE_INNER:
+          case ThrowTypes.SINGLE_OUTER:
+            data.marks = 1;
+            break;
+        }
       }
     }
     //data.value *= data.marks;
@@ -157,6 +174,13 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
     return marksClosed;
   }
 
+  isTriples() {
+    if (undefined === this.triples) {
+      this.triples = !!this.getState().config.modifiers.triples;
+    }
+    return this.triples;
+  }
+
   isCloseout() {
     if (undefined === this.closeout) {
       this.closeout = 'Closeout' === this.getState().config.variation;
@@ -253,7 +277,8 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
         score: 0,
         marks: Object.assign({}, marks),
         highlightMarks: {},
-        history: [[]]
+        history: [[]],
+        throwHistory: []
       };
     }
 
@@ -324,6 +349,7 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
 
       // recorded the throw and init the history if needed
       game.currentThrows.push(throwData);
+      currentPlayer.throwHistory.push(throwData);
 
       if (this.isNumberOpen(throwData.number)) {
         // process only if the number is open
@@ -360,6 +386,10 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
         // do this early so we can use the updated game object
         game.players[game.currentPlayer] = currentPlayer;
 
+        if (0 === throwStats.marks) {
+          notificationQueue = [{type: 'throw', data: {type: ThrowTypes.MISS, number: 0}}];
+        }
+
         // check win condition
         if (
           this.areAllMarksClosed(currentPlayer.marks) &&
@@ -382,6 +412,16 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
 
       // Process advance round
       game.roundOver = ((game.currentThrow + 1) >= game.rounds.throws);
+
+      if (game.roundOver) {
+        notificationQueue = notificationQueue.concat(
+            // @fixme: hat tricks don't know if the marks are valid or not.
+            // also something about closeout not needing to do some checks
+            this.checkForHatTrickNotifications(game.currentThrows) ||
+            this.checkForTonNotifications(game.tempScore) ||
+            []
+        );
+      }
 
       // sync to the global state
 
