@@ -19,7 +19,7 @@ import WidgetPlayerListContainer from 'containers/WidgetPlayerListContainer';
 import WidgetDartboardContainer from 'containers/WidgetDartboardContainer';
 import WidgetWinnerContainer from 'containers/WidgetWinnerContainer';
 import WidgetNotificationQueueContainer from 'containers/WidgetNotificationQueueContainer';
-
+import WidgetCurrentMPRContainer from 'containers/WidgetCurrentMPRContainer';
 
 top.window.registerGame((store) => {
   let unsubscribe = store.subscribe(() => {
@@ -32,7 +32,9 @@ top.window.registerGame((store) => {
           <Provider store={store}>
             <GameClient>
               <WidgetCricketDisplayContainer />
-              <CornerDash />
+              <CornerDash>
+                <WidgetCurrentMPRContainer />
+              </CornerDash>
               <WidgetScoreHistoryContainer displayLimit={8} valueComponent={ScoreHistoryCricket} />
               <WidgetThrowsContainer />
               <WidgetPlayerListContainer />
