@@ -109,7 +109,6 @@ module.exports = class DartGameServer_Archery extends DartHelpers.DartGameServer
     // cloning the part we need because we're going to overwrite stuff
     var game = {
           tempScore: 0,
-          roundBeginningScore: 0,
           players: {},
           currentThrows: [],
           roundOver: false,
@@ -194,7 +193,7 @@ module.exports = class DartGameServer_Archery extends DartHelpers.DartGameServer
 
       game.players[players.current].history[rounds.current].push(throwStats);
       game.players[players.current].throwHistory.push(throwData);
-      game.players[players.current].score = (game.roundBeginningScore + game.tempScore);
+      game.players[players.current].score += throwStats.value;
       game.players[players.current].bulls += this.countBulls(throwData);
 
       // Process advance round
@@ -264,7 +263,6 @@ module.exports = class DartGameServer_Archery extends DartHelpers.DartGameServer
       }
 
       if (playerChanged) {
-        game.roundBeginningScore = game.players[players.current].score;
         game.players[players.current].history[rounds.current] = [];
         notificationQueue = [];
       }
