@@ -110,20 +110,19 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
    * @returns {*}
    */
   actionInit(state) {
-    var config = Object.assign({}, state.config),
     // cloning the part we need because we're going to overwrite stuff
-          game = {
-            started: state.started,
-            locked: state.locked,
-            finished: state.finished,
-            winner: state.winner,
-            tempScore: 0,
-            players: {},
-            rounds: Object.assign({}, state.rounds),
-            roundOver: false
-          };
+    var config = Object.assign({}, state.config),
+        game = {
+          tempScore: 0,
+          roundBeginningScore: 0,
+          players: {},
+          currentThrows: [],
+          roundOver: false,
+          widgetWindicator: []
+        },
+        rounds = Object.assign({}, state.rounds);
 
-    this.registerPlugin(new WindicatorPlugin(new Windicator(this.calculateThrowDataValue, config.extras), (state) => state.game.players[state.game.currentPlayer].score));
+    this.registerPlugin(new WindicatorPlugin(new Windicator(this.calculateThrowDataValue, config.extras), (state) => state.game.players[state.players.current].score));
 
     if (!config.variation) {
       config.variation = 501;
@@ -131,7 +130,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       config.variation = parseInt(config.variation, 10);
     }
     if (config.modifiers && config.modifiers.limit) {
-      game.rounds.limit = config.modifiers.limit;
+      rounds.limit = config.modifiers.limit;
     }
 
     for (let i = 0, c = state.players.order.length; i < c; i += 1) {
@@ -140,12 +139,14 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       game.players[id] = {
         id,
         score: config.variation,
+        ppd: 0,
         history: [0],
         throwHistory: []
       };
     }
+    game.roundBeginningScore = config.variation;
 
-    return Object.assign({}, state, {game, rounds: Object.assign({}, game.rounds), config});
+    return Object.assign({}, state, {game, rounds, config});
   }
 
 
@@ -160,33 +161,15 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       //init the actual game
 
       // shallow clone stuff
-      let game = Object.assign({}, state.game),
-          players = Object.assign({}, state.players);
+      let players = Object.assign({}, state.players);
 
-      game.playerOffset = 0;
-      game.currentPlayer = state.players.order[game.playerOffset];
-      game.currentRound = 0;
-      game.currentThrow = 0;
-      game.currentThrows = [];
-
-      game.tempScore = 0;
-      game.roundBeginningScore = state.game.players[game.currentPlayer].score;
-
-      game.widgetWindicator = [];
-
-      game.started = true;
-      game.locked = false;
-
-
-      // sync to the global state
-      players.current = game.currentPlayer;
+      players.current = players.order[players.currentOffset];
 
       // rebuild the new state
       return Object.assign({}, state, {
-        game,
         players,
-        started: game.started,
-        locked: game.locked
+        started: true,
+        locked: false
       });
     }
     return state;
@@ -203,60 +186,82 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
   actionProcessThrow(state, throwData) {
     if (!state.locked && DartHelpers.State.isPlayable(state)) {
       // we're in a valid round
-
       // shallow clone stuff
       let game = Object.assign({}, state.game),
-          notificationQueue = [{type: 'throw', data: throwData}];
-
+          rounds = Object.assign({}, state.rounds),
+          players = Object.assign({}, state.players),
+          notificationQueue = [{type: 'throw', data: throwData}],
+          finished = state.finished,
+          winner = state.winner;
 
       game.roundOver = false;
       game.tempScore += this.calculateThrowDataValue(throwData);
       game.currentThrows.push(throwData);
+      rounds.currentThrow += 1;
 
-      // @todo: check to make sure assigning game.players[x].score is safe
-      let score = game.players[game.currentPlayer].score = (game.roundBeginningScore - game.tempScore);
       // set the temp score as in the player score history
-      game.players[game.currentPlayer].history[game.rounds.current] = game.tempScore;
-      game.players[game.currentPlayer].throwHistory.push(throwData);
+      game.players[players.current].history[rounds.current] = game.tempScore;
+      game.players[players.current].throwHistory.push(throwData);
+      let score = game.players[players.current].score = (game.roundBeginningScore - game.tempScore),
+          throws = game.players[players.current].throwHistory.length;
+
+      game.players[players.current].ppd = throws ? ((state.config.variation - score) / throws) : 0;
+
       if (0 === score) {
-        game.finished = true;
-        game.winner = game.currentPlayer;
-        console.log('WINNER');
+        finished = true;
+        winner = players.current;
+        notificationQueue.push({type: 'winner', data: winner});
+      } else {
+        // Process BUST or advance round
+        if (score < 0) {
+          // bust
+          game.roundOver = true;
+          notificationQueue.push({type: 'bust'});
+        } else if (rounds.currentThrow >= rounds.throws) {
+          // round over
+          game.roundOver = true;
+          notificationQueue = notificationQueue.concat(
+              this.checkForHatTrickNotifications(game.currentThrows) ||
+              this.checkForTonNotifications(game.tempScore) ||
+              []
+          );
+        }
+
+        if (game.roundOver && !winner) {
+          notificationQueue.push({type: 'remove_darts'});
+        }
       }
 
-      game.locked = true;
 
-
-      // Process BUST or advance round
-      //game.roundOver = ((score < 0) || ((game.currentThrow + 1) >= game.rounds.throws));
-      if (score < 0) {
-        // bust
-        game.roundOver = true;
-        notificationQueue.push({type: 'bust'});
-      } else if ((game.currentThrow + 1) >= game.rounds.throws) {
-        // round over
-        game.roundOver = true;
-        notificationQueue = notificationQueue.concat(
-            this.checkForHatTrickNotifications(game.currentThrows) ||
-            this.checkForTonNotifications(game.tempScore) ||
-            []
-        );
-      }
-
-      if (game.roundOver) {
-        notificationQueue.push({type: 'remove_darts'});
-      }
-
-      // sync to the global state
+      // @todo: Turn this into a standard check (this.isLastThrowOfGame(state))
+      //if (
+      //    rounds.limit &&
+      //    rounds.currentThrow >= rounds.throws &&
+      //    (players.currentOffset + 1) >= players.order.length &&
+      //    (rounds.current + 1) >= rounds.limit)
+      //{
+      //  // look ahead to see if we hit the round limit hit the round limit
+      //  winner = DartHelpers.State.getPlayerIdWithLowestScore(game.players);
+      //  notificationQueue.push({type: 'winner', data: winner});
+      //  return Object.assign({}, state, {
+      //    game,
+      //    rounds,
+      //    widgetThrows: game.currentThrows.slice(0),
+      //    //locked: true, // by not locking we can undo
+      //    finished: true,
+      //    winner,
+      //    notificationQueue: notificationQueue
+      //  });
+      //}
 
       // rebuild the new state
       return Object.assign({}, state, {
         game,
-        rounds: Object.assign({}, game.rounds),
+        rounds,
         widgetThrows: game.currentThrows.slice(0),
-        locked: game.locked,
-        finished: game.finished,
-        winner: game.winner,
+        locked: !winner, // by not locking we can undo
+        finished,
+        winner,
         notificationQueue
       });
     }
@@ -267,90 +272,72 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
   actionAdvanceGame(state) {
     if (state.locked && DartHelpers.State.isPlayable(state)) {
       // we're in a valid round
-
       // shallow clone stuff
       let game = Object.assign({}, state.game),
+          rounds = Object.assign({}, state.rounds),
           players = Object.assign({}, state.players),
           playerChanged = false,
           notificationQueue = state.notificationQueue;
 
 
       // Process BUST
-      if (game.players[game.currentPlayer].score < 0) {
+      if (game.players[players.current].score < 0) {
         // advance from a bust
-        game.players[game.currentPlayer].score = game.roundBeginningScore;
-        game.players[game.currentPlayer].history[game.rounds.current] = 0;
+        let score = game.players[players.current].score = game.roundBeginningScore,
+            throws = game.players[players.current].throwHistory.length;
+        game.players[players.current].history[rounds.current] = 0;
 
-        game.currentThrow = 0;
-        game.tempScore = 0;
-        game.playerOffset += 1;
-        playerChanged = true;
+        game.players[players.current].ppd = throws ? ((state.config.variation - score) / throws) : 0;
 
+        rounds.currentThrow = 0;
         game.currentThrows = [];
-      } else {
+        game.tempScore = 0;
+        players.currentOffset += 1;
+        playerChanged = true;
+      } else if (rounds.currentThrow >= rounds.throws) {
         // advance the game normally
-        game.currentThrow += 1;
-        if (game.currentThrow >= game.rounds.throws) {
-          // next player
-          game.currentThrow = 0;
-          game.tempScore = 0;
-          game.playerOffset += 1;
-          playerChanged = true;
-
-          game.currentThrows = [];
-        }
+        // next player
+        rounds.currentThrow = 0;
+        game.currentThrows = [];
+        game.tempScore = 0;
+        players.currentOffset += 1;
+        playerChanged = true;
       }
 
 
-      if (game.playerOffset >= players.order.length) {
-        // @todo: test if last round?
-
+      if (players.currentOffset >= players.order.length) {
         // next round actually
-        game.playerOffset = 0;
-        playerChanged = true;
-        game.currentRound += 1;
-        game.currentPlayer = players.order[game.playerOffset];
+        players.currentOffset = 0;
+        players.current = players.order[players.currentOffset];
+        rounds.current += 1;
 
-        if (game.rounds.limit && game.currentRound >= game.rounds.limit) {
-          game.finished = true;
-          game.winner = DartHelpers.State.getPlayerIdWithLowestScore(game.players);
-          notificationQueue = [];
+        if (rounds.limit && rounds.current >= rounds.limit) {
+          // hit the round limit
+          let winner = DartHelpers.State.getPlayerIdWithLowestScore(game.players);
           return Object.assign({}, state, {
-            game,
-            players,
-            rounds: Object.assign({}, game.rounds),
             widgetThrows: game.currentThrows.slice(0),
-            locked: game.locked,
-            finished: game.finished,
-            winner: game.winner,
-            notificationQueue
+            finished: true,
+            winner,
+            notificationQueue: [{type: 'winner', data: winner}]
           });
         }
       } else {
-        game.currentPlayer = players.order[game.playerOffset];
+        players.current = players.order[players.currentOffset];
       }
 
       if (playerChanged) {
-        game.roundBeginningScore = game.players[game.currentPlayer].score;
-        game.players[game.currentPlayer].history[game.currentRound] = 0;
+        game.roundBeginningScore = game.players[players.current].score;
+        game.players[players.current].history[rounds.current] = 0;
         notificationQueue = [];
       }
-
-      game.locked = false;
-
-      // sync to the global state
-      players.current = game.currentPlayer;
-      game.rounds.current = game.currentRound;
 
       // rebuild the new state
       return Object.assign({}, state, {
         game,
         players,
-        rounds: Object.assign({}, game.rounds),
+        rounds,
         widgetThrows: game.currentThrows.slice(0),
-        locked: game.locked,
-        finished: game.finished,
-        winner: game.winner,
+        locked: false,
         notificationQueue
       });
     }

@@ -13,7 +13,7 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
         name = state.game.label || state.config.variation || 'standard',
         modifiers = [];
 
-    if (state.config.modifiers.triples) {
+    if (state.config.modifiers && state.config.modifiers.triples) {
       modifiers = ['[Triples]'];
     }
 
@@ -30,7 +30,6 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
   calculateThrowDataValue(throwData) {
     var number = throwData.number,
         data = {marks: 0, value: 0};
-
     if (this.getState().game.targets.hasOwnProperty(number)) {
       data.value = 21 === number ? 25 : number;
 
@@ -53,10 +52,6 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
             break;
 
           case ThrowTypes.DOUBLE:
-            /*
-             if you wanted different rules for double bull this is the place to
-             put them
-             */
             data.marks = 2;
             break;
 
@@ -67,8 +62,6 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
         }
       }
     }
-    //data.value *= data.marks;
-
     return data;
   }
 
@@ -104,7 +97,7 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
     let state = this.getState();
 
     // Never close a number if there is only one player
-    if (1 === state.players.order.length) {
+    if (1 === state.players.order.length && !this.isCloseout()) {
       return true;
     }
 
@@ -176,7 +169,8 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
 
   isTriples() {
     if (undefined === this.triples) {
-      this.triples = !!this.getState().config.modifiers.triples;
+      let config = this.getState().config;
+      this.triples = (config.modifiers && config.modifiers.triples);
     }
     return this.triples;
   }
@@ -193,9 +187,10 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
    * the state.widgetDartboard property and WidgetDartboard component.
    *
    * @param {object} game
+   * @param currentPlayerId
    * @returns {{}}
    */
-  toWidgetDartboard(game) {
+  toWidgetDartboard(game, currentPlayerId) {
     var targets = Object.assign({}, game.targets),
       dartboard = {
           visible: false,
@@ -203,7 +198,7 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
         };
 
     if (this.isCloseout()) {
-      let currentPlayerMarks = game.players[game.currentPlayer].marks;
+      let currentPlayerMarks = game.players[currentPlayerId].marks;
       for (let mark in currentPlayerMarks) {
         if (currentPlayerMarks.hasOwnProperty(mark)) {
           targets[mark] = (currentPlayerMarks[mark] < 3);
@@ -242,20 +237,16 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
    * @returns {*}
    */
   actionInit(state) {
-    var {modifiers} = state.config,
-        // cloning the part we need because we're going to overwrite stuff
-        game = {
-          started: state.started,
-          locked: state.locked,
-          finished: state.finished,
-          winner: state.winner,
+    // cloning the part we need because we're going to overwrite stuff
+    var game = {
           tempScore: 0,
           players: {},
-          rounds: Object.assign({}, state.rounds),
+          currentThrows: [],
           roundOver: false,
           // true means open, false means closed
           targets: {20: true, 19: true, 18: true, 17: true, 16: true, 15: true, 21: true}
         },
+        rounds = Object.assign({}, state.rounds),
         marks = {};
 
     // init the marks for this game
@@ -265,8 +256,8 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
       }
     }
 
-    if (modifiers && modifiers.limit) {
-      game.rounds.limit = modifiers.limit;
+    if (state.config.modifiers && state.config.modifiers.limit) {
+      rounds.limit = state.config.modifiers.limit;
     }
 
     for (let i = 0, c = state.players.order.length; i < c; i += 1) {
@@ -282,10 +273,7 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
       };
     }
 
-    return Object.assign({}, state, {
-      game,
-      rounds: Object.assign({}, game.rounds)
-    });
+    return Object.assign({}, state, {game, rounds});
   }
 
 
@@ -300,31 +288,16 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
       //init the actual game
 
       // shallow clone stuff
-      let game = Object.assign({}, state.game),
-          players = Object.assign({}, state.players);
+      let players = Object.assign({}, state.players);
 
-      game.playerOffset = 0;
-      game.currentPlayer = state.players.order[game.playerOffset];
-      game.currentRound = 0;
-      game.currentThrow = 0;
-      game.currentThrows = [];
-
-      game.tempScore = 0;
-
-      game.started = true;
-      game.locked = false;
-
-
-      // sync to the global state
-      players.current = game.currentPlayer;
+      players.current = players.order[players.currentOffset];
 
       // rebuild the new state
       return Object.assign({}, state, {
-        game,
         players,
-        started: game.started,
-        locked: game.locked,
-        widgetDartboard: this.toWidgetDartboard(game)
+        started: true,
+        locked: false,
+        widgetDartboard: this.toWidgetDartboard(state.game, players.current)
       });
     }
     return state;
@@ -341,14 +314,21 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
   actionProcessThrow(state, throwData) {
     if (!state.locked && DartHelpers.State.isPlayable(state)) {
       // we're in a valid round
-
       // shallow clone stuff
-      let game = Object.assign({}, state.game),
-          currentPlayer = Object.assign({}, game.players[game.currentPlayer]),
-          notificationQueue = [{type: 'throw', data: throwData}];
 
-      // recorded the throw and init the history if needed
+      let game = Object.assign({}, state.game),
+          rounds = Object.assign({}, state.rounds),
+          players = Object.assign({}, state.players),
+          currentPlayer = game.players[players.current],
+          notificationQueue = [{type: 'throw', data: {type: ThrowTypes.MISS, number: 0}}],
+          finished = state.finished,
+          winner = state.winner;
+
+      game.roundOver = false;
       game.currentThrows.push(throwData);
+      rounds.currentThrow += 1;
+
+      // set the temp score as in the player score history
       currentPlayer.throwHistory.push(throwData);
 
       if (this.isNumberOpen(throwData.number)) {
@@ -358,18 +338,23 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
             neededMarks = Math.max(0, (3 - currentMarks)),
 
             // give marks
-            earnedMarks = Math.min(neededMarks, throwStats.marks),
-            excessMarks = throwStats.marks - earnedMarks;
+            earnedMarks = Math.min(neededMarks, throwStats.marks), // these marks are toward closing out
+            excessMarks = throwStats.marks - earnedMarks; // these marks are worth points
 
         currentPlayer.marks[throwData.number] += earnedMarks;
         currentPlayer.highlightMarks[throwData.number] = (currentPlayer.highlightMarks[throwData.number] || 0) + earnedMarks;
-        currentPlayer.history[game.rounds.current].push(earnedMarks);
+        currentPlayer.history[rounds.current].push(earnedMarks);
+        if (earnedMarks || excessMarks) {
+          notificationQueue = [{type: 'throw', data: throwData}];
+        }
+
 
         // check to see if this closes the number globally and assign the value
         if ((game.targets[throwData.number] = this.isNumberOpenInPlayers(throwData.number))) {
           // give points if allowed
           if (!this.isCloseout()) {
             let points = excessMarks * throwStats.value;
+
             currentPlayer.marks[throwData.number] += excessMarks;
             game.tempScore += points;
             currentPlayer.score += points;
@@ -383,58 +368,53 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
           }
         }
 
-        // do this early so we can use the updated game object
-        game.players[game.currentPlayer] = currentPlayer;
-
-        if (0 === throwStats.marks) {
-          notificationQueue = [{type: 'throw', data: {type: ThrowTypes.MISS, number: 0}}];
-        }
-
         // check win condition
         if (
           this.areAllMarksClosed(currentPlayer.marks) &&
           (
-            this.isCloseout() ||
-            (currentPlayer.score >= this.getHighestScore(game.players, currentPlayer.id))
+              this.isCloseout() ||
+              (currentPlayer.score >= this.getHighestScore(game.players, players.current))
           )
         ) {
-            game.winner = currentPlayer.id;
-            game.finished = true;
+          finished = true;
+          winner = currentPlayer.id;
+
+          notificationQueue = notificationQueue.concat(
+              // @fixme: hat tricks don't know if the marks are valid or not.
+              // also something about closeout not needing to do some checks
+              this.checkForHatTrickNotifications(game.currentThrows) ||
+              this.checkForTonNotifications(game.tempScore) ||
+              []
+          );
+
+          notificationQueue.push({type: 'winner', data: winner});
         }
       } else {
-        currentPlayer.history[game.rounds.current].push(0);
-        game.players[game.currentPlayer] = currentPlayer;
-        notificationQueue = [{type: 'throw', data: {type: ThrowTypes.MISS, number: 0}}];
+        currentPlayer.history[rounds.current].push(0);
       }
 
-      game.locked = true;
+      game.players[players.current] = currentPlayer;
+
 
 
       // Process advance round
-      game.roundOver = ((game.currentThrow + 1) >= game.rounds.throws);
+      game.roundOver = (rounds.currentThrow >= rounds.throws);
 
-      if (game.roundOver) {
-        notificationQueue = notificationQueue.concat(
-            // @fixme: hat tricks don't know if the marks are valid or not.
-            // also something about closeout not needing to do some checks
-            this.checkForHatTrickNotifications(game.currentThrows) ||
-            this.checkForTonNotifications(game.tempScore) ||
-            []
-        );
+      if (game.roundOver && !winner) {
+        notificationQueue.push({type: 'remove_darts'});
       }
 
-      // sync to the global state
-
+      // rebuild the new state
       // rebuild the new state
       return Object.assign({}, state, {
         game,
-        rounds: Object.assign({}, game.rounds),
+        rounds,
         widgetThrows: game.currentThrows.slice(0),
-        locked: game.locked,
-        finished: game.finished,
-        winner: game.winner,
-        widgetDartboard: this.toWidgetDartboard(game),
-        notificationQueue: notificationQueue
+        locked: !winner, // by not locking we can undo
+        finished,
+        winner,
+        widgetDartboard: this.toWidgetDartboard(game, players.current),
+        notificationQueue
       });
     }
     return state;
@@ -447,75 +427,57 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
 
       // shallow clone stuff
       let game = Object.assign({}, state.game),
+          rounds = Object.assign({}, state.rounds),
           players = Object.assign({}, state.players),
           playerChanged = false,
           notificationQueue = state.notificationQueue;
 
 
       // advance the game normally
-      game.currentThrow += 1;
-      if (game.currentThrow >= game.rounds.throws) {
+      if (rounds.currentThrow >= rounds.throws) {
         // next player
-        game.currentThrow = 0;
-        game.tempScore = 0;
-        game.playerOffset += 1;
-        playerChanged = true;
-
+        rounds.currentThrow = 0;
         game.currentThrows = [];
-        game.players[game.currentPlayer].highlightMarks = {};
+        game.tempScore = 0;
+        players.currentOffset += 1;
+        playerChanged = true;
+        game.players[players.current].highlightMarks = {};
       }
 
 
-      if (game.playerOffset >= players.order.length) {
-        // @todo: test if last round?
-
+      if (players.currentOffset >= players.order.length) {
         // next round actually
-        game.playerOffset = 0;
-        playerChanged = true;
-        game.currentRound += 1;
-        game.currentPlayer = players.order[game.playerOffset];
+        players.currentOffset = 0;
+        players.current = players.order[players.currentOffset];
+        rounds.current += 1;
 
-        if (game.rounds.limit && game.currentRound >= game.rounds.limit) {
-          game.finished = true;
-          game.winner = DartHelpers.State.getPlayerIdWithHighestScore(game.players);
-          notificationQueue = [];
+        if (rounds.limit && rounds.current >= rounds.limit) {
+          // hit the round limit
+          let winner = DartHelpers.State.getPlayerIdWithHighestScore(game.players);
           return Object.assign({}, state, {
-            game,
-            players,
-            rounds: Object.assign({}, game.rounds),
-            locked: game.locked,
-            finished: game.finished,
-            winner: game.winner,
             widgetThrows: game.currentThrows.slice(0),
-            notificationQueue
+            finished: true,
+            winner,
+            notificationQueue: [{type: 'winner', data: winner}]
           });
         }
       } else {
-        game.currentPlayer = players.order[game.playerOffset];
+        players.current = players.order[players.currentOffset];
       }
 
       if (playerChanged) {
-        game.roundBeginningScore = game.players[game.currentPlayer].score;
-        game.players[game.currentPlayer].history[game.currentRound] = [];
+        game.players[players.current].history[rounds.current] = [];
         notificationQueue = [];
       }
-
-      game.locked = false;
-
-      // sync to the global state
-      players.current = game.currentPlayer;
-      game.rounds.current = game.currentRound;
 
       // rebuild the new state
       return Object.assign({}, state, {
         game,
         players,
-        rounds: Object.assign({}, game.rounds),
-        locked: game.locked,
-        finished: game.finished,
-        winner: game.winner,
+        rounds,
         widgetThrows: game.currentThrows.slice(0),
-        widgetDartboard: this.toWidgetDartboard(game),
+        locked: false,
+        widgetDartboard: this.toWidgetDartboard(game, players.current),
         notificationQueue
       });
     }
