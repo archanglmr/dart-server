@@ -432,7 +432,6 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
           playerChanged = false,
           notificationQueue = state.notificationQueue;
 
-
       // advance the game normally
       if (rounds.currentThrow >= rounds.throws) {
         // next player
