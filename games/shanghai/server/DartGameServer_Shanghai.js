@@ -190,6 +190,7 @@ module.exports = class DartGameServer_Shanghai extends DartHelpers.DartGameServe
       rounds.currentThrow += 1;
 
       game.players[players.current].history[rounds.current] = game.tempScore;
+      game.players[players.current].throwHistory.push(throwData);
       game.players[players.current].score += throwScore;
 
 
