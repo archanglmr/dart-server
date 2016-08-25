@@ -20,6 +20,7 @@ import WidgetPlayerListContainer from 'containers/WidgetPlayerListContainer';
 import WidgetDartboardContainer from 'containers/WidgetDartboardContainer';
 import WidgetWinnerContainer from 'containers/WidgetWinnerContainer';
 import PlayerWindicator from 'components/PlayerWindicator';
+import WidgetNotificationQueueContainer from 'containers/WidgetNotificationQueueContainer';
 
 
 top.window.registerGame((store) => {
@@ -40,6 +41,7 @@ top.window.registerGame((store) => {
               <WidgetPlayerListContainer valueComponent={PlayerWindicator} />
               <WidgetDartboardContainer />
               <WidgetWinnerContainer />
+              <WidgetNotificationQueueContainer />
             </GameClient>
           </Provider>
       ),
