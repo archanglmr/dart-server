@@ -20,6 +20,8 @@ import WidgetDartboardContainer from 'containers/WidgetDartboardContainer';
 import WidgetWinnerContainer from 'containers/WidgetWinnerContainer';
 import WidgetNotificationQueueContainer from 'containers/WidgetNotificationQueueContainer';
 
+import NotificationSlide from './components/NotificationSlide';
+
 
 import './slider.scss';
 
@@ -41,7 +43,7 @@ top.window.registerGame((store) => {
               <WidgetDartboardContainer />
               <WidgetTargetNumberContainer />
               <WidgetWinnerContainer />
-              <WidgetNotificationQueueContainer />
+              <WidgetNotificationQueueContainer customNotifications={{slide: NotificationSlide}} />
             </GameClient>
           </Provider>
       ),

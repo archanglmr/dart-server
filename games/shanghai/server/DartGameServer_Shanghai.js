@@ -204,12 +204,10 @@ module.exports = class DartGameServer_Shanghai extends DartHelpers.DartGameServe
           finished = true;
           winner = players.current;
           // @fixme: should be a shanghai notification
-          notificationQueue.push({type: 'winner', data: game.winner});
+          notificationQueue.push({type: 'shanghai', data: game.winner});
         }
         notificationQueue.push({type: 'remove_darts'});
       }
-
-      // sync to the global state
 
       // rebuild the new state
       return Object.assign({}, state, {
@@ -271,7 +269,7 @@ module.exports = class DartGameServer_Shanghai extends DartHelpers.DartGameServe
       }
 
       if (playerChanged) {
-        game.players[players.current].history[rounds.current] = [];
+        game.players[players.current].history[rounds.current] = 0;
         notificationQueue = [];
       }
 

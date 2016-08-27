@@ -4,7 +4,7 @@ var DartHelpers = require('../../../lib/dart-helpers'),
 
 module.exports = class DartGameServer_Slider extends DartHelpers.DartGameServer {
   /**
-   * Calculates the value in this game of the current throw.
+   * Calculates the value in of the current throw.
    *
    * @param throwData {{type: string, number: number}}
    * @param target {number}
@@ -18,7 +18,7 @@ module.exports = class DartGameServer_Slider extends DartHelpers.DartGameServer 
    * Will look at the current game state and return an object compatible with
    * the state.widgetDartboard property and WidgetDartboard component.
    *
-   * @param {object} targets
+   * @param {object} target
    * @returns {{}}
    */
   toWidgetDartboard(target) {
@@ -54,22 +54,18 @@ module.exports = class DartGameServer_Slider extends DartHelpers.DartGameServer 
    * @returns {*}
    */
   actionInit(state) {
-    var {variation, modifiers} = state.config,
     // cloning the part we need because we're going to overwrite stuff
-          game = {
-            started: state.started,
-            locked: state.locked,
-            finished: state.finished,
-            winner: state.winner,
-            tempScore: 0,
-            players: {},
-            rounds: Object.assign({}, state.rounds),
-            roundOver: false,
-            target: 10
-          };
+    var game = {
+          tempScore: 0,
+          players: {},
+          currentThrows: [],
+          roundOver: false,
+          target: 10
+        },
+        rounds = Object.assign({}, state.rounds);
 
-    if (modifiers && modifiers.limit) {
-      game.rounds.limit = modifiers.limit;
+    if (state.config.modifiers && state.config.modifiers.hasOwnProperty('limit')) {
+      rounds.limit = state.config.modifiers.limit;
     }
 
     for (let i = 0, c = state.players.order.length; i < c; i += 1) {
@@ -78,11 +74,12 @@ module.exports = class DartGameServer_Slider extends DartHelpers.DartGameServer 
       game.players[id] = {
         id,
         score: game.target,
-        history: [0]
+        history: [0],
+        throwHistory: []
       };
     }
 
-    return Object.assign({}, state, {game, rounds: Object.assign({}, game.rounds)});
+    return Object.assign({}, state, {game, rounds, widgetDartboard: this.toWidgetDartboard(game.target)});
   }
 
 
@@ -97,32 +94,15 @@ module.exports = class DartGameServer_Slider extends DartHelpers.DartGameServer 
       //init the actual game
 
       // shallow clone stuff
-      let game = Object.assign({}, state.game),
-          players = Object.assign({}, state.players);
+      let players = Object.assign({}, state.players);
 
-      game.playerOffset = 0;
-      game.currentPlayer = state.players.order[game.playerOffset];
-      game.currentRound = 0;
-      game.currentThrow = 0;
-      game.currentThrows = [];
-
-      game.tempScore = 0;
-      game.roundBeginningScore = state.game.players[game.currentPlayer].score;
-
-      game.started = true;
-      game.locked = false;
-
-
-      // sync to the global state
-      players.current = game.currentPlayer;
+      players.current = players.order[players.currentOffset];
 
       // rebuild the new state
       return Object.assign({}, state, {
-        game,
         players,
-        started: game.started,
-        locked: game.locked,
-        widgetDartboard: this.toWidgetDartboard(game.target)
+        started: true,
+        locked: false
       });
     }
     return state;
@@ -139,47 +119,52 @@ module.exports = class DartGameServer_Slider extends DartHelpers.DartGameServer 
   actionProcessThrow(state, throwData) {
     if (!state.locked && DartHelpers.State.isPlayable(state)) {
       // we're in a valid round
-
       // shallow clone stuff
-      let game = Object.assign({}, state.game);
+      let game = Object.assign({}, state.game),
+          rounds = Object.assign({}, state.rounds),
+          players = Object.assign({}, state.players),
+          throwScore = this.calculateThrowDataValue(throwData, game.target),
+          notificationQueue = [throwScore ? {type: 'throw', data: throwData} : {type: 'throw', data: {type: ThrowTypes.MISS, number: 0}}],
+          finished = state.finished,
+          winner = state.winner;
 
-
-      game.tempScore += this.calculateThrowDataValue(throwData, game.target);
+      game.roundOver = false;
+      game.tempScore += throwScore;
       game.currentThrows.push(throwData);
+      rounds.currentThrow += 1;
 
-      let score = game.players[game.currentPlayer].score = (game.roundBeginningScore + game.tempScore);
-      // set the temp score as in the player score history
-      game.players[game.currentPlayer].history[game.rounds.current] = game.tempScore;
+      game.players[players.current].history[rounds.current] = game.tempScore;
+      game.players[players.current].throwHistory.push(throwData);
+      let score = game.players[players.current].score += throwScore;
 
       if (21 === score) {
-        game.finished = true;
-        game.winner = game.currentPlayer;
+        finished = true;
+        winner = players.current;
       }
 
       // Process advance round
-      game.roundOver = ((game.currentThrow + 1) >= game.rounds.throws);
+      game.roundOver = (rounds.currentThrow >= rounds.throws);
       game.target = score;
 
       if (game.roundOver && !game.tempScore && score > 1) {
         // slide back one, lowest number you can have is 1
-        game.players[game.currentPlayer].score -= 1;
-        game.players[game.currentPlayer].history[game.rounds.current] = -1;
-        game.target = 'SLIDE';
+        game.players[players.current].score -= 1;
+        game.players[players.current].history[rounds.current] = -1;
+        //game.target = 'SLIDE';
+        game.target -= 1;
+        notificationQueue.push({type: 'slide'});
       }
-
-      game.locked = true;
-
-      // sync to the global state
 
       // rebuild the new state
       return Object.assign({}, state, {
         game,
-        rounds: Object.assign({}, game.rounds),
+        rounds,
         widgetThrows: game.currentThrows.slice(0),
-        locked: game.locked,
-        finished: game.finished,
-        winner: game.winner,
-        widgetDartboard: this.toWidgetDartboard(game.target)
+        locked: !winner,
+        finished,
+        winner,
+        widgetDartboard: this.toWidgetDartboard(game.target),
+        notificationQueue
       });
     }
     return state;
@@ -192,69 +177,58 @@ module.exports = class DartGameServer_Slider extends DartHelpers.DartGameServer 
 
       // shallow clone stuff
       let game = Object.assign({}, state.game),
+          rounds = Object.assign({}, state.rounds),
           players = Object.assign({}, state.players),
-          playerChanged = false;
-
+          playerChanged = false,
+          notificationQueue = state.notificationQueue;
 
       // advance the game normally
-      game.currentThrow += 1;
-      if (game.currentThrow >= game.rounds.throws) {
+      if (rounds.currentThrow >= rounds.throws) {
         // next player
-        game.currentThrow = 0;
-        game.tempScore = 0;
-        game.playerOffset += 1;
-        playerChanged = true;
-
+        rounds.currentThrow = 0;
         game.currentThrows = [];
+        game.tempScore = 0;
+        players.currentOffset += 1;
+        playerChanged = true;
       }
 
 
-      if (game.playerOffset >= players.order.length) {
+      if (players.currentOffset >= players.order.length) {
         // next round actually
-        game.playerOffset = 0;
-        playerChanged = true;
-        game.currentRound += 1;
-        game.currentPlayer = players.order[game.playerOffset];
+        players.currentOffset = 0;
+        players.current = players.order[players.currentOffset];
+        rounds.current += 1;
         game.target += 1;
 
-        if (game.rounds.limit && game.currentRound >= game.rounds.limit) {
-          game.finished = true;
-          game.winner = DartHelpers.State.getPlayerIdWithHighestScore(game.players);
+        if (rounds.limit && rounds.current >= rounds.limit) {
+          // hit the round limit
+          let winner = DartHelpers.State.getPlayerIdWithHighestScore(game.players);
           return Object.assign({}, state, {
-            game,
-            players,
-            rounds: Object.assign({}, game.rounds),
             widgetThrows: game.currentThrows.slice(0),
-            locked: game.locked,
-            finished: game.finished,
-            winner: game.winner
+            finished: true,
+            winner,
+            notificationQueue: [{type: 'winner', data: winner}]
           });
         }
       } else {
-        game.currentPlayer = players.order[game.playerOffset];
+        players.current = players.order[players.currentOffset];
       }
 
       if (playerChanged) {
-        game.target = game.roundBeginningScore = game.players[game.currentPlayer].score;
-        game.players[game.currentPlayer].history[game.currentRound] = 0;
+        game.target = game.players[players.current].score;
+        game.players[players.current].history[rounds.current] = 0;
+        notificationQueue = [];
       }
-
-      game.locked = false;
-
-      // sync to the global state
-      players.current = game.currentPlayer;
-      game.rounds.current = game.currentRound;
 
       // rebuild the new state
       return Object.assign({}, state, {
         game,
         players,
-        rounds: Object.assign({}, game.rounds),
+        rounds,
         widgetThrows: game.currentThrows.slice(0),
-        locked: game.locked,
-        finished: game.finished,
-        winner: game.winner,
-        widgetDartboard: this.toWidgetDartboard(game.target)
+        locked: false,
+        widgetDartboard: this.toWidgetDartboard(game.target),
+        notificationQueue
       });
     }
     return state;
