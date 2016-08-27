@@ -134,7 +134,7 @@ module.exports = class DartGameServer_Warfare extends DartHelpers.DartGameServer
         },
         players = Object.assign({}, state.players);
 
-    if (modifiers && modifiers.limit) {
+    if (state.config.modifiers && state.config.modifiers.hasOwnProperty('limit')) {
       game.rounds.limit = modifiers.limit;
     }
 

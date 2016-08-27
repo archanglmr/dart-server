@@ -6,6 +6,7 @@ import NotificationTon from '../NotificationTon';
 import NotificationHatTrick from '../NotificationHatTrick';
 import NotificationThreeInBed from '../NotificationThreeInBed';
 import NotificationThreeInBlack from '../NotificationThreeInBlack';
+import NotificationGameOver from '../NotificationGameOver';
 
 
 function WidgetNotificationQueue({notifications, customNotifications = {}}) {
@@ -45,6 +46,11 @@ function WidgetNotificationQueue({notifications, customNotifications = {}}) {
           case 'ton':
             console.log('Ton ' + notification.data);
             components.push(<NotificationTon key={notification.type} data={'' + notification.data} />);
+            break;
+
+          case 'game_over':
+            console.log('Game Over');
+            components.push(<NotificationGameOver key={notification.type} />);
             break;
 
           case 'remove_darts':

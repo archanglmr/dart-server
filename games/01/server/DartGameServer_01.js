@@ -129,7 +129,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
     } else {
       config.variation = parseInt(config.variation, 10);
     }
-    if (config.modifiers && config.modifiers.limit) {
+    if (config.modifiers && config.modifiers.hasOwnProperty('limit')) {
       rounds.limit = config.modifiers.limit;
     }
 

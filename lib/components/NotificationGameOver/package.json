@@ -1,0 +1,4 @@
+{
+  "name": "NotificationGameOver",
+  "main": "./NotificationGameOver.jsx"
+}

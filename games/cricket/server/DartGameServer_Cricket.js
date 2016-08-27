@@ -167,6 +167,11 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
     return marksClosed;
   }
 
+  /**
+   * Checks to see if this is a Triples only game.
+   *
+   * @returns {boolean}
+   */
   isTriples() {
     if (undefined === this.triples) {
       let config = this.getState().config;
@@ -175,6 +180,11 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
     return this.triples;
   }
 
+  /**
+   * Checks to see if this is a "Closeout" game.
+   *
+   * @returns {boolean}
+   */
   isCloseout() {
     if (undefined === this.closeout) {
       this.closeout = 'Closeout' === this.getState().config.variation;
@@ -256,7 +266,7 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
       }
     }
 
-    if (state.config.modifiers && state.config.modifiers.limit) {
+    if (state.config.modifiers && state.config.modifiers.hasOwnProperty('limit')) {
       rounds.limit = state.config.modifiers.limit;
     }
 
@@ -457,7 +467,11 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
             widgetThrows: game.currentThrows.slice(0),
             finished: true,
             winner,
-            notificationQueue: [{type: 'winner', data: winner}]
+            notificationQueue: [
+              (1 === players.order.length) ?
+                {type: 'game_over'} :
+                {type: 'winner', data: winner}
+            ]
           });
         }
       } else {

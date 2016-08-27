@@ -118,10 +118,10 @@ module.exports = class DartGameServer_Shanghai extends DartHelpers.DartGameServe
         },
         rounds = Object.assign({}, state.rounds);
 
-    if (state.config.modifiers && state.config.modifiers.limit) {
+    if (state.config.modifiers && state.config.modifiers.hasOwnProperty('limit')) {
       rounds.limit = state.config.modifiers.limit;
     }
-    rounds.limit = Math.min(20, rounds.limit);
+    rounds.limit = Math.max(1, Math.min(20, rounds.limit));
     game.target = (20 - rounds.limit) + 1;
 
     for (let i = 0, c = state.players.order.length; i < c; i += 1) {
