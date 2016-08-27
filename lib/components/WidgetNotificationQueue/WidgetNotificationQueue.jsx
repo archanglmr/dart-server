@@ -12,7 +12,6 @@ import NotificationGameOver from '../NotificationGameOver';
 function WidgetNotificationQueue({notifications, customNotifications = {}}) {
   var components = [];
 
-  console.log('custom:', customNotifications);
   if (notifications && notifications.length) {
     // @todo: Cancel all existing notifications
     for (let i = 0, c = notifications.length; i < c; i += 1) {
