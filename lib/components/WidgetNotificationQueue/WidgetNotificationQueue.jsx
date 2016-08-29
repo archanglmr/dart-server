@@ -2,11 +2,13 @@
 
 import React, {PropTypes} from 'react';
 import NotificationThrow from '../NotificationThrow';
+import NotificationGameOver from '../NotificationGameOver';
+
 import NotificationTon from '../NotificationTon';
 import NotificationHatTrick from '../NotificationHatTrick';
-import NotificationThreeInBed from '../NotificationThreeInBed';
 import NotificationThreeInBlack from '../NotificationThreeInBlack';
-import NotificationGameOver from '../NotificationGameOver';
+
+import NotificationThreeInBed from '../NotificationThreeInBed';
 
 
 function WidgetNotificationQueue({notifications, customNotifications = {}}) {
@@ -27,11 +29,6 @@ function WidgetNotificationQueue({notifications, customNotifications = {}}) {
             components.push(<NotificationThrow key={notification.type} data={notification.data} />);
             break;
 
-          case 'three_in_bed':
-            console.log('Three in a Bed');
-            components.push(<NotificationThreeInBed key={notification.type} />);
-            break;
-
           case 'three_in_black':
             console.log('Three in the Black');
             components.push(<NotificationThreeInBlack key={notification.type} />);
@@ -40,6 +37,11 @@ function WidgetNotificationQueue({notifications, customNotifications = {}}) {
           case 'hat_trick':
             console.log('Hat Trick');
             components.push(<NotificationHatTrick key={notification.type} />);
+            break;
+
+          case 'three_in_bed':
+            console.log('Three in a Bed');
+            components.push(<NotificationThreeInBed key={notification.type} />);
             break;
 
           case 'ton':

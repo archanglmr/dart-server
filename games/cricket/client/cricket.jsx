@@ -11,6 +11,8 @@ import {Provider} from 'react-redux';
 // React components
 import GameClient from 'components/GameClient';
 import CornerDash from 'components/CornerDash';
+import NotificationWhiteHorse from 'components/NotificationWhiteHorse';
+import NotificationMarks from 'components/NotificationMarks';
 import WidgetScoreHistoryContainer from 'containers/WidgetScoreHistoryContainer';
 import ScoreHistoryCricket from 'components/ScoreHistoryCricket';
 import WidgetCricketDisplayContainer from 'containers/WidgetCricketDisplayContainer';
@@ -40,7 +42,7 @@ top.window.registerGame((store) => {
               <WidgetPlayerListContainer />
               <WidgetDartboardContainer />
               <WidgetWinnerContainer />
-              <WidgetNotificationQueueContainer />
+              <WidgetNotificationQueueContainer customNotifications={{white_horse: NotificationWhiteHorse, marks: NotificationMarks}} />
             </GameClient>
           </Provider>
       ),

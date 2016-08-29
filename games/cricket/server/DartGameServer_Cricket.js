@@ -193,6 +193,124 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
   }
 
   /**
+   * Checks the current throws with earnedMarks for Hat Trick awards.
+   *
+   * @param currentThrows {Array}
+   * @param earnedMarks {Array}
+   * @returns {*}
+   */
+  checkForHatTrickNotifications(currentThrows, earnedMarks) {
+    if (currentThrows.length >= 3 && earnedMarks.length >= 3) {
+      let hatTrick = true,
+          threeInTheBlack = true;
+
+      for (let i = 0, c = currentThrows.length; i < c; i += 1) {
+        let throwData = currentThrows[i],
+            throwMarks = earnedMarks[i];
+        if (21 === throwData.number && throwMarks) {
+          if (1 === throwMarks || ThrowTypes.DOUBLE !== throwData.type) {
+            threeInTheBlack = false;
+          }
+        } else {
+          hatTrick = false;
+          threeInTheBlack = false;
+        }
+      }
+
+      if (threeInTheBlack) {
+        return [{type: 'three_in_black'}];
+      } else if (hatTrick) {
+        return [{type: 'hat_trick'}];
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Checks the current throws with highlightMarks for a White Horse (3 unique
+   * virgin triples).
+   *
+   * @param currentThrows {Array}
+   * @param highlightMarks {Object}
+   * @returns {*}
+   */
+  checkForWhiteHorseNotification(currentThrows, highlightMarks) {
+    if (currentThrows.length >= 3) {
+      let whiteHorse = true,
+          throwNumbers = [];
+
+      for (let i = 0, c = currentThrows.length; i < c; i += 1) {
+        let throwData = currentThrows[i],
+            throwMarks = highlightMarks[throwData.number];
+
+        if (-1 === throwNumbers.indexOf(throwData.number) && throwMarks >= 3) {
+          //yes
+          throwNumbers.push(throwData.number);
+        } else {
+          whiteHorse = false;
+        }
+      }
+
+      if (whiteHorse) {
+        return [{type: 'white_horse'}];
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Checks the current throws with earnedMarks for various awards.
+   *
+   * @param currentThrows {Array}
+   * @param earnedMarks {Array}
+   * @returns {*}
+   */
+  checkForThreeInBedNotification(currentThrows, earnedMarks) {
+    if (currentThrows.length >= 3 && earnedMarks.length >= 3 && earnedMarks[0]) {
+      let threeInBed = true,
+          ref = currentThrows[0];
+
+      if (ThrowTypes.DOUBLE === ref.type || ThrowTypes.TRIPLE === ref.type) {
+        for (let i = 1, c = currentThrows.length; i < c; i += 1) {
+          let current = currentThrows[i];
+          if (current.type !== ref.type || current.number !== ref.number) {
+            threeInBed = false;
+          }
+        }
+      } else {
+        threeInBed = false;
+      }
+
+      if (threeInBed) {
+        return [{type: 'three_in_bed'}];
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Checks the current throws with earnedMarks for "X Mark" notifications (5-9
+   * Mark awards).
+   *
+   * @param earnedMarks {Array}
+   * @returns {*}
+   */
+  checkForXMarksNotifications(earnedMarks) {
+    if (earnedMarks.length >= 3) {
+      let marks = 0;
+
+      for (let i = 0, c = earnedMarks.length; i < c; i += 1) {
+        marks += earnedMarks[i];
+      }
+
+      if (marks >= 5) {
+        return [{type: 'marks', data: marks}];
+      }
+    }
+    return false;
+  }
+
+  /**
    * Will look at the current game state and return an object compatible with
    * the state.widgetDartboard property and WidgetDartboard component.
    *
@@ -279,6 +397,7 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
         marks: Object.assign({}, marks),
         highlightMarks: {},
         history: [[]],
+        earnedMarks: [[]],
         throwHistory: []
       };
     }
@@ -337,6 +456,7 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
       game.roundOver = false;
       game.currentThrows.push(throwData);
       rounds.currentThrow += 1;
+      game.roundOver = (rounds.currentThrow >= rounds.throws);
 
       // set the temp score as in the player score history
       currentPlayer.throwHistory.push(throwData);
@@ -348,16 +468,16 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
             neededMarks = Math.max(0, (3 - currentMarks)),
 
             // give marks
-            earnedMarks = Math.min(neededMarks, throwStats.marks), // these marks are toward closing out
-            excessMarks = throwStats.marks - earnedMarks; // these marks are worth points
+            closingMarks = Math.min(neededMarks, throwStats.marks), // these marks are toward closing out
+            excessMarks = throwStats.marks - closingMarks, // these marks are worth points
+            earnedMarks = closingMarks; // May add the excess marks if the number is still open
 
-        currentPlayer.marks[throwData.number] += earnedMarks;
-        currentPlayer.highlightMarks[throwData.number] = (currentPlayer.highlightMarks[throwData.number] || 0) + earnedMarks;
-        currentPlayer.history[rounds.current].push(earnedMarks);
-        if (earnedMarks || excessMarks) {
+        currentPlayer.marks[throwData.number] += closingMarks;
+        currentPlayer.highlightMarks[throwData.number] = (currentPlayer.highlightMarks[throwData.number] || 0) + closingMarks;
+        currentPlayer.history[rounds.current].push(closingMarks);
+        if (closingMarks || excessMarks) {
           notificationQueue = [{type: 'throw', data: throwData}];
         }
-
 
         // check to see if this closes the number globally and assign the value
         if ((game.targets[throwData.number] = this.isNumberOpenInPlayers(throwData.number))) {
@@ -368,14 +488,29 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
             currentPlayer.marks[throwData.number] += excessMarks;
             game.tempScore += points;
             currentPlayer.score += points;
+
+            earnedMarks += excessMarks;
           }
         }
 
         if (this.isCloseout()) {
-          if (earnedMarks && currentPlayer.marks[throwData.number] >= 3) {
+          if (closingMarks && currentPlayer.marks[throwData.number] >= 3) {
             game.tempScore += 1;
             currentPlayer.score += 1;
           }
+        }
+        currentPlayer.earnedMarks[rounds.current].push(earnedMarks);
+
+
+        if (game.roundOver) {
+          notificationQueue = notificationQueue.concat(this.checkForTonNotifications(game.tempScore) || []);
+          notificationQueue = notificationQueue.concat(
+              this.checkForHatTrickNotifications(game.currentThrows, currentPlayer.earnedMarks[rounds.current]) ||
+              this.checkForWhiteHorseNotification(game.currentThrows, currentPlayer.highlightMarks) ||
+              this.checkForThreeInBedNotification(game.currentThrows, currentPlayer.earnedMarks[rounds.current]) ||
+              this.checkForXMarksNotifications(currentPlayer.earnedMarks[rounds.current]) ||
+              []
+          );
         }
 
         // check win condition
@@ -388,27 +523,17 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
         ) {
           finished = true;
           winner = currentPlayer.id;
-
-          notificationQueue = notificationQueue.concat(
-              // @fixme: hat tricks don't know if the marks are valid or not.
-              // also something about closeout not needing to do some checks
-              this.checkForHatTrickNotifications(game.currentThrows) ||
-              this.checkForTonNotifications(game.tempScore) ||
-              []
-          );
-
           notificationQueue.push({type: 'winner', data: winner});
         }
       } else {
         currentPlayer.history[rounds.current].push(0);
+        currentPlayer.earnedMarks[rounds.current].push(0);
       }
 
       game.players[players.current] = currentPlayer;
 
 
 
-      // Process advance round
-      game.roundOver = (rounds.currentThrow >= rounds.throws);
 
       if (game.roundOver && !winner) {
         notificationQueue.push({type: 'remove_darts'});
@@ -480,6 +605,7 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
 
       if (playerChanged) {
         game.players[players.current].history[rounds.current] = [];
+        game.players[players.current].earnedMarks[rounds.current] = [];
         notificationQueue = [];
       }
 
