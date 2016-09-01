@@ -7,18 +7,18 @@ import FullScreenMessage from '../FullScreenMessage';
 function NotificationTon({data}) {
   switch (data) {
     case '80':
-      return <FullScreenMessage text="TON 80!!!" />;
+      return <FullScreenMessage {...arguments[0]} text="TON 80!!!" />;
     case 'high':
-      return <FullScreenMessage text="High Ton!!" />;
+      return <FullScreenMessage {...arguments[0]} text="High Ton!!" />;
     case 'low':
-      return <FullScreenMessage text="Low Ton!" />;
+      return <FullScreenMessage {...arguments[0]} text="Low Ton!" />;
   }
 
-  return null;
+  return <FullScreenMessage {...arguments[0]} text="Ton!" />;
 }
 
 NotificationTon.propTypes = {
-  data: PropTypes.string
+  //data: PropTypes.string
 };
 
 export default NotificationTon;

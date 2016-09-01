@@ -5,7 +5,7 @@ import FullScreenMessage from 'components/FullScreenMessage';
 
 
 function NotificationSlide() {
-  return <FullScreenMessage text="Slide!!!" />;
+  return <FullScreenMessage {...arguments[0]} text="Slide!!!" />;
 }
 
 export default NotificationSlide;

@@ -5,7 +5,7 @@ import FullScreenMessage from '../FullScreenMessage';
 
 
 function NotificationBust() {
-  return <FullScreenMessage text="B-U-S-T!!!" />;
+  return <FullScreenMessage {...arguments[0]} text="B-U-S-T!!!" />;
 }
 
 export default NotificationBust;

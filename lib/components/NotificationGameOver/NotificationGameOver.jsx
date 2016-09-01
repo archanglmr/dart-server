@@ -5,7 +5,7 @@ import FullScreenMessage from '../FullScreenMessage';
 
 
 function NotificationGameOver() {
-  return <FullScreenMessage text="Game Over" />;
+  return <FullScreenMessage {...arguments[0]} text="Game Over" />;
 }
 
 export default NotificationGameOver;

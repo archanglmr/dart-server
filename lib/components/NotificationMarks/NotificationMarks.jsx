@@ -5,7 +5,7 @@ import FullScreenMessage from '../FullScreenMessage';
 
 
 function NotificationMarks({data}) {
-    return <FullScreenMessage text={data + ' Mark!'} />;
+    return <FullScreenMessage {...arguments[0]} text={data + ' Mark!'} />;
 }
 
 NotificationMarks.propTypes = {

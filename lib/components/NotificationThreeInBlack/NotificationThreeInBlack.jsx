@@ -5,7 +5,7 @@ import FullScreenMessage from '../FullScreenMessage';
 
 
 function NotificationThreeInBlack() {
-  return <FullScreenMessage text="Three In The Black!!!" />;
+  return <FullScreenMessage {...arguments[0]} text="Three In The Black!!!" />;
 }
 
 export default NotificationThreeInBlack;

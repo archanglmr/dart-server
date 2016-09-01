@@ -5,7 +5,7 @@ import FullScreenMessage from '../FullScreenMessage';
 
 
 function NotificationHatTrick() {
-  return <FullScreenMessage text="Hat Trick!!!" />;
+  return <FullScreenMessage {...arguments[0]} text="Hat Trick!!!" />;
 }
 
 export default NotificationHatTrick;

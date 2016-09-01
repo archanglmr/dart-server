@@ -5,7 +5,7 @@ import FullScreenMessage from '../FullScreenMessage';
 
 
 function NotificationWhiteHorse() {
-  return <FullScreenMessage text="White Horse!!!" />;
+  return <FullScreenMessage {...arguments[0]} text="White Horse!!!" />;
 }
 
 export default NotificationWhiteHorse;
