@@ -5,7 +5,7 @@ import FullScreenMessage from 'components/FullScreenMessage';
 
 
 function NotificationBomb({data}) {
-  return <FullScreenMessage text={data.name + " was bombed!!!"} />;
+  return <FullScreenMessage {...arguments[0]} text={(data ? data.name : '') + " was bombed!!!"} />;
 }
 
 NotificationBomb.propTypes = {
