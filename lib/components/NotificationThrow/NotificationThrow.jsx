@@ -1,7 +1,6 @@
 'use strict';
 
 import React, {PropTypes} from 'react';
-import Sound from 'react-sound';
 
 
 class NotificationThrow extends React.Component {
