@@ -1,0 +1,39 @@
+@import 'colors';
+
+.notification-bomb {
+  position: absolute;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  text-align: center;
+  line-height: 100vh;
+  vertical-align: middle;
+
+  background-color: rgba($background, 0.8);
+  color: $background;
+
+  .svg-bomb {
+    width: auto;
+    height: 75vh;
+    vertical-align: middle;
+
+    .spark {
+      fill: red;
+      stroke-width: 2;
+      stroke: black;
+    }
+    .bomb {
+      fill: $foreground;;
+    }
+    text {
+      fill: $background;
+      font-size: 90px;
+    }
+  }
+
+  .svg-pow {
+    width: auto;
+    height: 75vh;
+    vertical-align: middle;
+  }
+}

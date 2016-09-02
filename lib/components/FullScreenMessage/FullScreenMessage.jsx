@@ -48,13 +48,6 @@ class FullScreenMessage extends React.Component {
 
 }
 
-//function FullScreenMessage({text}) {
-//  if (text) {
-//    return <div className="full-screen-message">{text}</div>;
-//  }
-//  return null;
-//}
-
 FullScreenMessage.propTypes = {
   text: PropTypes.string.isRequired
 };
