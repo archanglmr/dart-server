@@ -20,6 +20,10 @@ class NotificationThrow extends React.Component {
   }
 
   componentWillUnmount() {
+    this.clearTimer();
+  }
+
+  clearTimer() {
     if (this.timer) {
       clearTimeout(this.timer);
       this.timer = null;
@@ -30,7 +34,9 @@ class NotificationThrow extends React.Component {
     var {data, status, onFinish} = this.props,
         play = null;
 
-    if ('run' === status) {
+    if ('init' === status || 'finished' === status) {
+      this.clearTimer();
+    } else if ('run' === status) {
       switch (data.type) {
         case 'SINGLE_INNER':
           play = 'single';

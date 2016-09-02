@@ -1,7 +1,6 @@
 'use strict';
 
 import React, {PropTypes} from 'react';
-import Animate from 'rc-animate';
 import NotificationThrow from '../NotificationThrow';
 import NotificationGameOver from '../NotificationGameOver';
 

@@ -11,6 +11,10 @@ class FullScreenMessage extends React.Component {
   }
 
   componentWillUnmount() {
+    this.clearTimer();
+  }
+
+  clearTimer() {
     if (this.timer) {
       clearTimeout(this.timer);
       this.timer = null;
@@ -22,9 +26,12 @@ class FullScreenMessage extends React.Component {
 
     if (text) {
       if (status) {
+        if ('init' === status || 'finished' === status) {
+          this.clearTimer();
+        }
         // only do timer stuff if there is a status
         if (onFinish) {
-          this.timer = setTimeout(onFinish, 1000);
+          this.timer = setTimeout(onFinish, 1500);
         }
         let styles = {display: 'none'};
         if ('run' === status) {
