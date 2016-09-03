@@ -4,8 +4,11 @@ import React, {PropTypes} from 'react';
 import './DartIcon.scss';
 
 
-function DartIcon({outlineOnly}) {
+function DartIcon({outlineOnly, current}) {
   var className = ['dart-icon'];
+  if (current) {
+    className.push('current');
+  }
   if (outlineOnly) {
     className.push('outline');
   }

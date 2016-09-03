@@ -14,7 +14,7 @@ function WidgetThrows({throws, limit, tempScore = false, noTempScore = false}) {
     if (i < throwsLength) {
       throwElements.push(<span key={i}>{formatThrowData(throws[i])}</span>);
     } else {
-      throwElements.push(<span key={i}><DartIcon outlineOnly={outlineOnly} /></span>);
+      throwElements.push(<span key={i}><DartIcon outlineOnly={outlineOnly} current={!outlineOnly} /></span>);
       if (!outlineOnly) {
         outlineOnly = true;
       }
