@@ -2,11 +2,10 @@
 
 import React, {PropTypes} from 'react';
 
-
 function SVGBomb({text}) {
   /*
-  * src: http://www.flaticon.com/free-icon/bomb_32128
-  **/
+   * src: http://www.flaticon.com/free-icon/bomb_32128
+   **/
   return (
       <svg className="svg-bomb" viewBox="0 0 385 555">
         <g transform="translate(-85 0)">
@@ -26,7 +25,6 @@ function SVGBomb({text}) {
           <text textAnchor="middle" alignmentBaseline="middle" transform="translate(260 390)">{text}</text>
         </g>
       </svg>
-
   );
 }
 

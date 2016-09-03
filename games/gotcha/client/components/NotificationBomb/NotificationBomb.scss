@@ -13,9 +13,14 @@
   color: $background;
 
   .svg-bomb {
+    position: absolute;
+    top: 5vh;
+    left: 35vw;
     width: auto;
     height: 75vh;
-    vertical-align: middle;
+
+    z-index: 1;
+    opacity: 0;
 
     .spark {
       fill: red;
@@ -32,8 +37,13 @@
   }
 
   .svg-pow {
+    position: absolute;
+    top: 10vh;
+    left: 20vw;
     width: auto;
     height: 75vh;
-    vertical-align: middle;
+
+    z-index: 100;
+    opacity: 0;
   }
 }
