@@ -60,7 +60,9 @@ class NotificationThrow extends React.Component {
       }
 
       if (onFinish) {
-        this.timer = setTimeout(onFinish, 0);
+        // @todo: test this value more or possibly wait till the sound finished
+        // to advance
+        this.timer = setTimeout(onFinish, 750);
       }
     }
 

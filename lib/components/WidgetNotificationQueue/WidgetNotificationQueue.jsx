@@ -3,6 +3,7 @@
 import React, {PropTypes} from 'react';
 import NotificationThrow from '../NotificationThrow';
 import NotificationGameOver from '../NotificationGameOver';
+import NotificationRemoveDarts from '../NotificationRemoveDarts';
 
 import NotificationTon from '../NotificationTon';
 import NotificationHatTrick from '../NotificationHatTrick';
@@ -47,6 +48,7 @@ class WidgetNotificationQueue extends React.Component {
           hat_trick: NotificationHatTrick,
           three_in_bed: NotificationThreeInBed,
           ton: NotificationTon,
+          remove_darts: NotificationRemoveDarts,
           game_over: NotificationGameOver
           //remove_darts:
         },

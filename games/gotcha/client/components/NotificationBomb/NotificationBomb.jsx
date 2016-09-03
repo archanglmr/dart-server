@@ -46,14 +46,14 @@ class NotificationBomb extends React.Component {
 
   buildAnimation() {
     var bomb = ReactDOM.findDOMNode(this).getElementsByClassName('svg-bomb')[0],
-        pow = ReactDOM.findDOMNode(this).getElementsByClassName('svg-pow')[0];;
+        pow = ReactDOM.findDOMNode(this).getElementsByClassName('svg-pow')[0];
 
     this.animation = new TimelineLite({
           onComplete: () => {
             if (this.props.onFinish) {
               this.props.onFinish();
-              this.resetAnimation();
             }
+            this.resetAnimation();
           }
         })
         .to(bomb, 0, {scale: 2})
