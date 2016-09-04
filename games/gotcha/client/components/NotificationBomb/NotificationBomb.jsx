@@ -9,11 +9,6 @@ import 'gsap';
 
 
 class NotificationBomb extends React.Component {
-  constructor(props) {
-    super(props);
-    this.timer = null;
-  }
-
   componentWillUnmount() {
     this.destroyAnimation();
   }
