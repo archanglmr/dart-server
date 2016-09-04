@@ -5,7 +5,9 @@ import NotificationThrow from '../NotificationThrow';
 import NotificationGameOver from '../NotificationGameOver';
 import NotificationRemoveDarts from '../NotificationRemoveDarts';
 
-import NotificationTon from '../NotificationTon';
+import NotificationTon80 from '../NotificationTon80';
+import NotificationTonHigh from '../NotificationTonHigh';
+import NotificationTonLow from '../NotificationTonLow';
 import NotificationHatTrick from '../NotificationHatTrick';
 import NotificationThreeInBlack from '../NotificationThreeInBlack';
 
@@ -47,7 +49,9 @@ class WidgetNotificationQueue extends React.Component {
           three_in_black: NotificationThreeInBlack,
           hat_trick: NotificationHatTrick,
           three_in_bed: NotificationThreeInBed,
-          ton: NotificationTon,
+          ton_80: NotificationTon80,
+          ton_high: NotificationTonHigh,
+          ton_low: NotificationTonLow,
           remove_darts: NotificationRemoveDarts,
           game_over: NotificationGameOver
           //remove_darts:
