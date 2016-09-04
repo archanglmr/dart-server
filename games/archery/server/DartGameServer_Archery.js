@@ -123,7 +123,7 @@ module.exports = class DartGameServer_Archery extends DartHelpers.DartGameServer
         },
         rounds = Object.assign({}, state.rounds, {limit: 8});
 
-    if (state.config.modifiers && state.config.modifiers.limit) {
+    if (state.config.modifiers && state.config.modifiers.hasOwnProperty('limit')) {
       rounds.limit = state.config.modifiers.limit;
     }
 
