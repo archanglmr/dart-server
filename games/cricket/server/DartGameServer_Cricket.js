@@ -13,8 +13,8 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
         name = state.game.label || state.config.variation || 'standard',
         modifiers = [];
 
-    if (state.config.modifiers && state.config.modifiers.triples) {
-      modifiers = ['[Triples]'];
+    if (this.isTriples()) {
+      modifiers.push('[Triples]');
     }
 
     return name.substr(0, 1).toUpperCase() + name.substr(1) + ' Cricket' + (modifiers.length ? (' ' + modifiers.join(' ')) : '');

@@ -8,7 +8,7 @@ module.exports = (io) => {
       actions = require('../clients/display/actions'),
       GameManager = require('../lib/game-manager');
 
-  var gamePauseLength = 3000,
+  var gamePauseLength = 5000,
       gamePauseTimer = null,
       game = null, // this will be populated with whatever game
       gameStarted = function(g) {
@@ -25,24 +25,38 @@ module.exports = (io) => {
   /**
    * player order by id (unless you pass randomize: true)
    */
+
   var playerOrder = [4, 3, 2, 6],
       randomize = true;
 
   /**
    * Games we can play
    */
-  gm.createGame('01', {variation: 501, playerOrder, randomize});
+  //gm.createGame('01', {variation: 301, playerOrder, randomize});
+  //gm.createGame('01', {variation: 501, playerOrder, randomize});
+  gm.createGame('01', {variation: 501, playerOrder, randomize, modifiers: {split_bull: true}});
   //gm.createGame('01', {variation: 141, playerOrder, randomize, extras: { location: "192.168.1.137", port: 8888, endpoint: 'windicator', extraArgs: {limit:10}}});
   //gm.createGame('01', {variation: 50, playerOrder, randomize, extras: { location: "localhost", port: 8888, endpoint: 'windicator', extraArgs: {limit:10}}});
-  //gm.createGame('01', {variation: 50, playerOrder, randomize});
+  //gm.createGame('01', {variation: 50, playerOrder, randomize, modifiers: {limit: 2}});
+
   //gm.createGame('archery', {playerOrder, randomize});
+  //gm.createGame('archery', {playerOrder, randomize, modifiers: {limit: 2}});
+
   //gm.createGame('cricket', {playerOrder, randomize});
+  //gm.createGame('cricket', {playerOrder, randomize, modifiers: {triples: true, limit: 0}});
   //gm.createGame('cricket', {variation: 'Closeout', playerOrder, randomize});
-  //gm.createGame('shanghai', {modifiers: {limit: 7}, playerOrder, randomize});
-  //gm.createGame('slider', {playerOrder, randomize});
-  //gm.createGame('warfare', {playerOrder, randomize});
+  //gm.createGame('cricket', {variation: 'Closeout', playerOrder, randomize, modifiers: {triples: true, limit: 20}});
+
   //gm.createGame('gotcha', {playerOrder, randomize});
+  //gm.createGame('gotcha', {playerOrder, randomize, modifiers: {split_bull: true}});
+  //gm.createGame('gotcha', {playerOrder, randomize, modifiers: {limit: 4}});
   //gm.createGame('gotcha', {playerOrder, randomize, extras: { location: "192.168.1.137", port: 8888, endpoint: 'windicator', extraArgs: {limit:10}}});
+
+  //gm.createGame('shanghai', {modifiers: {limit: 7}, playerOrder, randomize});
+
+  //gm.createGame('slider', {playerOrder, randomize});
+
+  //gm.createGame('warfare', {playerOrder, randomize});
 
 
 
@@ -122,7 +136,6 @@ module.exports = (io) => {
                 });
               }
             });
-
           }
 
 
@@ -161,7 +174,6 @@ module.exports = (io) => {
    * @todo: This helper could be planned out a bit better....
    *
    * @param game {DartGameServer}
-   * @param state {object}
    * @returns {{display: string, state: *}}
    */
   function io_response_wrapper(game) {

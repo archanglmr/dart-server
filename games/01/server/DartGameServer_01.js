@@ -11,7 +11,14 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
    * @returns {string}
    */
   getDisplayName() {
-    return this.getState().config.variation || super.getDisplayName();
+    var name = this.getState().config.variation || super.getDisplayName(),
+        modifiers = [];
+
+    if (this.isSplitBull()) {
+      modifiers.push('[Split Bull]');
+    }
+
+    return name + (modifiers.length ? (' ' + modifiers.join(' ')) : '');
   }
 
 
@@ -89,9 +96,25 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       case ThrowTypes.MISS:
       case ThrowTypes.SINGLE_INNER:
       case ThrowTypes.SINGLE_OUTER:
+          if (25 === value && !this.isSplitBull()) {
+            value = 50;
+          }
         break;
     }
     return value;
+  }
+
+  /**
+   * Checks to see if this the split bull modifier is on.
+   *
+   * @returns {boolean}
+   */
+  isSplitBull() {
+    if (undefined === this.split_bull) {
+      let config = this.getState().config;
+      this.split_bull = (config.modifiers && config.modifiers.split_bull);
+    }
+    return this.split_bull;
   }
 
 
@@ -122,7 +145,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
         },
         rounds = Object.assign({}, state.rounds);
 
-    this.registerPlugin(new WindicatorPlugin(new Windicator(this.calculateThrowDataValue, config.extras), (state) => state.game.players[state.players.current].score));
+    this.registerPlugin(new WindicatorPlugin(new Windicator(this.calculateThrowDataValue.bind(this), config.extras), (state) => state.game.players[state.players.current].score));
 
     if (!config.variation) {
       config.variation = 501;

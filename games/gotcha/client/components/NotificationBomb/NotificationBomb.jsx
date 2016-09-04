@@ -51,11 +51,11 @@ class NotificationBomb extends React.Component {
             this.resetAnimation();
           }
         })
-        .to(bomb, 0, {scale: 2})
-        .to(pow, 0, {scale: 0})
+        .set(bomb, {scale: 2})
+        .set(pow, {scale: 0})
         .to(bomb, .25, {opacity: 1, scale: 1})
         .to(pow, .25, {opacity: 1, scale: 2}, '+=1')
-        .to(bomb, 0, {opacity: 0})
+        .set(bomb, {opacity: 0})
         .to(pow, .25, {opacity: 0});
   }
 
