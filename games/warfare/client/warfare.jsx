@@ -16,7 +16,7 @@ import ScoreHistoryUpDown from 'components/ScoreHistoryUpDown';
 import WidgetThrowsContainer from 'containers/WidgetThrowsContainer';
 import WidgetPlayerListContainer from 'containers/WidgetPlayerListContainer';
 import WidgetDartboardContainer from 'containers/WidgetDartboardContainer';
-import WidgetWinnerContainer from 'containers/WidgetWinnerContainer';
+import NotificationTeamKill from './components/NotificationTeamKill';
 import WidgetNotificationQueueContainer from 'containers/WidgetNotificationQueueContainer';
 
 
@@ -38,8 +38,7 @@ top.window.registerGame((store) => {
               <WidgetThrowsContainer />
               <WidgetPlayerListContainer />
               <WidgetDartboardContainer />
-              <WidgetWinnerContainer />
-              <WidgetNotificationQueueContainer />
+              <WidgetNotificationQueueContainer customNotifications={{team_kill: NotificationTeamKill}} />
             </GameClient>
           </Provider>
       ),

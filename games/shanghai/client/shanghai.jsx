@@ -17,7 +17,7 @@ import WidgetTargetNumberContainer from 'containers/WidgetTargetNumberContainer'
 import WidgetThrowsContainer from 'containers/WidgetThrowsContainer';
 import WidgetPlayerListContainer from 'containers/WidgetPlayerListContainer';
 import WidgetDartboardContainer from 'containers/WidgetDartboardContainer';
-import WidgetWinnerContainer from 'containers/WidgetWinnerContainer';
+import NotificationShanghai from './components/NotificationShanghai';
 import WidgetNotificationQueueContainer from 'containers/WidgetNotificationQueueContainer';
 
 
@@ -40,8 +40,7 @@ top.window.registerGame((store) => {
               <WidgetPlayerListContainer />
               <WidgetDartboardContainer />
               <WidgetTargetNumberContainer />
-              <WidgetWinnerContainer />
-              <WidgetNotificationQueueContainer />
+              <WidgetNotificationQueueContainer customNotifications={{shanghai: NotificationShanghai}} />
             </GameClient>
           </Provider>
       ),

@@ -22,7 +22,12 @@ class FullScreenMessage extends React.Component {
   }
 
   render() {
-    var {text, status, onFinish, className} = this.props;
+    var {text, status, onFinish, className} = this.props,
+        classNames = ['full-screen-message'];
+
+    if (className) {
+      classNames.push(className);
+    }
 
     if (text) {
       if (status) {
@@ -38,9 +43,9 @@ class FullScreenMessage extends React.Component {
           styles.display = '';
         }
 
-        return <div className={'full-screen-message ' + className} data-status={status} style={styles}><span>{text}</span></div>;
+        return <div className={classNames.join(' ')} data-status={status} style={styles}><span>{text}</span></div>;
       } else {
-        return <div className={'full-screen-message ' + className}><span>{text}</span></div>;
+        return <div className={classNames.join(' ')}><span>{text}</span></div>;
       }
     }
     return null;

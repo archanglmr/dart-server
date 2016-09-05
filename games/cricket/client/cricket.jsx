@@ -19,7 +19,6 @@ import WidgetCricketDisplayContainer from 'containers/WidgetCricketDisplayContai
 import WidgetThrowsContainer from 'containers/WidgetThrowsContainer';
 import WidgetPlayerListContainer from 'containers/WidgetPlayerListContainer';
 import WidgetDartboardContainer from 'containers/WidgetDartboardContainer';
-import WidgetWinnerContainer from 'containers/WidgetWinnerContainer';
 import WidgetNotificationQueueContainer from 'containers/WidgetNotificationQueueContainer';
 import WidgetCurrentMPRContainer from 'containers/WidgetCurrentMPRContainer';
 
@@ -41,7 +40,6 @@ top.window.registerGame((store) => {
               <WidgetThrowsContainer />
               <WidgetPlayerListContainer />
               <WidgetDartboardContainer />
-              <WidgetWinnerContainer />
               <WidgetNotificationQueueContainer customNotifications={{white_horse: NotificationWhiteHorse, marks: NotificationMarks}} />
             </GameClient>
           </Provider>

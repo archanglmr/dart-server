@@ -3,6 +3,8 @@
 import React, {PropTypes} from 'react';
 import NotificationThrow from '../NotificationThrow';
 import NotificationGameOver from '../NotificationGameOver';
+import NotificationDraw from '../NotificationDraw';
+import NotificationWinner from '../NotificationWinner';
 import NotificationRemoveDarts from '../NotificationRemoveDarts';
 
 import NotificationTon80 from '../NotificationTon80';
@@ -53,8 +55,9 @@ class WidgetNotificationQueue extends React.Component {
           ton_high: NotificationTonHigh,
           ton_low: NotificationTonLow,
           remove_darts: NotificationRemoveDarts,
-          game_over: NotificationGameOver
-          //remove_darts:
+          game_over: NotificationGameOver,
+          draw: NotificationDraw,
+          winner: NotificationWinner
         },
         customNotifications = this.props.customNotifications || {},
 

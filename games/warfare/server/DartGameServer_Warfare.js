@@ -236,8 +236,10 @@ module.exports = class DartGameServer_Warfare extends DartHelpers.DartGameServer
       } else if (game.players[otherPlayerId].targets[throwData.number]) {
         game.players[otherPlayerId].targets[throwData.number] = false;
         game.tempScore -= 1;
-        // @fixme: should be a Team Kill sound of some sort
-        notificationQueue = [{type: 'throw', data: {type: ThrowTypes.MISS, number: 0}}]
+        notificationQueue = [
+          {type: 'throw', data: {type: ThrowTypes.MISS, number: 0}},
+          {type: 'team_kill'}
+        ];
       } else if (21 === throwData.number) {
         // @todo: regenerate a player
       }
@@ -252,10 +254,15 @@ module.exports = class DartGameServer_Warfare extends DartHelpers.DartGameServer
       if (this.areAllTargetsClosed(game.players[players.current].targets)) {
         finished = true;
         winner = players.current;
+        notificationQueue.push(this.buildWinnerNotification(winner));
       }
 
       // Process advance round
       game.roundOver = (rounds.currentThrow >= rounds.throws);
+
+      if (game.roundOver && !winner) {
+        notificationQueue.push({type: 'remove_darts'});
+      }
 
       // rebuild the new state
       return Object.assign({}, state, {
@@ -304,12 +311,12 @@ module.exports = class DartGameServer_Warfare extends DartHelpers.DartGameServer
 
         if (rounds.limit && rounds.current >= rounds.limit) {
           // hit the round limit
-          let winner = DartHelpers.State.getPlayerIdWithHighestScore(game.players);
+          let winner = (players.order.length > 1) ? DartHelpers.State.getPlayerIdWithHighestScore(game.players) : -1;
           return Object.assign({}, state, {
             widgetThrows: game.currentThrows.slice(0),
             finished: true,
             winner,
-            notificationQueue: [{type: 'winner', data: winner}]
+            notificationQueue: [this.buildWinnerNotification(winner)]
           });
         }
       } else {

@@ -18,7 +18,6 @@ import WidgetCurrentScoreContainer from 'containers/WidgetCurrentScoreContainer'
 import WidgetThrowsContainer from 'containers/WidgetThrowsContainer';
 import WidgetPlayerListContainer from 'containers/WidgetPlayerListContainer';
 import WidgetDartboardContainer from 'containers/WidgetDartboardContainer';
-import WidgetWinnerContainer from 'containers/WidgetWinnerContainer';
 import PlayerWindicator from 'components/PlayerWindicator';
 import WidgetNotificationQueueContainer from 'containers/WidgetNotificationQueueContainer';
 import NotificationBomb from './components/NotificationBomb';
@@ -45,7 +44,6 @@ top.window.registerGame((store) => {
               <WidgetThrowsContainer />
               <WidgetPlayerListContainer valueComponent={PlayerWindicator} />
               <WidgetDartboardContainer />
-              <WidgetWinnerContainer />
               <WidgetNotificationQueueContainer customNotifications={{bust: NotificationBust, bomb: NotificationBomb}} />
             </GameClient>
           </Provider>

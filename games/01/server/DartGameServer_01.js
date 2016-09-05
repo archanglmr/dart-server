@@ -233,7 +233,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       if (0 === score) {
         finished = true;
         winner = players.current;
-        notificationQueue.push({type: 'winner', data: winner});
+        notificationQueue.push(this.buildWinnerNotification(winner));
       } else {
         // Process BUST or advance round
         if (score < 0) {
@@ -336,12 +336,12 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
 
         if (rounds.limit && rounds.current >= rounds.limit) {
           // hit the round limit
-          let winner = DartHelpers.State.getPlayerIdWithLowestScore(game.players);
+          let winner = (players.order.length > 1) ? DartHelpers.State.getPlayerIdWithLowestScore(game.players) : -1;
           return Object.assign({}, state, {
             widgetThrows: game.currentThrows.slice(0),
             finished: true,
             winner,
-            notificationQueue: [{type: 'winner', data: winner}]
+            notificationQueue: [this.buildWinnerNotification(winner)]
           });
         }
       } else {

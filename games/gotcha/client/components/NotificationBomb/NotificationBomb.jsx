@@ -44,6 +44,7 @@ class NotificationBomb extends React.Component {
         pow = ReactDOM.findDOMNode(this).getElementsByClassName('svg-pow')[0];
 
     this.animation = new TimelineLite({
+          paused: true,
           onComplete: () => {
             if (this.props.onFinish) {
               this.props.onFinish();

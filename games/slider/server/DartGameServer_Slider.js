@@ -140,19 +140,23 @@ module.exports = class DartGameServer_Slider extends DartHelpers.DartGameServer 
       if (21 === score) {
         finished = true;
         winner = players.current;
+        notificationQueue.push(this.buildWinnerNotification(winner));
       }
 
       // Process advance round
       game.roundOver = (rounds.currentThrow >= rounds.throws);
       game.target = score;
 
-      if (game.roundOver && !game.tempScore && score > 1) {
-        // slide back one, lowest number you can have is 1
-        game.players[players.current].score -= 1;
-        game.players[players.current].history[rounds.current] = -1;
-        //game.target = 'SLIDE';
-        game.target -= 1;
-        notificationQueue.push({type: 'slide'});
+      if (game.roundOver) {
+        if (!game.tempScore && score > 1) {
+          // slide back one, lowest number you can have is 1
+          game.players[players.current].score -= 1;
+          game.players[players.current].history[rounds.current] = -1;
+          //game.target = 'SLIDE';
+          game.target -= 1;
+          notificationQueue.push({type: 'slide'});
+        }
+        notificationQueue.push({type: 'remove_darts'});
       }
 
       // rebuild the new state
@@ -202,12 +206,12 @@ module.exports = class DartGameServer_Slider extends DartHelpers.DartGameServer 
 
         if (rounds.limit && rounds.current >= rounds.limit) {
           // hit the round limit
-          let winner = DartHelpers.State.getPlayerIdWithHighestScore(game.players);
+          let winner = (players.order.length > 1) ? DartHelpers.State.getPlayerIdWithHighestScore(game.players) : -1;
           return Object.assign({}, state, {
             widgetThrows: game.currentThrows.slice(0),
             finished: true,
             winner,
-            notificationQueue: [{type: 'winner', data: winner}]
+            notificationQueue: [this.buildWinnerNotification(winner)]
           });
         }
       } else {

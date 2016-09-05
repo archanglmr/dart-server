@@ -63,7 +63,8 @@ module.exports = class DartGameServer_Gotcha extends DartHelpers.DartGameServer 
 
   /**
    * Checks all the players and resets their score to 0 if they have the same
-   * score as the current player.
+   * score as the current player. Shouldn't really be called "list" since no two
+   * scores can match.
    *
    * @param players {Array}
    * @param currentPlayerId {number}
@@ -209,7 +210,7 @@ module.exports = class DartGameServer_Gotcha extends DartHelpers.DartGameServer 
       if (301 === score) {
         finished = true;
         winner = players.current;
-        notificationQueue.push({type: 'winner', data: winner});
+        notificationQueue.push(this.buildWinnerNotification(winner));
       } else {
         // Process BUST or advance round
         if (score > 301) {
@@ -223,7 +224,6 @@ module.exports = class DartGameServer_Gotcha extends DartHelpers.DartGameServer 
             let id = bombedPlayers[i],
                 oldScore = game.players[id].score;
             game.players[id].score = 0;
-            // @fixme: When the notification queue behaves uncomment this
             notificationQueue.push({
               type: 'bomb',
               data: {
@@ -233,16 +233,17 @@ module.exports = class DartGameServer_Gotcha extends DartHelpers.DartGameServer 
               }
             });
           }
+        }
 
-          if (rounds.currentThrow >= rounds.throws) {
-            // round over
-            game.roundOver = true;
-            notificationQueue = notificationQueue.concat(
-                this.checkForHatTrickNotifications(game.currentThrows) ||
-                this.checkForTonNotifications(game.tempScore) ||
-                []
-            );
-          }
+        // game.roundOver flag may already be set if the player busted
+        if (!game.roundOver && rounds.currentThrow >= rounds.throws) {
+          // round over
+          game.roundOver = true;
+          notificationQueue = notificationQueue.concat(
+              this.checkForHatTrickNotifications(game.currentThrows) ||
+              this.checkForTonNotifications(game.tempScore) ||
+              []
+          );
         }
 
         if (game.roundOver && !winner) {
@@ -310,12 +311,12 @@ module.exports = class DartGameServer_Gotcha extends DartHelpers.DartGameServer 
 
         if (rounds.limit && rounds.current >= rounds.limit) {
           // hit the round limit
-          let winner = DartHelpers.State.getPlayerIdWithHighestScore(game.players);
+          let winner = (players.order.length > 1) ? DartHelpers.State.getPlayerIdWithHighestScore(game.players) : -1;
           return Object.assign({}, state, {
             widgetThrows: game.currentThrows.slice(0),
             finished: true,
             winner,
-            notificationQueue: [{type: 'winner', data: winner}]
+            notificationQueue: [this.buildWinnerNotification(winner)]
           });
         }
       } else {

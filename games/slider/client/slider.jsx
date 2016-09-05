@@ -17,7 +17,6 @@ import WidgetTargetNumberContainer from 'containers/WidgetTargetNumberContainer'
 import WidgetThrowsContainer from 'containers/WidgetThrowsContainer';
 import WidgetPlayerListContainer from 'containers/WidgetPlayerListContainer';
 import WidgetDartboardContainer from 'containers/WidgetDartboardContainer';
-import WidgetWinnerContainer from 'containers/WidgetWinnerContainer';
 import WidgetNotificationQueueContainer from 'containers/WidgetNotificationQueueContainer';
 
 import NotificationSlide from './components/NotificationSlide';
@@ -42,7 +41,6 @@ top.window.registerGame((store) => {
               <WidgetPlayerListContainer />
               <WidgetDartboardContainer />
               <WidgetTargetNumberContainer />
-              <WidgetWinnerContainer />
               <WidgetNotificationQueueContainer customNotifications={{slide: NotificationSlide}} />
             </GameClient>
           </Provider>

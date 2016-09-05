@@ -203,10 +203,11 @@ module.exports = class DartGameServer_Shanghai extends DartHelpers.DartGameServe
         if (throwScore && this.isShanghai(game.currentThrows, game.target)) {
           finished = true;
           winner = players.current;
-          // @fixme: should be a shanghai notification
-          notificationQueue.push({type: 'shanghai', data: game.winner});
+          notificationQueue.push({type: 'shanghai'});
+          notificationQueue.push(this.buildWinnerNotification(winner));
+        } else {
+          notificationQueue.push({type: 'remove_darts'});
         }
-        notificationQueue.push({type: 'remove_darts'});
       }
 
       // rebuild the new state
@@ -256,12 +257,12 @@ module.exports = class DartGameServer_Shanghai extends DartHelpers.DartGameServe
 
         if (rounds.limit && rounds.current >= rounds.limit) {
           // hit the round limit
-          let winner = DartHelpers.State.getPlayerIdWithHighestScore(game.players);
+          let winner = (players.order.length > 1) ? DartHelpers.State.getPlayerIdWithHighestScore(game.players) : -1;
           return Object.assign({}, state, {
             widgetThrows: game.currentThrows.slice(0),
             finished: true,
             winner,
-            notificationQueue: [{type: 'winner', data: winner}]
+            notificationQueue: [this.buildWinnerNotification(winner)]
           });
         }
       } else {
