@@ -5,6 +5,7 @@ module.exports = (io) => {
       express = require('express'),
       router = express.Router(),
       DartHelpers = require('../lib/dart-helpers'),
+      FilterTypes = DartHelpers.State.FilterTypes,
       actions = require('../clients/display/actions'),
       GameManager = require('../lib/game-manager');
 
@@ -42,9 +43,9 @@ module.exports = (io) => {
   //gm.createGame('archery', {playerOrder, randomize, modifiers: {limit: 2}});
 
   //gm.createGame('cricket', {playerOrder, randomize});
-  //gm.createGame('cricket', {playerOrder, randomize, modifiers: {triples: true, limit: 0}});
+  //gm.createGame('cricket', {playerOrder, randomize, modifiers: {filter: FilterTypes.TRIPLES, limit: 0}});
   //gm.createGame('cricket', {variation: 'Closeout', playerOrder, randomize});
-  //gm.createGame('cricket', {variation: 'Closeout', playerOrder, randomize, modifiers: {triples: true, limit: 20}});
+  //gm.createGame('cricket', {variation: 'Closeout', playerOrder, randomize, modifiers: {filter: FilterTypes.TRIPLES, limit: 20}});
   //gm.createGame('cricket', {playerOrder, randomize, modifiers: {limit: 2}});
 
   //gm.createGame('gotcha', {playerOrder, randomize});

@@ -97,6 +97,10 @@
     .blink {
       animation: blink-animation 1s infinite;
     }
+
+    * {
+      transition: fill .1s linear;
+    }
   }
 
   .sector_bull {

@@ -1,8 +1,18 @@
 'use strict';
 var DartHelpers = require('../../../lib/dart-helpers'),
-    ThrowTypes = DartHelpers.ThrowTypes;
+    ThrowTypes = DartHelpers.ThrowTypes,
+    FilterTypes = DartHelpers.State.FilterTypes;
 
 module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer {
+  /**
+   * List the allowed value for modifiers.filter. Combine with
+   * checkThrowFilter(throw) to see if a throw is valid.
+   * @returns {string[]}
+   */
+  listFiltersAllowed() {
+    return [FilterTypes.SINGLES, FilterTypes.DOUBLES, FilterTypes.TRIPLES, FilterTypes.MASTERS];
+  }
+
   /**
    * Gets the display name for this game type/variation
    *
@@ -11,16 +21,11 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
   getDisplayName() {
     var state = this.getState(),
         name = state.game.label || state.config.variation || 'standard',
+        filter = this.getFilter(),
         modifiers = [];
 
-    if (this.isSingles()) {
-      modifiers.push('[Singles]');
-    } else if (this.isDoubles()) {
-      modifiers.push('[Doubles]');
-    } else if (this.isTriples()) {
-      modifiers.push('[Triples]');
-    } else if (this.isMasters()) {
-      modifiers.push('[Masters]');
+    if (filter) {
+      modifiers.push(`[${DartHelpers.State.getFilterName(filter)}]`);
     }
 
     return name.substr(0, 1).toUpperCase() + name.substr(1) + ' Cricket' + (modifiers.length ? (' ' + modifiers.join(' ')) : '');
@@ -36,7 +41,8 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
   calculateThrowDataValue(throwData) {
     var number = throwData.number,
         data = {marks: 0, value: 0};
-    if (this.getState().game.targets.hasOwnProperty(number)) {
+
+    if (this.isNumberInGame(number)) {
       data.value = 21 === number ? 25 : number;
 
       if (25 === data.value) {
@@ -45,42 +51,22 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
         } else if (ThrowTypes.SINGLE_OUTER) {
           data.marks = 1;
         }
-      } else {
-        if (this.isSingles()) {
-          if (ThrowTypes.SINGLE_INNER === throwData.type || ThrowTypes.SINGLE_OUTER === throwData.type) {
+      } else if (this.isFilteredThrow(throwData)) {
+        switch(throwData.type) {
+          case ThrowTypes.TRIPLE:
+            if (25 !== data.value) {
+              data.marks = 3;
+            }
+            break;
+
+          case ThrowTypes.DOUBLE:
+            data.marks = 2;
+            break;
+
+          case ThrowTypes.SINGLE_INNER:
+          case ThrowTypes.SINGLE_OUTER:
             data.marks = 1;
-          }
-        } else if (this.isDoubles()) {
-          if (ThrowTypes.DOUBLE === throwData.type) {
-            data.marks = 2;
-          }
-        } else if (this.isTriples()) {
-          if (ThrowTypes.TRIPLE === throwData.type) {
-            data.marks = 3;
-          }
-        } else if (this.isMasters()) {
-          if (ThrowTypes.DOUBLE === throwData.type) {
-            data.marks = 2;
-          } else if (ThrowTypes.TRIPLE === throwData.type) {
-            data.marks = 3;
-          }
-        } else {
-          switch(throwData.type) {
-            case ThrowTypes.TRIPLE:
-              if (25 !== data.value) {
-                data.marks = 3;
-              }
-              break;
-
-            case ThrowTypes.DOUBLE:
-              data.marks = 2;
-              break;
-
-            case ThrowTypes.SINGLE_INNER:
-            case ThrowTypes.SINGLE_OUTER:
-              data.marks = 1;
-              break;
-          }
+            break;
         }
       }
     }
@@ -187,58 +173,6 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
       }
     }
     return marksClosed;
-  }
-
-  /**
-   * Checks to see if this is a Singles only game.
-   *
-   * @returns {boolean}
-   */
-  isSingles() {
-    if (undefined === this.singles) {
-      let modifiers = this.getState().config.modifiers;
-      this.singles = (modifiers && modifiers.filter && 'single' === modifiers.filter);
-    }
-    return this.singles;
-  }
-
-  /**
-   * Checks to see if this is a Doubles only game.
-   *
-   * @returns {boolean}
-   */
-  isDoubles() {
-    if (undefined === this.doubles) {
-      let modifiers = this.getState().config.modifiers;
-      this.doubles = (modifiers && modifiers.filter && 'double' === modifiers.filter);
-    }
-    return this.doubles;
-  }
-
-  /**
-   * Checks to see if this is a Triples only game.
-   *
-   * @returns {boolean}
-   */
-  isTriples() {
-    if (undefined === this.triples) {
-      let modifiers = this.getState().config.modifiers;
-      this.triples = (modifiers && modifiers.filter && 'triple' === modifiers.filter);
-    }
-    return this.triples;
-  }
-
-  /**
-   * Checks to see if this is a Master only game.
-   *
-   * @returns {boolean}
-   */
-  isMasters() {
-    if (undefined === this.masters) {
-      let modifiers = this.getState().config.modifiers;
-      this.masters = (modifiers && modifiers.filter && 'master' === modifiers.filter);
-    }
-    return this.masters;
   }
 
   /**
@@ -397,14 +331,30 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
 
     for (let number in targets) {
       if (targets.hasOwnProperty(number) && targets[number]) {
+        let single_outer = {number, type: ThrowTypes.SINGLE_OUTER},
+            single_inner = {number, type: ThrowTypes.SINGLE_INNER},
+            double = {number, type: ThrowTypes.DOUBLE},
+            triple = {number, type: ThrowTypes.TRIPLE};
+
         dartboard.visible = true;
-        dartboard.highlight[number] = [
-          {number: number, type: ThrowTypes.DOUBLE},
-          {number: number, type: ThrowTypes.SINGLE_OUTER}
-        ];
-        if (21 !== number) {
-          dartboard.highlight[number].push({number: number, type: ThrowTypes.TRIPLE});
-          dartboard.highlight[number].push({number: number, type: ThrowTypes.SINGLE_INNER});
+        dartboard.highlight[number] = [];
+
+        if (21 === parseInt(number)) {
+          dartboard.highlight[number].push(single_outer);
+          dartboard.highlight[number].push(double);
+        } else {
+          if (this.isFilteredThrow(single_outer)) {
+            dartboard.highlight[number].push(single_outer);
+          }
+          if (this.isFilteredThrow(single_inner)) {
+            dartboard.highlight[number].push(single_inner);
+          }
+          if (this.isFilteredThrow(double)) {
+            dartboard.highlight[number].push(double);
+          }
+          if (this.isFilteredThrow(triple)) {
+            dartboard.highlight[number].push(triple);
+          }
         }
       }
     }
@@ -427,7 +377,8 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
    */
   actionInit(state) {
     // cloning the part we need because we're going to overwrite stuff
-    var game = {
+    var config = Object.assign({}, state.config),
+        game = {
           tempScore: 0,
           players: {},
           currentThrows: [],
@@ -445,8 +396,15 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
       }
     }
 
-    if (state.config.modifiers && state.config.modifiers.hasOwnProperty('limit')) {
-      rounds.limit = state.config.modifiers.limit;
+    if (config.modifiers) {
+      if (config.modifiers.hasOwnProperty('limit')) {
+        rounds.limit = state.config.modifiers.limit;
+      }
+      if (config.modifiers.hasOwnProperty('filter')) {
+        if (!DartHelpers.State.isFilterAllowed(config.modifiers.filter, this.listFiltersAllowed())) {
+          delete config.modifiers.filter;
+        }
+      }
     }
 
     for (let i = 0, c = state.players.order.length; i < c; i += 1) {
@@ -463,7 +421,7 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
       };
     }
 
-    return Object.assign({}, state, {game, rounds});
+    return Object.assign({}, state, {config, game, rounds});
   }
 
 
