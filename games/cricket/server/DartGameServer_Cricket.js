@@ -13,8 +13,14 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
         name = state.game.label || state.config.variation || 'standard',
         modifiers = [];
 
-    if (this.isTriples()) {
+    if (this.isSingles()) {
+      modifiers.push('[Singles]');
+    } else if (this.isDoubles()) {
+      modifiers.push('[Doubles]');
+    } else if (this.isTriples()) {
       modifiers.push('[Triples]');
+    } else if (this.isMasters()) {
+      modifiers.push('[Masters]');
     }
 
     return name.substr(0, 1).toUpperCase() + name.substr(1) + ' Cricket' + (modifiers.length ? (' ' + modifiers.join(' ')) : '');
@@ -33,32 +39,48 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
     if (this.getState().game.targets.hasOwnProperty(number)) {
       data.value = 21 === number ? 25 : number;
 
-      if (this.isTriples()) {
-        if (25 === data.value) {
-          if (ThrowTypes.DOUBLE === throwData.type) {
-            data.marks = 2;
-          } else if (ThrowTypes.SINGLE_OUTER) {
-            data.marks = 1;
-          }
-        } else if (ThrowTypes.TRIPLE === throwData.type) {
-          data.marks = 3;
+      if (25 === data.value) {
+        if (ThrowTypes.DOUBLE === throwData.type) {
+          data.marks = 2;
+        } else if (ThrowTypes.SINGLE_OUTER) {
+          data.marks = 1;
         }
       } else {
-        switch(throwData.type) {
-          case ThrowTypes.TRIPLE:
-            if (25 !== data.value) {
-              data.marks = 3;
-            }
-            break;
-
-          case ThrowTypes.DOUBLE:
-            data.marks = 2;
-            break;
-
-          case ThrowTypes.SINGLE_INNER:
-          case ThrowTypes.SINGLE_OUTER:
+        if (this.isSingles()) {
+          if (ThrowTypes.SINGLE_INNER === throwData.type || ThrowTypes.SINGLE_OUTER === throwData.type) {
             data.marks = 1;
-            break;
+          }
+        } else if (this.isDoubles()) {
+          if (ThrowTypes.DOUBLE === throwData.type) {
+            data.marks = 2;
+          }
+        } else if (this.isTriples()) {
+          if (ThrowTypes.TRIPLE === throwData.type) {
+            data.marks = 3;
+          }
+        } else if (this.isMasters()) {
+          if (ThrowTypes.DOUBLE === throwData.type) {
+            data.marks = 2;
+          } else if (ThrowTypes.TRIPLE === throwData.type) {
+            data.marks = 3;
+          }
+        } else {
+          switch(throwData.type) {
+            case ThrowTypes.TRIPLE:
+              if (25 !== data.value) {
+                data.marks = 3;
+              }
+              break;
+
+            case ThrowTypes.DOUBLE:
+              data.marks = 2;
+              break;
+
+            case ThrowTypes.SINGLE_INNER:
+            case ThrowTypes.SINGLE_OUTER:
+              data.marks = 1;
+              break;
+          }
         }
       }
     }
@@ -168,16 +190,55 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
   }
 
   /**
+   * Checks to see if this is a Singles only game.
+   *
+   * @returns {boolean}
+   */
+  isSingles() {
+    if (undefined === this.singles) {
+      let modifiers = this.getState().config.modifiers;
+      this.singles = (modifiers && modifiers.filter && 'single' === modifiers.filter);
+    }
+    return this.singles;
+  }
+
+  /**
+   * Checks to see if this is a Doubles only game.
+   *
+   * @returns {boolean}
+   */
+  isDoubles() {
+    if (undefined === this.doubles) {
+      let modifiers = this.getState().config.modifiers;
+      this.doubles = (modifiers && modifiers.filter && 'double' === modifiers.filter);
+    }
+    return this.doubles;
+  }
+
+  /**
    * Checks to see if this is a Triples only game.
    *
    * @returns {boolean}
    */
   isTriples() {
     if (undefined === this.triples) {
-      let config = this.getState().config;
-      this.triples = (config.modifiers && config.modifiers.triples);
+      let modifiers = this.getState().config.modifiers;
+      this.triples = (modifiers && modifiers.filter && 'triple' === modifiers.filter);
     }
     return this.triples;
+  }
+
+  /**
+   * Checks to see if this is a Master only game.
+   *
+   * @returns {boolean}
+   */
+  isMasters() {
+    if (undefined === this.masters) {
+      let modifiers = this.getState().config.modifiers;
+      this.masters = (modifiers && modifiers.filter && 'master' === modifiers.filter);
+    }
+    return this.masters;
   }
 
   /**
