@@ -33,7 +33,6 @@
         border-top: 1px solid $foreground;
         border-bottom: 1px solid $foreground;
         height: 0;
-        width: calc(100% - 2vw);
       }
 
       .marks {
@@ -42,10 +41,12 @@
       .row {
         line-height: 7vh;
         &.closed .line {
-          display: inline-block;
+          width: calc(100% - 2vw);
         }
         .line {
-          display: none;
+          transition: width .25s linear;
+          display: inline-block;
+          width: 0;
         }
       }
     }
@@ -113,6 +114,7 @@
       height: 8vh;
       line-height: 8vh;
       vertical-align: middle;
+      transition: opacity .25s linear;
       &.name  {
         height: 7vh;
         line-height: 7.5vh;
