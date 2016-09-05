@@ -25,7 +25,6 @@ module.exports = (io) => {
   /**
    * player order by id (unless you pass randomize: true)
    */
-
   var playerOrder = [4, 3, 2, 6],
       randomize = true;
 
@@ -46,6 +45,7 @@ module.exports = (io) => {
   //gm.createGame('cricket', {playerOrder, randomize, modifiers: {triples: true, limit: 0}});
   //gm.createGame('cricket', {variation: 'Closeout', playerOrder, randomize});
   //gm.createGame('cricket', {variation: 'Closeout', playerOrder, randomize, modifiers: {triples: true, limit: 20}});
+  //gm.createGame('cricket', {playerOrder, randomize, modifiers: {limit: 2}});
 
   //gm.createGame('gotcha', {playerOrder, randomize});
   //gm.createGame('gotcha', {playerOrder, randomize, modifiers: {split_bull: true}});
@@ -53,10 +53,13 @@ module.exports = (io) => {
   //gm.createGame('gotcha', {playerOrder, randomize, extras: { location: "192.168.1.137", port: 8888, endpoint: 'windicator', extraArgs: {limit:10}}});
 
   //gm.createGame('shanghai', {modifiers: {limit: 7}, playerOrder, randomize});
+  //gm.createGame('shanghai', {modifiers: {limit: 2}, playerOrder, randomize});
 
   //gm.createGame('slider', {playerOrder, randomize});
+  //gm.createGame('slider', {playerOrder, randomize, modifiers: {limit: 2}});
 
   //gm.createGame('warfare', {playerOrder, randomize});
+  //gm.createGame('warfare', {playerOrder, randomize, modifiers: {limit: 2}});
 
 
 
@@ -121,13 +124,15 @@ module.exports = (io) => {
                 // the game
                 io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
 
-                gamePauseTimer = setTimeout(() => {
-                  game.advanceGame();
-                  game.runPlugins(() => {
-                    io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
-                    gamePauseTimer = null;
-                  });
-                }, gamePauseLength);
+                if (!state.finished) {
+                  gamePauseTimer = setTimeout(() => {
+                    game.advanceGame();
+                    game.runPlugins(() => {
+                      io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
+                      gamePauseTimer = null;
+                    });
+                  }, gamePauseLength);
+                }
               } else {
                 // if the round is not over we can update immediately
                 game.advanceGame();
