@@ -12,13 +12,11 @@ module.exports = class DartGameServer_Gotcha extends DartHelpers.DartGameServer 
    * @returns {string}
    */
   getDisplayName() {
-    var name = super.getDisplayName() + '!',
-        modifiers = [];
-    if (this.isSplitBull()) {
-      modifiers.push('[Split Bull]');
-    }
+    var state = this.getState(),
+        name = state.config.variation || super.getDisplayName(),
+        modifiers = this.formatModifiers(state.game.modifiers);
 
-    return name + (modifiers.length ? (' ' + modifiers.join(' ')) : '');
+    return name + (modifiers ? ` ${modifiers}` : '');
   }
 
 
@@ -123,15 +121,21 @@ module.exports = class DartGameServer_Gotcha extends DartHelpers.DartGameServer 
           currentThrows: [],
           roundOver: false,
           widgetWindicator: [],
-          opponentWindicators: []
+          opponentWindicators: [],
+          modifiers: []
         },
         rounds = Object.assign({}, state.rounds);
 
     this.registerPlugin(new WindicatorPlugin(new Windicator(this.calculateThrowDataValue.bind(this), config.extras), (state) => 301 - state.game.players[state.players.current].score));
     this.registerPlugin(new WindicatorOpponentPlugin(new Windicator(this.calculateThrowDataValue.bind(this), config.extras)));
 
-    if (config.modifiers && config.modifiers.hasOwnProperty('limit')) {
-      rounds.limit = config.modifiers.limit;
+    if (config.modifiers) {
+      if (config.modifiers.hasOwnProperty('limit')) {
+        rounds.limit = config.modifiers.limit;
+      }
+      if (config.modifiers.hasOwnProperty('split_bull') && config.modifiers.split_bull) {
+        game.modifiers.push('Split Bull');
+      }
     }
 
     for (let i = 0, c = state.players.order.length; i < c; i += 1) {

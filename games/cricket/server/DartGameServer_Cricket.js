@@ -22,14 +22,9 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
   getDisplayName() {
     var state = this.getState(),
         name = state.game.label || state.config.variation || 'standard',
-        filter = this.getFilter(),
-        modifiers = [];
+        modifiers = this.formatModifiers(state.game.modifiers);
 
-    if (filter) {
-      modifiers.push(`[${DartHelpers.State.getFilterName(filter)}]`);
-    }
-
-    return name.substr(0, 1).toUpperCase() + name.substr(1) + ' Cricket' + (modifiers.length ? (' ' + modifiers.join(' ')) : '');
+    return name.substr(0, 1).toUpperCase() + name.substr(1) + ' Cricket' + (modifiers ? ` ${modifiers}` : '');
   }
 
 
@@ -385,7 +380,8 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
           currentThrows: [],
           roundOver: false,
           // true means open, false means closed
-          targets: {20: true, 19: true, 18: true, 17: true, 16: true, 15: true, 21: true}
+          targets: {20: true, 19: true, 18: true, 17: true, 16: true, 15: true, 21: true},
+          modifiers: []
         },
         rounds = Object.assign({}, state.rounds),
         marks = {};
@@ -395,24 +391,32 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
         rounds.limit = state.config.modifiers.limit;
       }
       if (config.modifiers.hasOwnProperty('filter')) {
-        if (!DartHelpers.State.isFilterAllowed(config.modifiers.filter, this.listFiltersAllowed())) {
+        if (DartHelpers.State.isFilterAllowed(config.modifiers.filter, this.listFiltersAllowed())) {
+          game.modifiers.push(DartHelpers.State.getFilterName(config.modifiers.filter));
+        } else {
           delete config.modifiers.filter;
         }
       }
       if (config.modifiers.hasOwnProperty('targets')) {
         let targets = config.modifiers.targets,
+            random = false,
             newTargets = {};
 
         if ('random' === targets) {
+          random = true;
           targets = Random.sample(Random.engines.mt19937().seed(state.config.seed), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21], 7);
+          game.modifiers.push('Random');
         }
 
         if (Array.isArray(targets) && 7 === targets.length) {
+          if (!random) {
+            game.modifiers.push('Static');
+          }
+
           for (let i = 0, c = 7; i < c; i += 1) {
             newTargets[parseInt(targets[i])] = true;
           }
           game.targets = newTargets;
-          // @fixme: Add to the modifiers list for the display
         } else {
           // unrecognized option, remove it
           delete config.modifiers.targets;
