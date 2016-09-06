@@ -14,7 +14,7 @@ class NotificationThrow extends React.Component {
       single: '/sounds/single.mp3',
       double: '/sounds/double.mp3',
       triple: '/sounds/triple.mp3',
-      miss: '/sounds/miss.mp3'
+      miss: '/sounds/miss.mp3' // https://www.freesound.org/people/erkanozan/sounds/51755/
 
     };
   }

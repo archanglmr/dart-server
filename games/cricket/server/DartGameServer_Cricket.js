@@ -1,7 +1,8 @@
 'use strict';
 var DartHelpers = require('../../../lib/dart-helpers'),
     ThrowTypes = DartHelpers.ThrowTypes,
-    FilterTypes = DartHelpers.State.FilterTypes;
+    FilterTypes = DartHelpers.State.FilterTypes,
+    Random = require('random-js');
 
 module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer {
   /**
@@ -389,13 +390,6 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
         rounds = Object.assign({}, state.rounds),
         marks = {};
 
-    // init the marks for this game
-    for (let target in game.targets) {
-      if (game.targets.hasOwnProperty(target)) {
-        marks[target] = 0;
-      }
-    }
-
     if (config.modifiers) {
       if (config.modifiers.hasOwnProperty('limit')) {
         rounds.limit = state.config.modifiers.limit;
@@ -404,6 +398,32 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
         if (!DartHelpers.State.isFilterAllowed(config.modifiers.filter, this.listFiltersAllowed())) {
           delete config.modifiers.filter;
         }
+      }
+      if (config.modifiers.hasOwnProperty('targets')) {
+        let targets = config.modifiers.targets,
+            newTargets = {};
+
+        if ('random' === targets) {
+          targets = Random.sample(Random.engines.mt19937().seed(state.config.seed), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21], 7);
+        }
+
+        if (Array.isArray(targets) && 7 === targets.length) {
+          for (let i = 0, c = 7; i < c; i += 1) {
+            newTargets[parseInt(targets[i])] = true;
+          }
+          game.targets = newTargets;
+          // @fixme: Add to the modifiers list for the display
+        } else {
+          // unrecognized option, remove it
+          delete config.modifiers.targets;
+        }
+      }
+    }
+
+    // init the marks for this game
+    for (let target in game.targets) {
+      if (game.targets.hasOwnProperty(target)) {
+        marks[target] = 0;
       }
     }
 

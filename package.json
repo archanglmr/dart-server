@@ -41,6 +41,7 @@
     "gsap": "^1.19.0",
     "morgan": "~1.6.1",
     "mware": "0.0.3",
+    "random-js": "^1.0.8",
     "react": "^15.1.0",
     "react-dom": "^15.1.0",
     "react-redux": "^4.4.5",
