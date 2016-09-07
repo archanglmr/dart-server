@@ -469,7 +469,8 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
         players,
         started: true,
         locked: false,
-        widgetDartboard: this.toWidgetDartboard(state.game, players.current)
+        widgetDartboard: this.toWidgetDartboard(state.game, players.current),
+        notificationQueue: [{type: 'throw_darts'}]
       });
     }
     return state;
@@ -645,7 +646,7 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
       if (playerChanged) {
         game.players[players.current].history[rounds.current] = [];
         game.players[players.current].earnedMarks[rounds.current] = [];
-        notificationQueue = [];
+        notificationQueue = [{type: 'throw_darts'}];
       }
 
       // rebuild the new state

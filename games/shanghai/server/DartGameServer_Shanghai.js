@@ -158,7 +158,8 @@ module.exports = class DartGameServer_Shanghai extends DartHelpers.DartGameServe
       return Object.assign({}, state, {
         players,
         started: true,
-        locked: false
+        locked: false,
+        notificationQueue: [{type: 'throw_darts'}]
       });
     }
     return state;
@@ -271,7 +272,7 @@ module.exports = class DartGameServer_Shanghai extends DartHelpers.DartGameServe
 
       if (playerChanged) {
         game.players[players.current].history[rounds.current] = 0;
-        notificationQueue = [];
+        notificationQueue = [{type: 'throw_darts'}];
       }
 
       // rebuild the new state
