@@ -72,6 +72,7 @@ module.exports = [
       'archery': [__dirname + '/games/archery/client/archery.jsx', hotMiddlewareScript],
       'cricket': [__dirname + '/games/cricket/client/cricket.jsx', hotMiddlewareScript],
       'gotcha': [__dirname + '/games/gotcha/client/gotcha.jsx', hotMiddlewareScript],
+      'jumpup': [__dirname + '/games/jump_up/client/jumpup.jsx', hotMiddlewareScript],
       'shanghai': [__dirname + '/games/shanghai/client/shanghai.jsx', hotMiddlewareScript],
       'slider': [__dirname + '/games/slider/client/slider.jsx', hotMiddlewareScript],
       'warfare': [__dirname + '/games/warfare/client/warfare.jsx', hotMiddlewareScript]
