@@ -17,6 +17,7 @@ import WidgetMultiplierContainer from './containers/WidgetMultiplierContainer';
 import WidgetThrowsContainer from 'containers/WidgetThrowsContainer';
 import WidgetPlayerListContainer from 'containers/WidgetPlayerListContainer';
 import WidgetDartboardContainer from 'containers/WidgetDartboardContainer';
+import NotificationCombo from './components/NotificationCombo';
 import WidgetNotificationQueueContainer from 'containers/WidgetNotificationQueueContainer';
 
 
@@ -39,7 +40,7 @@ top.window.registerGame((store) => {
               <WidgetPlayerListContainer />
               <WidgetDartboardContainer />
               <WidgetMultiplierContainer />
-              <WidgetNotificationQueueContainer />
+              <WidgetNotificationQueueContainer customNotifications={{combo: NotificationCombo}}  />
             </GameClient>
           </Provider>
       ),

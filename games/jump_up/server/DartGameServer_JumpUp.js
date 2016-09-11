@@ -19,9 +19,24 @@ module.exports = class DartGameServer_JumpUp extends DartHelpers.DartGameServer 
    * @returns {string}
    */
   getDisplayName() {
-    var modifiers = this.formatModifiers(this.getState().game.modifiers);
+    var state = this.getState(),
+        modifiers = this.formatModifiers(state.game.modifiers),
+        variation = state.config.variation || '';
 
-    return 'Jump Up' + (modifiers ? ` ${modifiers}` : '');
+    return (variation ? `${variation} ` : '') + 'Jump Up' + (modifiers ? ` ${modifiers}` : '');
+  }
+
+
+  /**
+   * Checks to see if this is a "Hyper" Jump Up game.
+   *
+   * @returns {boolean}
+   */
+  isHyperJumpUp() {
+    if (undefined === this.hyper) {
+      this.hyper = 'Hyper' === this.getState().config.variation;
+    }
+    return this.hyper;
   }
 
   /**
@@ -88,6 +103,69 @@ module.exports = class DartGameServer_JumpUp extends DartHelpers.DartGameServer 
   }
 
   /**
+   * Calculates the value in this game of the current throw.
+   *
+   * @param throwData {{type: string, number: number}}
+   * @param currentPlayer {object}
+   * @returns {object}
+   */
+  calculateHyperJumpUpThrowDataValue(throwData, currentPlayer) {
+    var number = throwData.number,
+        data = {
+          value: 0,
+          increase_multiplier: 0,
+          increase_blinking: 0,
+          decrease_remaining: 0
+        },
+        value_multiplier = 1;
+
+    if (21 === number) {
+      // bull calculation is special
+      if (currentPlayer.remaining[21]) {
+        let bulls_allowed = Math.min(4, currentPlayer.highest_blinking - 20),
+            bulls_hit = 4 - currentPlayer.remaining[21];
+
+        if (bulls_allowed > bulls_hit) {
+          // we hit a blinking number
+          data.increase_multiplier = 0;
+          data.increase_blinking = value_multiplier;
+          data.decrease_remaining = number;
+          value_multiplier *= currentPlayer.multiplier;
+        }
+      }
+      // single and double bull are both worth 50
+      data.value = 50 * value_multiplier;
+
+    } else {
+      // calculate the normal value multiplier
+      switch (throwData.type) {
+        case ThrowTypes.TRIPLE:
+          value_multiplier = 3;
+          break;
+
+        case ThrowTypes.DOUBLE:
+          value_multiplier = 2;
+          break;
+
+        case ThrowTypes.SINGLE_INNER:
+        case ThrowTypes.SINGLE_OUTER:
+          value_multiplier = 1;
+          break;
+      }
+
+      if (currentPlayer.remaining[number] && number <= currentPlayer.highest_blinking) {
+        // we hit a blinking number
+        data.increase_multiplier = value_multiplier;
+        data.increase_blinking = value_multiplier;
+        data.decrease_remaining = number;
+        value_multiplier *= currentPlayer.multiplier;
+      }
+      data.value = number * value_multiplier;
+    }
+    return data;
+  }
+
+  /**
    * Will look at the current game state and return an object compatible with
    * the state.widgetDartboard property and WidgetDartboard component.
    *
@@ -116,7 +194,7 @@ module.exports = class DartGameServer_JumpUp extends DartHelpers.DartGameServer 
               {number: target, type: ThrowTypes.SINGLE_INNER}
             ];
           }
-        } else {
+        } else if (!this.isHyperJumpUp()) {
           //hidden
           dartboard.hide[target] = [
             {number: target, type: ThrowTypes.DOUBLE},
@@ -157,7 +235,7 @@ module.exports = class DartGameServer_JumpUp extends DartHelpers.DartGameServer 
         rounds = Object.assign({}, state.rounds, {limit: 8}),
         remaining = {};
 
-    for (let i = 1; i <= 21; i += 1) {
+    for (let i = 1; i < 21; i += 1) {
       remaining[i] = 1;
     }
     remaining[21] = 4;
@@ -181,6 +259,7 @@ module.exports = class DartGameServer_JumpUp extends DartHelpers.DartGameServer 
         history: [0],
         throwHistory: [],
         multiplier: 1,
+        blinks_this_round: 0,
         highest_blinking: 3,
         remaining: Object.assign({}, remaining)
       };
@@ -201,12 +280,22 @@ module.exports = class DartGameServer_JumpUp extends DartHelpers.DartGameServer 
       //init the actual game
 
       // shallow clone stuff
-      let players = Object.assign({}, state.players);
+      let players = Object.assign({}, state.players),
+          game = Object.assign({}, state.game);
 
       players.current = players.order[players.currentOffset];
 
+      if (this.isHyperJumpUp()) {
+        let playerData = Object.assign(game.players);
+        for (let id in playerData) {
+          playerData[id].highest_blinking = 5;
+        }
+        game = Object.assign(game, {players: playerData});
+      }
+
       // rebuild the new state
       return Object.assign({}, state, {
+        game,
         players,
         started: true,
         locked: false,
@@ -232,8 +321,18 @@ module.exports = class DartGameServer_JumpUp extends DartHelpers.DartGameServer 
       let game = Object.assign({}, state.game),
           rounds = Object.assign({}, state.rounds),
           players = Object.assign({}, state.players),
-          throwStats = this.calculateThrowDataValue(throwData, game.players[players.current]),
+          throwStats = this.isHyperJumpUp() ?
+              this.calculateHyperJumpUpThrowDataValue(throwData, game.players[players.current]) :
+              this.calculateThrowDataValue(throwData, game.players[players.current]),
           notificationQueue = [throwStats.value ? {type: 'throw', data: throwData} : {type: 'throw', data: {type: ThrowTypes.MISS, number: 0}}];
+
+      if (throwStats.increase_blinking) {
+        game.players[players.current].blinks_this_round += 1;
+        if (this.isHyperJumpUp() && game.players[players.current].blinks_this_round >= 3) {
+          throwStats.value *= 3;
+          notificationQueue.push({type: 'combo', data: (throwStats.value)});
+        }
+      }
 
       game.roundOver = false;
       game.tempScore += throwStats.value;
@@ -242,7 +341,6 @@ module.exports = class DartGameServer_JumpUp extends DartHelpers.DartGameServer 
 
       game.players[players.current].history[rounds.current] = game.tempScore;
       game.players[players.current].throwHistory.push(throwData);
-      // @todo: Remove this line once scoring is verified
       game.players[players.current].score += throwStats.value;
       game.players[players.current].multiplier += throwStats.increase_multiplier;
       game.players[players.current].highest_blinking += throwStats.increase_blinking;
@@ -316,6 +414,7 @@ module.exports = class DartGameServer_JumpUp extends DartHelpers.DartGameServer 
 
       if (playerChanged) {
         game.players[players.current].history[rounds.current] = 0;
+        game.players[players.current].blinks_this_round = 0;
         notificationQueue = [{type: 'throw_darts'}];
       }
 
