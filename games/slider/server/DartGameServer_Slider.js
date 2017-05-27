@@ -1,8 +1,31 @@
 'use strict';
 var DartHelpers = require('../../../lib/dart-helpers'),
-    ThrowTypes = DartHelpers.ThrowTypes;
+    ThrowTypes = DartHelpers.ThrowTypes,
+    FilterTypes = DartHelpers.State.FilterTypes;
 
 module.exports = class DartGameServer_Slider extends DartHelpers.DartGameServer {
+  /**
+   * List the allowed value for modifiers.filter. Combine with
+   * checkThrowFilter(throw) to see if a throw is valid.
+   * @returns {string[]}
+   */
+  listFiltersAllowed() {
+    return [FilterTypes.SINGLES, FilterTypes.DOUBLES, FilterTypes.TRIPLES, FilterTypes.MASTERS];
+  }
+
+  /**
+   * Gets the display name for this game type/variation
+   *
+   * @returns {string}
+   */
+  getDisplayName() {
+    var state = this.getState(),
+        modifiers = this.formatModifiers(state.game.modifiers);
+
+    return 'Slider' + (modifiers ? ` ${modifiers}` : '');
+  }
+
+
   /**
    * Calculates the value in of the current throw.
    *
@@ -11,7 +34,7 @@ module.exports = class DartGameServer_Slider extends DartHelpers.DartGameServer 
    * @returns {number}
    */
   calculateThrowDataValue(throwData, target) {
-    return (target === throwData.number) ? 1 : 0;
+    return (this.isFilteredThrow(throwData) && target === throwData.number) ? 1 : 0;
   }
 
   /**
@@ -23,19 +46,37 @@ module.exports = class DartGameServer_Slider extends DartHelpers.DartGameServer 
    */
   toWidgetDartboard(target) {
     var dartboard = {
-      visible: false,
-      hide: {},
-      blink: {},
-      highlight: {}
-    };
+          visible: true,
+          hide: {},
+          blink: {},
+          highlight: {}
+        },
+        single_outer = {number: target, type: ThrowTypes.SINGLE_OUTER},
+        single_inner = {number: target, type: ThrowTypes.SINGLE_INNER},
+        double = {number: target, type: ThrowTypes.DOUBLE},
+        triple = {number: target, type: ThrowTypes.TRIPLE};
 
-    dartboard.visible = true;
-    dartboard.blink[target] = dartboard.highlight[target] = [
-      {number: target, type: ThrowTypes.DOUBLE},
-      {number: target, type: ThrowTypes.SINGLE_OUTER},
-      {number: target, type: ThrowTypes.TRIPLE},
-      {number: target, type: ThrowTypes.SINGLE_INNER}
-    ];
+    dartboard.highlight[target] = [];
+
+    if (21 === parseInt(target)) {
+      dartboard.highlight[target].push(single_outer);
+      dartboard.highlight[target].push(double);
+    } else {
+      if (this.isFilteredThrow(single_outer)) {
+        dartboard.highlight[target].push(single_outer);
+      }
+      if (this.isFilteredThrow(single_inner)) {
+        dartboard.highlight[target].push(single_inner);
+      }
+      if (this.isFilteredThrow(double)) {
+        dartboard.highlight[target].push(double);
+      }
+      if (this.isFilteredThrow(triple)) {
+        dartboard.highlight[target].push(triple);
+      }
+    }
+
+    dartboard.blink[target] = dartboard.highlight[target];
 
     return dartboard;
   }
@@ -55,17 +96,28 @@ module.exports = class DartGameServer_Slider extends DartHelpers.DartGameServer 
    */
   actionInit(state) {
     // cloning the part we need because we're going to overwrite stuff
-    var game = {
+    var config = Object.assign({}, state.config),
+        game = {
           tempScore: 0,
           players: {},
           currentThrows: [],
           roundOver: false,
-          target: 10
+          target: 10,
+          modifiers: []
         },
         rounds = Object.assign({}, state.rounds);
 
-    if (state.config.modifiers && state.config.modifiers.hasOwnProperty('limit')) {
-      rounds.limit = state.config.modifiers.limit;
+    if (config.modifiers) {
+      if (config.modifiers.hasOwnProperty('limit')) {
+        rounds.limit = config.modifiers.limit;
+      }
+      if (config.modifiers.hasOwnProperty('filter')) {
+        if (DartHelpers.State.isFilterAllowed(config.modifiers.filter, this.listFiltersAllowed())) {
+          game.modifiers.push(DartHelpers.State.getFilterName(config.modifiers.filter));
+        } else {
+          delete config.modifiers.filter;
+        }
+      }
     }
 
     for (let i = 0, c = state.players.order.length; i < c; i += 1) {
@@ -79,7 +131,7 @@ module.exports = class DartGameServer_Slider extends DartHelpers.DartGameServer 
       };
     }
 
-    return Object.assign({}, state, {game, rounds, widgetDartboard: this.toWidgetDartboard(game.target)});
+    return Object.assign({}, state, {config, game, rounds, widgetDartboard: this.toWidgetDartboard(game.target)});
   }
 
 
@@ -103,6 +155,7 @@ module.exports = class DartGameServer_Slider extends DartHelpers.DartGameServer 
         players,
         started: true,
         locked: false,
+        widgetDartboard: this.toWidgetDartboard(state.game.target),
         notificationQueue: [{type: 'throw_darts'}]
       });
     }

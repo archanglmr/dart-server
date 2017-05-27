@@ -21,10 +21,10 @@ module.exports = class DartGameServer_Cricket extends DartHelpers.DartGameServer
    */
   getDisplayName() {
     var state = this.getState(),
-        name = state.game.label || state.config.variation || 'standard',
+        name = state.config.variation || 'Standard',
         modifiers = this.formatModifiers(state.game.modifiers);
 
-    return name.substr(0, 1).toUpperCase() + name.substr(1) + ' Cricket' + (modifiers ? ` ${modifiers}` : '');
+    return name + ' Cricket' + (modifiers ? ` ${modifiers}` : '');
   }
 
 
