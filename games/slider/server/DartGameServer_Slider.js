@@ -34,6 +34,9 @@ module.exports = class DartGameServer_Slider extends DartHelpers.DartGameServer 
    * @returns {number}
    */
   calculateThrowDataValue(throwData, target) {
+    if (21 === target && target === throwData.number) {
+      return 1;
+    }
     return (this.isFilteredThrow(throwData) && target === throwData.number) ? 1 : 0;
   }
 
@@ -41,44 +44,83 @@ module.exports = class DartGameServer_Slider extends DartHelpers.DartGameServer 
    * Will look at the current game state and return an object compatible with
    * the state.widgetDartboard property and WidgetDartboard component.
    *
-   * @param {object} target
+   * @param target {number}
+   * @param currentPlayer {object}
    * @returns {{}}
    */
-  toWidgetDartboard(target) {
+  toWidgetDartboard(target, currentPlayer) {
     var dartboard = {
           visible: true,
           hide: {},
           blink: {},
           highlight: {}
-        },
-        single_outer = {number: target, type: ThrowTypes.SINGLE_OUTER},
-        single_inner = {number: target, type: ThrowTypes.SINGLE_INNER},
-        double = {number: target, type: ThrowTypes.DOUBLE},
-        triple = {number: target, type: ThrowTypes.TRIPLE};
+        };
 
-    dartboard.highlight[target] = [];
+    if (target <= (this.isBullRequired() ? 21 : 20)) {
+      let single_outer = {number: target, type: ThrowTypes.SINGLE_OUTER},
+          single_inner = {number: target, type: ThrowTypes.SINGLE_INNER},
+          double = {number: target, type: ThrowTypes.DOUBLE},
+          triple = {number: target, type: ThrowTypes.TRIPLE};
 
-    if (21 === parseInt(target)) {
-      dartboard.highlight[target].push(single_outer);
-      dartboard.highlight[target].push(double);
-    } else {
-      if (this.isFilteredThrow(single_outer)) {
+      dartboard.highlight[target] = [];
+
+      if (21 === parseInt(target)) {
         dartboard.highlight[target].push(single_outer);
-      }
-      if (this.isFilteredThrow(single_inner)) {
-        dartboard.highlight[target].push(single_inner);
-      }
-      if (this.isFilteredThrow(double)) {
         dartboard.highlight[target].push(double);
+      } else {
+        if (this.isFilteredThrow(single_outer)) {
+          dartboard.highlight[target].push(single_outer);
+        }
+        if (this.isFilteredThrow(single_inner)) {
+          dartboard.highlight[target].push(single_inner);
+        }
+        if (this.isFilteredThrow(double)) {
+          dartboard.highlight[target].push(double);
+        }
+        if (this.isFilteredThrow(triple)) {
+          dartboard.highlight[target].push(triple);
+        }
       }
-      if (this.isFilteredThrow(triple)) {
-        dartboard.highlight[target].push(triple);
+
+      dartboard.blink[target] = dartboard.highlight[target];
+    } else if (currentPlayer && currentPlayer.winner) {
+      dartboard.highlight = this.highlightHistory(currentPlayer.advanceHistory);
+    }
+
+    return dartboard;
+  }
+
+  /**
+   * Returns the players history up till the last number (presumably winning
+   * number) back to the start. This will be used to light up the hits that
+   * caused advancement and the win back to number 10.
+   *
+   * @param history {object}
+   * @returns {{}}
+   */
+  highlightHistory(history) {
+    var transformed = {};
+
+    for (let i in history) {
+      if (history.hasOwnProperty(i)) {
+        transformed[history[i].number] = [history[i]];
       }
     }
 
-    dartboard.blink[target] = dartboard.highlight[target];
+    return transformed;
+  }
 
-    return dartboard;
+  /**
+   * Checks to see if this the bull_required modifier is on.
+   *
+   * @returns {boolean}
+   */
+  isBullRequired() {
+    if (undefined === this.bull_required) {
+      let config = this.getState().config;
+      this.bull_required = (config.modifiers && config.modifiers.bull_required);
+    }
+    return this.bull_required;
   }
 
 
@@ -118,6 +160,13 @@ module.exports = class DartGameServer_Slider extends DartHelpers.DartGameServer 
           delete config.modifiers.filter;
         }
       }
+      if (config.modifiers.hasOwnProperty('bull_required')) {
+        if (true === config.modifiers.bull_required) {
+          game.modifiers.push('Bull Required');
+        } else {
+          delete config.modifiers.bull_required;
+        }
+      }
     }
 
     for (let i = 0, c = state.players.order.length; i < c; i += 1) {
@@ -127,7 +176,8 @@ module.exports = class DartGameServer_Slider extends DartHelpers.DartGameServer 
         id,
         score: game.target,
         history: [0],
-        throwHistory: []
+        throwHistory: [],
+        advanceHistory: {}
       };
     }
 
@@ -191,9 +241,14 @@ module.exports = class DartGameServer_Slider extends DartHelpers.DartGameServer 
       game.players[players.current].throwHistory.push(throwData);
       let score = game.players[players.current].score += throwScore;
 
-      if (21 === score) {
+      if (throwScore) {
+        game.players[players.current].advanceHistory[throwData.number] = throwData;
+      }
+
+      if (score === (this.isBullRequired() ? 22 : 21)) {
         finished = true;
         winner = players.current;
+        game.players[players.current].winner = true;
         notificationQueue.push(this.buildWinnerNotification(winner));
       }
 
@@ -221,7 +276,7 @@ module.exports = class DartGameServer_Slider extends DartHelpers.DartGameServer 
         locked: !winner,
         finished,
         winner,
-        widgetDartboard: this.toWidgetDartboard(game.target),
+        widgetDartboard: this.toWidgetDartboard(game.target, game.players[players.current]),
         notificationQueue
       });
     }

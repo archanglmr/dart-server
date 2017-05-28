@@ -17,6 +17,7 @@ import WidgetTargetNumberContainer from 'containers/WidgetTargetNumberContainer'
 import WidgetThrowsContainer from 'containers/WidgetThrowsContainer';
 import WidgetPlayerListContainer from 'containers/WidgetPlayerListContainer';
 import WidgetDartboardContainer from 'containers/WidgetDartboardContainer';
+import PlayerTarget from 'components/PlayerTarget';
 import WidgetNotificationQueueContainer from 'containers/WidgetNotificationQueueContainer';
 
 import NotificationSlide from './components/NotificationSlide';
@@ -38,7 +39,7 @@ top.window.registerGame((store) => {
               <CornerDash />
               <WidgetScoreHistoryContainer displayLimit={8} valueComponent={ScoreHistoryUpDown} />
               <WidgetThrowsContainer noTempScore={true} />
-              <WidgetPlayerListContainer />
+              <WidgetPlayerListContainer valueComponent={PlayerTarget} />
               <WidgetDartboardContainer />
               <WidgetTargetNumberContainer />
               <WidgetNotificationQueueContainer customNotifications={{slide: NotificationSlide}} />

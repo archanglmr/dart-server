@@ -8,7 +8,7 @@ const mapStateToProps = (state) => {
   if (state.game) {
     // pre-pending '' to prevent warning since score is typically a number
     return {
-      text: '' + state.game.target,
+      text: '' + (21 === state.game.target ? 'Bull' : state.game.target),
       hide: state.finished,
       label: 'Throw At:',
       className: 'target-number-container'
