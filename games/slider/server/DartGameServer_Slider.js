@@ -10,7 +10,7 @@ module.exports = class DartGameServer_Slider extends DartHelpers.DartGameServer 
    * @returns {string[]}
    */
   listFiltersAllowed() {
-    return [FilterTypes.SINGLES, FilterTypes.DOUBLES, FilterTypes.TRIPLES, FilterTypes.MASTERS];
+    return [FilterTypes.SINGLES, FilterTypes.DOUBLES, FilterTypes.TRIPLES, FilterTypes.MASTERS, FilterTypes.SINGLE_INNER, FilterTypes.SINGLE_OUTER];
   }
 
   /**
