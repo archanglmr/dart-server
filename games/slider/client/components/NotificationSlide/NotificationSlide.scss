@@ -1,0 +1,32 @@
+@import 'colors';
+
+.notification-slide {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  font-size: 20vh;
+
+  background-color: rgba($foreground, 0.8);
+  color: $background;
+
+  .notification-slide-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+
+    text-align: center;
+    line-height: 100vh;
+    vertical-align: middle;
+
+    .notification-slide-number {
+      display: inline-block;
+      width: 9vw;
+      text-align: center;
+      margin-left: -2vw;
+    }
+  }
+}
