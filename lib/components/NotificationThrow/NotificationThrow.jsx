@@ -2,6 +2,12 @@
 
 import React, {PropTypes} from 'react';
 
+import SOUND_BULL from 'base64!./sounds/bull.mp3'; // http://soundbible.com/1696-Train-Honk-Horn-Clear.html
+import SOUND_DOUBLE_BULL from 'base64!./sounds/double_bull.mp3';
+import SOUND_SINGLE from 'base64!./sounds/single.mp3';
+import SOUND_DOUBLE from 'base64!./sounds/double.mp3';
+import SOUND_TRIPLE from 'base64!./sounds/triple.mp3';
+import SOUND_MISS from 'base64!./sounds/miss.mp3'; // https://www.freesound.org/people/erkanozan/sounds/51755/
 
 class NotificationThrow extends React.Component {
   constructor(props) {
@@ -9,13 +15,12 @@ class NotificationThrow extends React.Component {
     this.timer = null;
     this.play = null;
     this.soundMap = {
-      bull: '/sounds/bull.mp3', // http://soundbible.com/1696-Train-Honk-Horn-Clear.html
-      double_bull: '/sounds/double_bull.mp3',
-      single: '/sounds/single.mp3',
-      double: '/sounds/double.mp3',
-      triple: '/sounds/triple.mp3',
-      miss: '/sounds/miss.mp3' // https://www.freesound.org/people/erkanozan/sounds/51755/
-
+      bull: 'data:audio/mpeg;base64,' + SOUND_BULL,
+      double_bull: 'data:audio/mpeg;base64,' + SOUND_DOUBLE_BULL,
+      single: 'data:audio/mpeg;base64,' + SOUND_SINGLE,
+      double: 'data:audio/mpeg;base64,' + SOUND_DOUBLE,
+      triple: 'data:audio/mpeg;base64,' + SOUND_TRIPLE,
+      miss: 'data:audio/mpeg;base64,' + SOUND_MISS
     };
   }
 
