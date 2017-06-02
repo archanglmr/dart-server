@@ -221,7 +221,7 @@ module.exports = class DartGameServer_Gotcha extends DartHelpers.DartGameServer 
         if (score > 301) {
           // bust
           game.roundOver = true;
-          notificationQueue.push({type: 'bust'});
+          notificationQueue = [{type: 'bust'}];
         } else if (score > 0) {
           // check for bombs (must have some score)
           let bombedPlayers = this.listPlayersToBomb(game.players, players.current);

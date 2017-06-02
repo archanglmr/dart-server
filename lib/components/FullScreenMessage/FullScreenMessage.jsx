@@ -8,6 +8,11 @@ class FullScreenMessage extends React.Component {
   constructor(props) {
     super(props);
     this.timer = null;
+    this.audioId = null;
+
+    if (props.text && props.sound) {
+      this.audioId = 'full-screen-message-' + props.text.toLowerCase().replace(/ /g, '-').replace(/[!-a-z0-9]/g, '');
+    }
   }
 
   componentWillUnmount() {
@@ -21,12 +26,37 @@ class FullScreenMessage extends React.Component {
     }
   }
 
+  componentDidUpdate() {
+    var {text, status, onFinish} = this.props;
+
+    if ('init' === status || 'finished' === status) {
+      this.clearTimer();
+    }
+
+    if (this.audioId) {
+      let el = document.getElementById(this.audioId);
+      if (el) {
+        if ('run' === status) {
+          el.play();
+        } else if ('init' === status) {
+          el.pause();
+          el.currentTime = 0;
+        }
+      }
+    }
+  }
+
   render() {
-    var {text, status, onFinish, className} = this.props,
-        classNames = ['full-screen-message'];
+    var {text, status, onFinish, className, sound} = this.props,
+        classNames = ['full-screen-message'],
+        audio = null;
 
     if (className) {
       classNames.push(className);
+    }
+
+    if (this.audioId) {
+      audio = <audio key={this.audioId} id={this.audioId} preload="auto" src={sound} />;
     }
 
     if (text) {
@@ -43,9 +73,9 @@ class FullScreenMessage extends React.Component {
           styles.display = '';
         }
 
-        return <div className={classNames.join(' ')} data-status={status} style={styles}><span>{text}</span></div>;
+        return <div className={classNames.join(' ')} data-status={status} style={styles}><span>{text}</span>{audio}</div>;
       } else {
-        return <div className={classNames.join(' ')}><span>{text}</span></div>;
+        return <div className={classNames.join(' ')}><span>{text}</span>{audio}</div>;
       }
     }
     return null;
@@ -54,7 +84,8 @@ class FullScreenMessage extends React.Component {
 }
 
 FullScreenMessage.propTypes = {
-  text: PropTypes.string.isRequired
+  text: PropTypes.string.isRequired,
+  sound: PropTypes.string
 };
 
 export default FullScreenMessage;

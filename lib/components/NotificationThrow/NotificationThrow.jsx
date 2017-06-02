@@ -13,7 +13,6 @@ class NotificationThrow extends React.Component {
   constructor(props) {
     super(props);
     this.timer = null;
-    this.play = null;
     this.soundMap = {
       bull: 'data:audio/mpeg;base64,' + SOUND_BULL,
       double_bull: 'data:audio/mpeg;base64,' + SOUND_DOUBLE_BULL,
@@ -73,7 +72,7 @@ class NotificationThrow extends React.Component {
 
     for (let soundName in this.soundMap) {
       if (this.soundMap.hasOwnProperty(soundName)) {
-        let el = document.getElementById('notification_throw_'+soundName);
+        let el = document.getElementById('notification-throw-'+soundName);
         if (el) {
           if (soundName === play) {
             el.play();
@@ -91,7 +90,7 @@ class NotificationThrow extends React.Component {
 
     for (let soundName in this.soundMap) {
       if (this.soundMap.hasOwnProperty(soundName)) {
-        components.push(<audio key={'notification_throw_'+soundName} id={'notification_throw_'+soundName} preload="auto" src={this.soundMap[soundName]} />);
+        components.push(<audio key={'notification-throw-'+soundName} id={'notification-throw-'+soundName} preload="auto" src={this.soundMap[soundName]} />);
       }
     }
 

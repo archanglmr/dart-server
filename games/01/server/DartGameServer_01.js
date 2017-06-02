@@ -245,7 +245,7 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
         if (score < 0) {
           // bust
           game.roundOver = true;
-          notificationQueue.push({type: 'bust'});
+          notificationQueue = [{type: 'bust'}];
         } else if (rounds.currentThrow >= rounds.throws) {
           // round over
           game.roundOver = true;
