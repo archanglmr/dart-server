@@ -70,6 +70,7 @@ module.exports = [
     entry: {
       '01': [__dirname + '/games/01/client/01.jsx', hotMiddlewareScript],
       'archery': [__dirname + '/games/archery/client/archery.jsx', hotMiddlewareScript],
+      'countup': [__dirname + '/games/count_up/client/countup.jsx', hotMiddlewareScript],
       'cricket': [__dirname + '/games/cricket/client/cricket.jsx', hotMiddlewareScript],
       'gotcha': [__dirname + '/games/gotcha/client/gotcha.jsx', hotMiddlewareScript],
       'jumpup': [__dirname + '/games/jump_up/client/jumpup.jsx', hotMiddlewareScript],
