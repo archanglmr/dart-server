@@ -8,11 +8,6 @@ class FullScreenMessage extends React.Component {
   constructor(props) {
     super(props);
     this.timer = null;
-    this.audioId = null;
-
-    if (props.text && props.sound) {
-      this.audioId = 'full-screen-message-' + props.text.toLowerCase().replace(/ /g, '-').replace(/[!-a-z0-9]/g, '');
-    }
   }
 
   componentWillUnmount() {
@@ -33,15 +28,12 @@ class FullScreenMessage extends React.Component {
       this.clearTimer();
     }
 
-    if (this.audioId) {
-      let el = document.getElementById(this.audioId);
-      if (el) {
-        if ('run' === status) {
-          el.play();
-        } else if ('init' === status) {
-          el.pause();
-          el.currentTime = 0;
-        }
+    if (this.audio) {
+      if ('run' === status) {
+        this.audio.play();
+      } else if ('init' === status) {
+        this.audio.pause();
+        this.audio.currentTime = 0;
       }
     }
   }
@@ -55,8 +47,8 @@ class FullScreenMessage extends React.Component {
       classNames.push(className);
     }
 
-    if (this.audioId) {
-      audio = <audio key={this.audioId} id={this.audioId} preload="auto" src={sound} />;
+    if (sound) {
+      audio = <audio ref={audio => this.audio = audio} preload="auto" src={sound} />;
     }
 
     if (text) {

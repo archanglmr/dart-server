@@ -29,7 +29,7 @@ function SVGBomb({text}) {
 }
 
 SVGBomb.propTypes = {
-  player: PropTypes.string
+  text: PropTypes.string
 };
 
 export default SVGBomb;

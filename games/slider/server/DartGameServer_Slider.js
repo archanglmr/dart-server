@@ -261,7 +261,6 @@ module.exports = class DartGameServer_Slider extends DartHelpers.DartGameServer 
           // slide back one, lowest number you can have is 1
           game.players[players.current].score -= 1;
           game.players[players.current].history[rounds.current] = -1;
-          //game.target = 'SLIDE';
           game.target -= 1;
           notificationQueue.push({type: 'slide', data: {oldTarget: (game.target + 1), newTarget: game.target}});
         }
