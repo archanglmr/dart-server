@@ -13,6 +13,9 @@ $player_color_opacity: .75;
   line-height: 14vh;
   font-size: 12vh;
   vertical-align: middle;
+  overflow: hidden;
+  border-radius: .5vw;
+
   div.heading {
     width: 100%;
     white-space: nowrap;

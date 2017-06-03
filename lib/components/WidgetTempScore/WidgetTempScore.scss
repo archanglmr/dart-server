@@ -11,6 +11,8 @@
   font-size: 10vh;
   line-height: 12vh;
   vertical-align: middle;
+  overflow: hidden;
+  border-radius: .5vw;
 
   div {
     border-bottom: 1px solid $foreground;
