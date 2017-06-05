@@ -47,7 +47,7 @@ class NotificationSlide extends React.Component {
         <div className="notification-slide" data-status={status} style={styles}>
           <div ref={div => this.container = div} className="notification-slide-container">
             Slide...
-            <span ref={span => this.number = span} className="notification-slide-number">{data.oldTarget}</span>
+            <span ref={span => this.number = span} className="notification-slide-number">{21 === data.oldTarget ? 'BULL' : data.oldTarget}</span>
           </div>
           <audio ref={audio => this.audio = audio} key="notification-slide-sound" preload="auto" src={'data:audio/mpeg;base64,' + SOUND_SLIDE} />
         </div>
