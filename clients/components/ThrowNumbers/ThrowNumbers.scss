@@ -1,11 +1,19 @@
 .throw-numbers {
   margin-bottom: 2vh;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
 
   button {
     margin: 0;
     padding: 0;
     text-align: center;
-    width: 14.2vw;
+    width: calc(100vw / 7);
+    height: 8vh;
     font-size: 3vh;
+    background-color: transparent;
+  }
+
+  .throwButton {
+    border: 0;
   }
 }

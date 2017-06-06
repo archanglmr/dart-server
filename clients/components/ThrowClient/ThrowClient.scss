@@ -27,21 +27,26 @@ body {
 
   .corner-dash {
     left: 2vw;
+    h1 {
+      position: absolute;
+      top: 8vh;
+    }
   }
   .widget-temp-score {
-    top: 18vh;
+    top: 20vh;
     left: 52vw;
     width: 40vw;
+    bottom: auto;
 
     &.score-container {
       left: 8vw;
     }
   }
   .widget-throws {
-    bottom: 57vh;
+    bottom: 51vh;
     span {
       width: 30vw;
-      font-size: 5vw;
+      font-size: 3vh;
 
       &.temp-score {
         display: none;

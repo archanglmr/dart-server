@@ -7,8 +7,11 @@
     text-align: center;
     padding: 0;
     margin: 0;
+    border-right: none;
+
     &.inner {
       height: 4vh;
+      border-left: none;
     }
     &.triple {
       height: 6vh;

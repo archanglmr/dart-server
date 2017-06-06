@@ -1,7 +1,7 @@
 .throwButton {
   height: 10vh;
   border-radius: 0;
-  border: 1px solid black;
+  border: 1px solid #000;
   vertical-align: middle;
   background-color: #fff;
   font-size: 3vh;
@@ -27,5 +27,7 @@
   }
   &.submit {
     width: 100vw;
+    border-left: none;
+    border-right: none;
   }
 }
