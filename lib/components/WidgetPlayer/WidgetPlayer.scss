@@ -16,6 +16,8 @@ $player_color_opacity: .75;
   overflow: hidden;
   border-radius: .5vw;
 
+  transition: all .5s linear;
+
   div.heading {
     width: 100%;
     white-space: nowrap;
@@ -25,6 +27,11 @@ $player_color_opacity: .75;
     border-bottom: 1px solid $foreground;
     font-size: 5vh;
     line-height: 6vh;
+  }
+
+  &.disabled {
+    opacity: .25;
+    width: 5vw !important;
   }
 
   &.current {

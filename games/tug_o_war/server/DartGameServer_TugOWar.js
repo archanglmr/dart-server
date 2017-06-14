@@ -1,10 +1,11 @@
 'use strict';
 var DartHelpers = require('../../../lib/dart-helpers'),
-    ThrowTypes = DartHelpers.ThrowTypes,
-    WindicatorPlugin = require('./../../../lib/windicator/WindicatorPlugin'),
-    Windicator = require('./../../../lib/windicator/Windicator');
+    ThrowTypes = DartHelpers.ThrowTypes;
 
-module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
+/**
+ * @todo: When getting a bull multiplier it should show on the throw widget
+ */
+module.exports = class DartGameServer_TugOWar extends DartHelpers.DartGameServer {
   /**
    * Gets the display name for this game type/variation
    *
@@ -12,64 +13,24 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
    */
   getDisplayName() {
     var state = this.getState(),
-        name = state.config.variation || super.getDisplayName(),
+        name = state.config.variation || 'Tug-O-War (Beta)',
         modifiers = this.formatModifiers(state.game.modifiers);
 
     return name + (modifiers ? ` ${modifiers}` : '');
   }
 
-
-  ///**
-  // * Pretty much just for the command line to see the score after a throw.
-  // *
-  // * @returns {string}
-  // */
-  //getScores() {
-  //  var state = this.getState(),
-  //      player = DartHelpers.State.getPlayer(state, state.players.current),
-  //      lines = [],
-  //      conditions = [],
-  //      score = state.game.players[player.id].score;
-  //
-  //  if (0 === score) {
-  //    conditions.push('WIN');
-  //  } if (score < 0) {
-  //    conditions.push('BUST');
-  //  }
-  //  if (state.rounds.limit && ((state.rounds.current + 1) === state.rounds.limit)) {
-  //    conditions.push('ROUND LIMIT');
-  //  }
-  //  lines.push(`Temp Score: ${state.game.tempScore} ${conditions.join(' ')}`);
-  //  lines.push('----------------------------------------');
-  //  lines.push(
-  //      `${player.displayName}: ` +
-  //      `throw ${state.game.currentThrow + 1}:${state.rounds.throws} ` +
-  //      `round ${state.rounds.current + 1}:${state.rounds.limit}`);
-  //  for (let i = 0, c = state.players.order.length; i < c; i += 1) {
-  //    let id = state.players.order[i],
-  //        player = DartHelpers.State.getPlayer(state, id);
-  //
-  //    lines.push(
-  //        (state.players.current === id ? ' > ' : ' - ') +
-  //        `${player.displayName}: ${state.game.players[id].score}`
-  //    );
-  //  }
-  //  //lines.push('----------------------------------------');
-  //  lines.push("");
-  //  lines.push("");
-  //
-  //  return lines.join("\n");
-  //}
-
-
   /**
    * Calculates the value in this game of the current throw.
    *
    * @param throwData {{type: string, number: number}}
-   * @returns {number}
+   * @param handicap {number}
+   * @param multiplier {number}
+   * @param last_round {boolean}
+   * @returns {{multiplier: number, value: number}}
    */
-  calculateThrowDataValue(throwData) {
-    var value = throwData.number;
+  calculateThrowDataValue(throwData, handicap, multiplier, last_round) {
+    var value = throwData.number,
+        increase_multiplier = 0;
 
     /* accounts for the bull */
     if (21 === value) {
@@ -87,31 +48,60 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
           if you wanted different rules for double bull this is the place to
           put them
         */
-        value *= 2;
+        if (this.isBullMultiplier() && 25 === value) {
+          increase_multiplier = 2;
+        } else {
+          value *= 2;
+        }
         break;
 
       case ThrowTypes.MISS:
       case ThrowTypes.SINGLE_INNER:
       case ThrowTypes.SINGLE_OUTER:
-          if (25 === value && !this.isSplitBull()) {
-            value = 50;
+          if (this.isBullMultiplier() && 25 === value) {
+            increase_multiplier = 1;
           }
         break;
     }
-    return value;
+
+    if (increase_multiplier) {
+      if (!last_round || multiplier > 1) {
+        multiplier += increase_multiplier;
+      }
+
+      if (last_round) {
+        value = Math.ceil(handicap * multiplier * value);
+      } else {
+        value = 0;
+      }
+    } else {
+      value = Math.ceil(handicap * multiplier * value);
+      multiplier = 1;
+    }
+    return {multiplier, value};
   }
 
   /**
-   * Checks to see if the split bull modifier is on.
+   * Check to see if the passed handicap is within the valid range.
+   *
+   * @param {number} handicap
+   * @returns {boolean}
+   */
+  isValidHandicap(handicap) {
+    return handicap >= .1 && handicap <= 10;
+  }
+
+  /**
+   * Checks to see if the bull multiplier modifier is on.
    *
    * @returns {boolean}
    */
-  isSplitBull() {
-    if (undefined === this.split_bull) {
+  isBullMultiplier() {
+    if (undefined === this.bull_multiplier) {
       let config = this.getState().config;
-      this.split_bull = (config.modifiers && config.modifiers.split_bull);
+      this.bull_multiplier = (config.modifiers && config.modifiers.bull_multiplier);
     }
-    return this.split_bull;
+    return this.bull_multiplier;
   }
 
 
@@ -134,45 +124,39 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
     var config = Object.assign({}, state.config),
         game = {
           tempScore: 0,
-          roundBeginningScore: 0,
           players: {},
           currentThrows: [],
           roundOver: false,
-          widgetWindicator: [],
           modifiers: []
         },
-        rounds = Object.assign({}, state.rounds);
-
-    this.registerPlugin(new WindicatorPlugin(new Windicator(this.calculateThrowDataValue.bind(this), config.extras), (state) => state.game.players[state.players.current].score));
-
-    if (!config.variation) {
-      config.variation = 501;
-    } else {
-      config.variation = parseInt(config.variation, 10);
-    }
+        rounds = Object.assign({}, state.rounds),
+        handicaps = config.extras ? config.extras.handicap : false;
 
     if (config.modifiers) {
       if (config.modifiers.hasOwnProperty('limit')) {
         rounds.limit = config.modifiers.limit;
       }
-      if (config.modifiers.hasOwnProperty('split_bull') && config.modifiers.split_bull) {
-        game.modifiers.push('Split Bull');
+      if (config.modifiers.hasOwnProperty('bull_multiplier') && config.modifiers.bull_multiplier) {
+        game.modifiers.push('Bull Multiplier');
       }
     }
 
 
     for (let i = 0, c = state.players.order.length; i < c; i += 1) {
-      let id = state.players.order[i];
+      let id = state.players.order[i],
+          handicap = (handicaps && this.isValidHandicap(handicaps[id])) ? handicaps[id] : 1;
 
       game.players[id] = {
         id,
-        score: config.variation,
+        score: 301,
         ppd: 0,
         history: [0],
-        throwHistory: []
+        throwHistory: [],
+        handicap,
+        multiplier: 1,
+        disabled: false
       };
     }
-    game.roundBeginningScore = config.variation;
 
     return Object.assign({}, state, {game, rounds, config});
   }
@@ -219,69 +203,62 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
       let game = Object.assign({}, state.game),
           rounds = Object.assign({}, state.rounds),
           players = Object.assign({}, state.players),
+          throwStats = null,
           notificationQueue = [{type: 'throw', data: throwData}],
           finished = state.finished,
           winner = state.winner;
 
-      game.roundOver = false;
-      game.tempScore += this.calculateThrowDataValue(throwData);
       game.currentThrows.push(throwData);
       rounds.currentThrow += 1;
+
+      // set this a little early because it will determine the final round score
+      // if there was a multiplier.
+      game.roundOver = (rounds.currentThrow >= rounds.throws);
+
+      // we need to know if the round is over before we calculate the throwStats
+      throwStats = this.calculateThrowDataValue(throwData, game.players[players.current].handicap, game.players[players.current].multiplier, game.roundOver);
+      game.tempScore += throwStats.value;
 
       // set the temp score as in the player score history
       game.players[players.current].history[rounds.current] = game.tempScore;
       game.players[players.current].throwHistory.push(throwData);
-      let score = game.players[players.current].score = (game.roundBeginningScore - game.tempScore),
+      game.players[players.current].multiplier = throwStats.multiplier;
+      let score = game.players[players.current].score += throwStats.value,
           throws = game.players[players.current].throwHistory.length;
 
-      game.players[players.current].ppd = throws ? ((state.config.variation - score) / throws) : 0;
+      game.players[players.current].ppd = throws ? (score / throws) : 0;
 
-      if (0 === score) {
-        finished = true;
-        winner = players.current;
-        notificationQueue.push(this.buildWinnerNotification(winner));
-      } else {
-        // Process BUST or advance round
-        if (score < 0) {
-          // bust
-          game.roundOver = true;
-          notificationQueue = [{type: 'bust'}];
-        } else if (rounds.currentThrow >= rounds.throws) {
-          // round over
-          game.roundOver = true;
-          notificationQueue = notificationQueue.concat(
-              this.checkForHatTrickNotifications(game.currentThrows) ||
-              this.checkForTonNotifications(game.tempScore) ||
-              []
-          );
-        }
-
-        if (game.roundOver && !winner) {
-          notificationQueue.push({type: 'remove_darts'});
+      let allDisabled = true;
+      for (let i = 0, c = players.order.length; i < c; i += 1) {
+        let id = players.order[i];
+        if (id !== players.current && !game.players[id].disabled) {
+          game.players[id].score -= throwStats.value;
+          if (game.players[id].score <= 0) {
+            game.players[id].disabled = true;
+          } else {
+            allDisabled = false;
+          }
         }
       }
 
+      if (allDisabled) {
+        // you win
+        finished = true;
+        winner = players.current;
+        notificationQueue.push(this.buildWinnerNotification(winner));
+      }
 
-      // @todo: Turn this into a standard check (this.isLastThrowOfGame(state))
-      //if (
-      //    rounds.limit &&
-      //    rounds.currentThrow >= rounds.throws &&
-      //    (players.currentOffset + 1) >= players.order.length &&
-      //    (rounds.current + 1) >= rounds.limit)
-      //{
-      //  // look ahead to see if we hit the round limit hit the round limit
-      //  winner = DartHelpers.State.getPlayerIdWithLowestScore(game.players);
-      //  notificationQueue.push({type: 'winner', data: winner});
-      //  return Object.assign({}, state, {
-      //    game,
-      //    rounds,
-      //    widgetThrows: game.currentThrows.slice(0),
-      //    //locked: true, // by not locking we can undo
-      //    finished: true,
-      //    winner,
-      //    notificationQueue: notificationQueue
-      //  });
-      //}
+      // Process advance round
+      if (game.roundOver) {
+        notificationQueue = notificationQueue.concat(
+            (
+              this.checkForHatTrickNotifications(game.currentThrows) ||
+              this.checkForTonNotifications(game.tempScore) ||
+              []
+            ),
+            [{type: 'remove_darts'}]
+        );
+      }
 
       // rebuild the new state
       return Object.assign({}, state, {
@@ -308,23 +285,8 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
           playerChanged = false,
           notificationQueue = state.notificationQueue;
 
-
-      // Process BUST
-      if (game.players[players.current].score < 0) {
-        // advance from a bust
-        let score = game.players[players.current].score = game.roundBeginningScore,
-            throws = game.players[players.current].throwHistory.length;
-        game.players[players.current].history[rounds.current] = 0;
-
-        game.players[players.current].ppd = throws ? ((state.config.variation - score) / throws) : 0;
-
-        rounds.currentThrow = 0;
-        game.currentThrows = [];
-        game.tempScore = 0;
-        players.currentOffset += 1;
-        playerChanged = true;
-      } else if (rounds.currentThrow >= rounds.throws) {
-        // advance the game normally
+      // advance the game normally
+      if (rounds.currentThrow >= rounds.throws) {
         // next player
         rounds.currentThrow = 0;
         game.currentThrows = [];
@@ -340,9 +302,14 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
         players.current = players.order[players.currentOffset];
         rounds.current += 1;
 
+        if (game.players[players.current].disabled) {
+          return this.actionAdvanceGame(Object.assign({}, state, {players, rounds})
+          );
+        }
+
         if (rounds.limit && rounds.current >= rounds.limit) {
           // hit the round limit
-          let winner = (players.order.length > 1) ? DartHelpers.State.getPlayerIdWithLowestScore(game.players) : -1;
+          let winner = (players.order.length > 1) ? DartHelpers.State.getPlayerIdWithHighestScore(game.players) : -1;
           return Object.assign({}, state, {
             widgetThrows: game.currentThrows.slice(0),
             finished: true,
@@ -352,11 +319,15 @@ module.exports = class DartGameServer_01 extends DartHelpers.DartGameServer {
         }
       } else {
         players.current = players.order[players.currentOffset];
+        if (game.players[players.current].disabled) {
+          return this.actionAdvanceGame(Object.assign({}, state, {players})
+          );
+        }
       }
 
       if (playerChanged) {
-        game.roundBeginningScore = game.players[players.current].score;
         game.players[players.current].history[rounds.current] = 0;
+        game.players[players.current].multiplier = 1;
         notificationQueue = [{type: 'throw_darts'}];
       }
 

@@ -8,8 +8,12 @@ import './WidgetPlayer.scss';
 function WidgetPlayer({id, displayName, score, current, className, player, valueComponent}) {
   var classNames = ['widget-player', 'player_id_' + id],
       value = null;
+
   if (current) {
     classNames.push('current');
+  }
+  if (player.meta.disabled) {
+    classNames.push('disabled');
   }
   if (className) {
     classNames.push(className);

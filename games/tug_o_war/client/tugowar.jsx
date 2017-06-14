@@ -14,10 +14,15 @@ import CornerDash from 'components/CornerDash';
 import WidgetScoreHistoryContainer from 'containers/WidgetScoreHistoryContainer';
 import ScoreHistoryNumber from 'components/ScoreHistoryNumber';
 import WidgetCurrentScoreContainer from 'containers/WidgetCurrentScoreContainer';
+import WidgetMultiplierContainer from 'containers/WidgetMultiplierContainer';
+import WidgetHandicapContainer from 'containers/WidgetHandicapContainer';
 import WidgetThrowsContainer from 'containers/WidgetThrowsContainer';
 import WidgetPlayerListContainer from 'containers/WidgetPlayerListContainer';
 import WidgetNotificationQueueContainer from 'containers/WidgetNotificationQueueContainer';
 import WidgetCurrentPPDContainer from 'containers/WidgetCurrentPPDContainer';
+
+
+import './tugowar.scss';
 
 
 top.window.registerGame((store) => {
@@ -37,6 +42,8 @@ top.window.registerGame((store) => {
               <WidgetScoreHistoryContainer displayLimit={8} valueComponent={ScoreHistoryNumber} />
               <WidgetThrowsContainer />
               <WidgetPlayerListContainer />
+              <WidgetMultiplierContainer />
+              <WidgetHandicapContainer />
               <WidgetNotificationQueueContainer />
             </GameClient>
           </Provider>

@@ -76,6 +76,7 @@ module.exports = [
       'jumpup': [__dirname + '/games/jump_up/client/jumpup.jsx', hotMiddlewareScript],
       'shanghai': [__dirname + '/games/shanghai/client/shanghai.jsx', hotMiddlewareScript],
       'slider': [__dirname + '/games/slider/client/slider.jsx', hotMiddlewareScript],
+      'tugowar': [__dirname + '/games/tug_o_war/client/tugowar.jsx', hotMiddlewareScript],
       'warfare': [__dirname + '/games/warfare/client/warfare.jsx', hotMiddlewareScript]
     },
     output: {

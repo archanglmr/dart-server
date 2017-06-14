@@ -13,7 +13,7 @@ import GameClient from 'components/GameClient';
 import CornerDash from 'components/CornerDash';
 import WidgetScoreHistoryContainer from 'containers/WidgetScoreHistoryContainer';
 import ScoreHistoryNumber from 'components/ScoreHistoryNumber';
-import WidgetMultiplierContainer from './containers/WidgetMultiplierContainer';
+import WidgetMultiplierContainer from 'containers/WidgetMultiplierContainer';
 import WidgetThrowsContainer from 'containers/WidgetThrowsContainer';
 import WidgetPlayerListContainer from 'containers/WidgetPlayerListContainer';
 import WidgetDartboardContainer from 'containers/WidgetDartboardContainer';
