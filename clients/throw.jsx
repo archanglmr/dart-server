@@ -17,29 +17,35 @@ import WidgetTempScoreContainer from 'containers/WidgetTempScoreContainer';
 import thunkMiddleware from 'redux-thunk';
 import {createStore, applyMiddleware} from 'redux'
 import {Provider} from 'react-redux';
+
+// Our Rexux reducers and actions
 import {updateGameState, UPDATE_GAME_STATE} from './display/actions';
-import {rootReducer, gameRootReducer} from './throw/reducers';
-import {showGamesList} from './throw/actions-new-game';
+import {throwClientRootReducer, gameDisplayRootReducer} from './throw/reducers';
 
-// Create the Redux store
-var store = createStore(
-    rootReducer,
-    applyMiddleware(thunkMiddleware)
-);
-// Create the Redux store
-var gameStore = createStore(gameRootReducer),
-    socket = io();
+// Create the Redux stores
+var throwClientStore = createStore(throwClientRootReducer, applyMiddleware(thunkMiddleware)),
+    gameDisplayStore = createStore(gameDisplayRootReducer);
 
-//gameStore.subscribe((store) => console.log('game:', gameStore.getState()));
-//store.subscribe(() => console.log(store.getState()));
+/*
+ We only need to subscribe to UPDATE_GAME_STATE because we are only pulling
+ data from the game state. We are not showing the real client or worrying about
+ redirects or anything.
+ */
+io().on(UPDATE_GAME_STATE, (data) => {
+  gameDisplayStore.dispatch(updateGameState(data.state));
+});
+
+// These are really just for debugging
+//gameDisplayStore.subscribe(() => console.log('game display:', gameDisplayStore.getState()));
+//throwClientStore.subscribe(() => console.log('throw client:', throwClientStore.getState()));
 
 // Render the React root component
 render(
   (
     <div>
-      <Provider store={store}>
+      <Provider store={throwClientStore}>
         <ThrowClient>
-          <Provider store={gameStore}>
+          <Provider store={gameDisplayStore}>
             <GameStateReadyContainer>
               <CornerDash />
               <WidgetScoreContainer />
@@ -53,12 +59,3 @@ render(
   ),
   document.getElementById('root')
 );
-
-
-socket.on(UPDATE_GAME_STATE, (data) => {
-  gameStore.dispatch(updateGameState(data.state));
-  if (data.state.finished) {
-    console.log('show new game chooser: showGamesList()');
-    //store.dispatch(showGamesList());
-  }
-});

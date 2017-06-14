@@ -4,25 +4,29 @@ import {combineReducers} from 'redux'
 
 
 import throwStateReducer from './reducer-throw-state';
-import newGameReducer from './reducer-new-game';
 import {UPDATE_GAME_STATE} from '../display/actions';
 
 
-export const rootReducer = combineReducers({
-  throwState: throwStateReducer,
-  newGame: newGameReducer
+/**
+ * This makes it so the the throwClientRootReducer only cares about the
+ * throwState
+ */
+export const throwClientRootReducer = combineReducers({
+  throwState: throwStateReducer
 });
 
 
 
 /**
- * The "Root Reducer" for the game client
+ * The "Root Reducer" for the game display client. This allows us to use game
+ * display components in the throw client. We only care about the updated game
+ * state action.
  *
  * @param state {object}
  * @param action {{type: string}}
  * @returns {object}
  */
-export function gameRootReducer(state, action = {}) {
+export function gameDisplayRootReducer(state, action = {}) {
   if ('undefined' === typeof state) {
     return {};
   }
