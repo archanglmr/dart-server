@@ -39,7 +39,7 @@ export function clientRootReducer(state, action = {}) {
  * @param action {{type: string}}
  * @returns {object}
  */
-export function displayRootReducer(state, action = {}) {
+export function gameDisplayRootReducer(state, action = {}) {
   if ('undefined' === typeof state) {
     return {loading: true, display: false};
   }

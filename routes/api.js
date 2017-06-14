@@ -22,7 +22,6 @@ module.exports = (io) => {
       },
       gm = new GameManager(__dirname + '/../games', models, gameStarted);
 
-
   /**
    * player order by id (unless you pass randomize: true)
    */
@@ -42,10 +41,13 @@ module.exports = (io) => {
   //gm.createGame('archery', {playerOrder, randomize});
   //gm.createGame('archery', {playerOrder, randomize, modifiers: {limit: 2}});
 
+  //gm.createGame('count_up', {playerOrder, randomize});
+
   //gm.createGame('cricket', {playerOrder, randomize});
   //gm.createGame('cricket', {playerOrder, randomize, modifiers: {filter: FilterTypes.TRIPLES, limit: 0}});
   //gm.createGame('cricket', {variation: 'Closeout', playerOrder, randomize});
   //gm.createGame('cricket', {variation: 'Closeout', playerOrder, randomize, modifiers: {filter: FilterTypes.TRIPLES, limit: 20}});
+  //gm.createGame('cricket', {variation: 'Closeout', playerOrder, randomize, modifiers: {targets: 'random', filter: FilterTypes.MASTERS}});
   //gm.createGame('cricket', {playerOrder, randomize, modifiers: {limit: 2}});
 
   //gm.createGame('gotcha', {playerOrder, randomize});
@@ -53,11 +55,21 @@ module.exports = (io) => {
   //gm.createGame('gotcha', {playerOrder, randomize, modifiers: {limit: 4}});
   //gm.createGame('gotcha', {playerOrder, randomize, extras: { location: "192.168.1.137", port: 8888, endpoint: 'windicator', extraArgs: {limit:10}}});
 
+  //gm.createGame('jump_up', {playerOrder, randomize});
+  //gm.createGame('jump_up', {variation: 'Hyper', playerOrder, randomize});
+
   //gm.createGame('shanghai', {modifiers: {limit: 7}, playerOrder, randomize});
   //gm.createGame('shanghai', {modifiers: {limit: 2}, playerOrder, randomize});
 
   //gm.createGame('slider', {playerOrder, randomize});
+  //gm.createGame('slider', {playerOrder, randomize, modifiers: {filter: FilterTypes.MASTERS}});
+  //gm.createGame('slider', {playerOrder, randomize, modifiers: {bull_required: true}});
+  //gm.createGame('slider', {playerOrder, randomize, modifiers: {bull_required: true, filter: FilterTypes.SINGLE_INNER}});
+  //gm.createGame('slider', {playerOrder, randomize, modifiers: {bull_required: true, filter: FilterTypes.MASTERS}});
   //gm.createGame('slider', {playerOrder, randomize, modifiers: {limit: 2}});
+
+  //gm.createGame('tug_o_war', {playerOrder, randomize});
+  //gm.createGame('tug_o_war', {playerOrder, randomize, modifiers: {bull_multiplier: true}, extras: {handicap: {2: .5, 3: 1.5}}});
 
   //gm.createGame('warfare', {playerOrder, randomize});
   //gm.createGame('warfare', {playerOrder, randomize, modifiers: {limit: 2}});
@@ -121,8 +133,8 @@ module.exports = (io) => {
               let state = game.getState();
 
               if (state.game.roundOver) {
-                // if the round is we should send an update, then wait to advance
-                // the game
+                // if the round is over we should send an update, then wait to
+                // advance the game
                 io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
 
                 if (!state.finished) {

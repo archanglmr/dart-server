@@ -3,6 +3,7 @@
 // React dependencies
 import React from 'react';
 import {render} from 'react-dom';
+
 import GameClient from 'components/GameClient';
 import DisplayContainer from './containers/DisplayContainer';
 import LoadingContainer from './containers/LoadingContainer';
@@ -11,20 +12,22 @@ import LoadingContainer from './containers/LoadingContainer';
 // Redux dependencies
 import {createStore} from 'redux';
 import {Provider} from 'react-redux';
+
+// Our Rexux reducers and actions
 import {updateDisplayUrl, clientLoaded, updateGameState, UPDATE_GAME_STATE} from './display/actions';
-import {clientRootReducer, displayRootReducer} from './display/reducers';
+import {clientRootReducer, gameDisplayRootReducer} from './display/reducers';
 
 // Create the Redux store
 var clientStore = null,
-    displayStore = createStore(displayRootReducer),
+    gameDisplayStore = createStore(gameDisplayRootReducer),
     socket = io(),
     currentDisplay = '';
 
-let unsubscribe = displayStore.subscribe((store) => console.log('display:', displayStore.getState()));
+let unsubscribe = gameDisplayStore.subscribe(() => console.log('game display:', gameDisplayStore.getState()));
 
 render(
   (
-    <Provider store={displayStore}>
+    <Provider store={gameDisplayStore}>
       <GameClient>
         <DisplayContainer />
         <LoadingContainer />
@@ -40,7 +43,7 @@ render(
 socket.on(UPDATE_GAME_STATE, (data) => {
   if (currentDisplay !== data.display) {
     clientStore = null;
-    displayStore.dispatch(updateDisplayUrl((currentDisplay = data.display)));
+    gameDisplayStore.dispatch(updateDisplayUrl((currentDisplay = data.display)));
     clientStore = createStore(clientRootReducer);
     clientStore.dispatch(updateGameState(data.state));
   } else {
@@ -58,5 +61,5 @@ socket.on(UPDATE_GAME_STATE, (data) => {
  */
 window.registerGame = (cb) => {
   cb(clientStore);
-  displayStore.dispatch(clientLoaded());
+  gameDisplayStore.dispatch(clientLoaded());
 };
