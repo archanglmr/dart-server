@@ -12,7 +12,7 @@ const initialState = {};
  * @param action {{type: string}}
  * @returns {object}
  */
-export function clientRootReducer(state, action = {}) {
+export function gameDisplayClientRootReducer(state, action = {}) {
   if ('undefined' === typeof state) {
     return initialState;
   }
@@ -33,13 +33,14 @@ export function clientRootReducer(state, action = {}) {
 
 
 /**
- * The "Root Reducer" for the display controlling the game client
+ * The "Root Reducer" for the display container controlling the game client
+ * (display)
  *
  * @param state {object}
  * @param action {{type: string}}
  * @returns {object}
  */
-export function gameDisplayRootReducer(state, action = {}) {
+export function gameDisplayContainerRootReducer(state, action = {}) {
   if ('undefined' === typeof state) {
     return {loading: true, display: false};
   }

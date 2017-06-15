@@ -9,18 +9,11 @@ module.exports = (io) => {
       actions = require('../clients/display/actions'),
       GameManager = require('../lib/game-manager');
 
-  var gamePauseLength = 5000,
-      gamePauseTimer = null,
-      game = null, // this will be populated with whatever game
-      gameStarted = function(g) {
-        game = g;
-        console.log('Starting ' + game.getDisplayName() + ' Game');
-        game.startGame();
-        game.runPlugins(() => {
-          io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
-        });
-      },
-      gm = new GameManager(__dirname + '/../games', models, gameStarted);
+   var gm = new GameManager({
+        gamesPath: __dirname + '/../games',
+        models,
+        socket: io
+      });
 
   /**
    * player order by id (unless you pass randomize: true)
@@ -80,15 +73,15 @@ module.exports = (io) => {
   /**
    * socket.io server
    */
-  io.on('connection', function(socket) {
+  io.on('connection', (socket) => {
     console.log('A client connected');
-    if (game) {
-      socket.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
+    if (gm.activeGame) {
+      gm.emitGameState();
     } else {
       console.log('game not ready');
     }
 
-    socket.on('disconnect', function(){
+    socket.on('disconnect', () => {
       console.log('user disconnected');
     });
   });
@@ -97,115 +90,14 @@ module.exports = (io) => {
   /**
    * Throw handler for "throw client"
    */
-  router.post('/throw', function (req, res) {
-    var data = req.body;
+  router.post('/throw', gm.processThrow.bind(gm));
 
-    if ('object' == typeof req.body) {
-      res.setHeader('Content-Type', 'application/json');
-
-      if (!game) {
-        res.status(200);
-        res.end();
-        return;
-      }
-
-      // @todo: this does not check if the game is active or anything
-      if (DartHelpers.Test.isValidThrow(req.body)) {
-        res.write(JSON.stringify({success: true}));
-        res.end();
-
-
-        if (null === gamePauseTimer) {
-          let initialState = game.getState();
-
-          if (initialState.finished) {
-            console.log('game is over, hit MISS to start a new one.');
-            if (req.body.type === DartHelpers.ThrowTypes.MISS) {
-              console.log('restart game');
-              gm.restartLastGame();
-            } else {
-              console.log('ignore throw');
-            }
-          } else {
-            console.log('throw (good):', data);
-            game.throwDart(req.body);
-            game.runPlugins(() => {
-              let state = game.getState();
-
-              if (state.game.roundOver) {
-                // if the round is over we should send an update, then wait to
-                // advance the game
-                io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
-
-                if (!state.finished) {
-                  gamePauseTimer = setTimeout(() => {
-                    game.advanceGame();
-                    game.runPlugins(() => {
-                      io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
-                      gamePauseTimer = null;
-                    });
-                  }, gamePauseLength);
-                }
-              } else {
-                // if the round is not over we can update immediately
-                game.advanceGame();
-                game.runPlugins(() => {
-                  io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
-                });
-              }
-            });
-          }
-
-
-        } else {
-          console.log('throw (ignored):', data);
-        }
-      } else if (req.body.undo) {
-        if (!gamePauseTimer && game.undoLastThrow()) {
-          game.advanceGame();
-          game.runPlugins(() => {
-            io.sockets.emit(actions.UPDATE_GAME_STATE, io_response_wrapper(game));
-            gamePauseTimer = null;
-
-            res.write(JSON.stringify({success: true}));
-            res.end();
-          });
-        } else {
-          console.log('undo failed');
-
-          res.status(400);
-          res.end();
-        }
-      } else {
-        res.write(JSON.stringify({success: false}));
-        res.end();
-        console.log('throw (bad):', data);
-      }
-    } else {
-      res.status(400);
-      res.end();
-    }
-  });
-
-
-  /**
-   * @todo: This helper could be planned out a bit better....
-   *
-   * @param game {DartGameServer}
-   * @returns {{display: string, state: *}}
-   */
-  function io_response_wrapper(game) {
-    return {
-      display: '/display/game/' + game.getClientDisplayKey(),
-      state: game.getState()
-    };
-  }
 
   router.get('/gameoptions', function (req, res) {
     var games = gm.listGames();
 
     models.Player.all()
-        .then(function (players) {
+        .then((players) => {
           // @fixme: dumping to much player info here???
           res.setHeader('Content-Type', 'application/json');
           res.write(JSON.stringify({games, players}), 'utf-8');

@@ -35,10 +35,6 @@ io().on(UPDATE_GAME_STATE, (data) => {
   gameDisplayStore.dispatch(updateGameState(data.state));
 });
 
-// These are really just for debugging
-//gameDisplayStore.subscribe(() => console.log('game display:', gameDisplayStore.getState()));
-//throwClientStore.subscribe(() => console.log('throw client:', throwClientStore.getState()));
-
 // Render the React root component
 render(
   (
@@ -59,3 +55,10 @@ render(
   ),
   document.getElementById('root')
 );
+
+
+
+
+// These are really just for debugging
+//gameDisplayStore.subscribe(() => console.log('game display:', gameDisplayStore.getState()));
+//throwClientStore.subscribe(() => console.log('throw client:', throwClientStore.getState()));
