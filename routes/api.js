@@ -15,6 +15,26 @@ module.exports = (io) => {
         socket: io
       });
 
+
+  /**
+   * socket.io server
+   */
+  io.on('connection', (socket) => {
+    console.log('A client connected');
+    if (gm && gm.activeGame) {
+      gm.emitUpdateUrl();
+      gm.emitGameState();
+    } else {
+      console.log('game not ready');
+    }
+
+    socket.on('disconnect', () => {
+      console.log('user disconnected');
+    });
+  });
+
+
+
   /**
    * player order by id (unless you pass randomize: true)
    */
@@ -70,21 +90,6 @@ module.exports = (io) => {
 
 
 
-  /**
-   * socket.io server
-   */
-  io.on('connection', (socket) => {
-    console.log('A client connected');
-    if (gm.activeGame) {
-      gm.emitGameState();
-    } else {
-      console.log('game not ready');
-    }
-
-    socket.on('disconnect', () => {
-      console.log('user disconnected');
-    });
-  });
 
 
   /**

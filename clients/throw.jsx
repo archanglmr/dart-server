@@ -31,8 +31,8 @@ var throwClientStore = createStore(throwClientRootReducer, applyMiddleware(thunk
  data from the game state. We are not showing the real client or worrying about
  redirects or anything.
  */
-io().on(UPDATE_GAME_STATE, (data) => {
-  gameDisplayStore.dispatch(updateGameState(data.state));
+io().on(UPDATE_GAME_STATE, (state) => {
+  gameDisplayStore.dispatch(updateGameState(state));
 });
 
 // Render the React root component

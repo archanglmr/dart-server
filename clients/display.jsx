@@ -14,9 +14,14 @@ import {createStore} from 'redux';
 import {Provider} from 'react-redux';
 
 // Our Rexux reducers and actions
-import {updateDisplayUrl, clientLoaded, updateGameState, UPDATE_GAME_STATE} from './display/actions';
+import {
+    updateDisplayUrl, clientLoaded, updateGameState,
+    gameMenuVisibility,
+    UPDATE_GAME_STATE,
+    UPDATE_DISPLAY_URL,
+    GAME_MENU_VISIBILITY
+} from './display/actions';
 import {gameDisplayClientRootReducer, gameDisplayContainerRootReducer} from './display/reducers';
-
 
 // Create the Redux store
 var gameDisplayClientStore = null,
@@ -27,15 +32,19 @@ var gameDisplayClientStore = null,
  We only need to subscribe to UPDATE_GAME_STATE because we are only pulling
  data from the game state.
  */
-io().on(UPDATE_GAME_STATE, (data) => {
-  if (currentDisplay !== data.display) {
-    gameDisplayContainerStore.dispatch(updateDisplayUrl((currentDisplay = data.display)));
-    gameDisplayClientStore = createStore(gameDisplayClientRootReducer);
-    gameDisplayClientStore.dispatch(updateGameState(data.state));
-  } else {
-    gameDisplayClientStore.dispatch(updateGameState(data.state));
-  }
-});
+io()
+    .on(UPDATE_DISPLAY_URL, (data) => {
+      if (currentDisplay !== data.url) {
+        gameDisplayContainerStore.dispatch(updateDisplayUrl((currentDisplay = data.url)));
+        gameDisplayClientStore = createStore(gameDisplayClientRootReducer);
+      }
+    })
+    .on(UPDATE_GAME_STATE, (state) => {
+      gameDisplayClientStore.dispatch(updateGameState(state));
+    })
+    .on(GAME_MENU_VISIBILITY, (data) => {
+      gameDisplayContainerStore.dispatch(gameMenuVisibility(data.visible));
+    });
 
 /**
  * This function is called by the iframe window once it's loaded in order to

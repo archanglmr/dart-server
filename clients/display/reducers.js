@@ -1,9 +1,6 @@
 'use strict';
 
-import { UPDATE_GAME_STATE, UPDATE_DISPLAY_URL, CLIENT_LOADED } from './actions';
-
-const initialState = {};
-
+import { UPDATE_GAME_STATE, UPDATE_DISPLAY_URL, CLIENT_LOADED, GAME_MENU_VISIBILITY } from './actions';
 
 /**
  * The "Root Reducer" for the game client
@@ -14,7 +11,7 @@ const initialState = {};
  */
 export function gameDisplayClientRootReducer(state, action = {}) {
   if ('undefined' === typeof state) {
-    return initialState;
+    return {};
   }
 
   switch(action.type) {
@@ -42,7 +39,7 @@ export function gameDisplayClientRootReducer(state, action = {}) {
  */
 export function gameDisplayContainerRootReducer(state, action = {}) {
   if ('undefined' === typeof state) {
-    return {loading: true, display: false};
+    return {loading: true, display: false, showGameMenu: false};
   }
 
   switch(action.type) {
@@ -54,6 +51,9 @@ export function gameDisplayContainerRootReducer(state, action = {}) {
 
     case CLIENT_LOADED:
       return Object.assign({}, state, {loading: false});
+
+    case GAME_MENU_VISIBILITY:
+      return Object.assign({}, state, {showGameMenu: action.show});
 
     default:
       break;
