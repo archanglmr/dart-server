@@ -1,0 +1,4 @@
+{
+  "name": "GameMenuItem",
+  "main": "./game-menu-item.js"
+}

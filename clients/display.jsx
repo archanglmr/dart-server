@@ -7,6 +7,7 @@ import {render} from 'react-dom';
 import GameClient from 'components/GameClient';
 import DisplayContainer from './containers/DisplayContainer';
 import LoadingContainer from './containers/LoadingContainer';
+import GameMenuContainer from './containers/GameMenuContainer';
 
 
 // Redux dependencies
@@ -16,10 +17,10 @@ import {Provider} from 'react-redux';
 // Our Rexux reducers and actions
 import {
     updateDisplayUrl, clientLoaded, updateGameState,
-    gameMenuVisibility,
+    updateGameMenu,
     UPDATE_GAME_STATE,
     UPDATE_DISPLAY_URL,
-    GAME_MENU_VISIBILITY
+    UPDATE_GAME_MENU
 } from './display/actions';
 import {gameDisplayClientRootReducer, gameDisplayContainerRootReducer} from './display/reducers';
 
@@ -42,8 +43,10 @@ io()
     .on(UPDATE_GAME_STATE, (state) => {
       gameDisplayClientStore.dispatch(updateGameState(state));
     })
-    .on(GAME_MENU_VISIBILITY, (data) => {
-      gameDisplayContainerStore.dispatch(gameMenuVisibility(data.visible));
+    .on(UPDATE_GAME_MENU, (data) => {
+      //console.log('UPDATE_GAME_MENU', data);
+      gameDisplayContainerStore.dispatch(updateGameMenu(data));
+      //console.log('game menu visibility:', gameDisplayContainerStore.getState());
     });
 
 /**
@@ -64,6 +67,7 @@ render(
     <Provider store={gameDisplayContainerStore}>
       <GameClient>
         <DisplayContainer />
+        <GameMenuContainer />
         <LoadingContainer />
       </GameClient>
     </Provider>

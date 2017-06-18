@@ -24,6 +24,7 @@ module.exports = (io) => {
     if (gm && gm.activeGame) {
       gm.emitUpdateUrl();
       gm.emitGameState();
+      gm.emitGameMenu();
     } else {
       console.log('game not ready');
     }
@@ -96,6 +97,7 @@ module.exports = (io) => {
    * Throw handler for "throw client"
    */
   router.post('/throw', gm.processThrow.bind(gm));
+  router.post('/menu', gm.processMenuKey.bind(gm));
 
 
   router.get('/gameoptions', function (req, res) {
