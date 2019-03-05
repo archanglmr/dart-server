@@ -90,7 +90,7 @@ export default class GameMenu extends Component {
       /* Shortcuts */
       case 'U':
         console.log('Unthrow Last Dart');
-          this.submitKey(GAME_ACTION_UNTHROW);
+        this.submitKey(GAME_ACTION_UNTHROW);
         e.preventDefault();
         break;
 
@@ -134,29 +134,39 @@ export default class GameMenu extends Component {
     var lightboxStyles = {
       opacity: this.props.visible ? 1 : 0
     },
-    menuContaierStyles = {
+    menuContainerStyles = {
       top: this.state.top + 'px',
       left: this.state.left + 'px',
       width: this.state.width + 'px',
       height: this.state.height + 'px'
-    };
+    },
+    menuItems = [],
+    highlighted = false;
+
+    this.props.menu.map((item, index) => {
+      let classNames = [];
+      if (item.title) {
+        classNames.push('title');
+      } else if (!item.enabled) {
+        classNames.push('disabled');
+      } else if (item.highlighted) {
+        classNames.push('highlight');
+        highlighted = index;
+      }
+
+      menuItems.push(<li key={'menu_item_' + index} className={classNames.join(' ')}>{item.label}</li>);
+    });
+
+    if (highlighted > 7) {
+      let remove = highlighted - 7;
+      menuItems.splice(1, remove);
+    }
 
     return (
         <div className="game-menu" style={lightboxStyles}>
-          <div style={menuContaierStyles}>
+          <div style={menuContainerStyles}>
             <ul>
-              {this.props.menu.map((item, index) => {
-                let classNames = [];
-                if (item.title) {
-                  classNames.push('title');
-                } else if (!item.enabled) {
-                  classNames.push('disabled');
-                } else if (item.highlighted) {
-                  classNames.push('highlight');
-                }
-
-                return (<li key={'menu_item_' + index} className={classNames.join(' ')}>{item.label}</li>);
-              })}
+              {menuItems}
             </ul>
           </div>
         </div>
